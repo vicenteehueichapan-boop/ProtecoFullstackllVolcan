@@ -14,4 +14,10 @@ describe('productoService', () => {
     listarProductos()
     expect(listarProductos()[0].codigo).toBe('CL001')
   })
+
+  it('restaura el catálogo cuando el almacenamiento no contiene una lista', () => {
+    localStorage.setItem('gas-el-volcan-productos', JSON.stringify({ codigo: 'incorrecto' }))
+
+    expect(listarProductos()).toHaveLength(10)
+  })
 })

@@ -16,10 +16,16 @@ export function listarProductos() {
   }
 
   try {
-    return JSON.parse(productosGuardados)
+    const productos = JSON.parse(productosGuardados)
+
+    if (Array.isArray(productos)) {
+      return productos
+    }
   } catch {
-    const productos = copiarProductosIniciales()
-    localStorage.setItem(CLAVE_PRODUCTOS, JSON.stringify(productos))
-    return productos
+    // Si los datos están dañados, se restaura el catálogo inicial más abajo.
   }
+
+  const productos = copiarProductosIniciales()
+  localStorage.setItem(CLAVE_PRODUCTOS, JSON.stringify(productos))
+  return productos
 }
