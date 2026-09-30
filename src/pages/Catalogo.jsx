@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Col, Container, Row } from 'react-bootstrap'
 import SelectorTipoCliente from '../components/molecules/SelectorTipoCliente'
 import TarjetaProducto from '../components/molecules/TarjetaProducto'
 import { useProductos } from '../hooks/useProductos'
@@ -8,26 +9,26 @@ export default function Catalogo() {
   const [tipoCliente, setTipoCliente] = useState('residencial')
 
   return (
-    <section className="container py-5">
-      <div className="row align-items-end mb-3">
-        <div className="col-md-8">
+    <Container as="section" className="py-5">
+      <Row className="align-items-end mb-3">
+        <Col md={8}>
           <h1>Catálogo de productos</h1>
           <p className="text-secondary">
             Selecciona el tipo de cliente para consultar la tarifa correspondiente.
           </p>
-        </div>
-        <div className="col-md-4">
+        </Col>
+        <Col md={4}>
           <SelectorTipoCliente valor={tipoCliente} alCambiar={setTipoCliente} />
-        </div>
-      </div>
+        </Col>
+      </Row>
 
-      <div className="row g-4">
+      <Row className="g-4">
         {productos.map((producto) => (
-          <div className="col-sm-6 col-lg-4 col-xl-3" key={producto.codigo}>
+          <Col xs={12} md={6} lg={4} xl={3} key={producto.codigo}>
             <TarjetaProducto producto={producto} tipoCliente={tipoCliente} />
-          </div>
+          </Col>
         ))}
-      </div>
-    </section>
+      </Row>
+    </Container>
   )
 }

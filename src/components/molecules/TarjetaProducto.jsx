@@ -7,21 +7,22 @@ export default function TarjetaProducto({ producto, tipoCliente }) {
   const stockBajo = producto.stock <= 10
 
   return (
-    <article className="card h-100 tarjeta-producto">
-      <img
-        className="card-img-top imagen-producto"
+    <Card as="article" className="h-100 tarjeta-producto">
+      <Card.Img
+        className="imagen-producto"
         src={producto.imagen}
         alt={producto.nombre}
       />
-      <div className="card-body d-flex flex-column">
+      <Card.Body className="d-flex flex-column">
         <p className="text-secondary small mb-1">{producto.codigo}</p>
-        <h2 className="h5 card-title">{producto.nombre}</h2>
-        <p className="card-text flex-grow-1">{producto.descripcion}</p>
+        <Card.Title as="h2" className="h5">{producto.nombre}</Card.Title>
+        <Card.Text className="flex-grow-1">{producto.descripcion}</Card.Text>
         <Precio valor={formatearPrecio(precio)} />
-        <span className={`badge ${stockBajo ? 'text-bg-warning' : 'text-bg-success'} align-self-start`}>
+        <Badge bg={stockBajo ? 'warning' : 'success'} text={stockBajo ? 'dark' : undefined} className="align-self-start">
           {stockBajo ? `Últimas ${producto.stock} unidades` : `Stock: ${producto.stock}`}
-        </span>
-      </div>
-    </article>
+        </Badge>
+      </Card.Body>
+    </Card>
   )
 }
+import { Badge, Card } from 'react-bootstrap'

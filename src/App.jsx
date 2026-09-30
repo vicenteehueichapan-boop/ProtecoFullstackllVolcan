@@ -1,11 +1,14 @@
+import { BrowserRouter } from 'react-router-dom'
 import { ProductosProvider } from './context/ProductosContext'
 import RutasAplicacion from './routes/RutasAplicacion'
 
 function App() {
   return (
-    <ProductosProvider>
-      <RutasAplicacion />
-    </ProductosProvider>
+    <BrowserRouter>
+      <ProductosProvider>
+        <RutasAplicacion />
+      </ProductosProvider>
+    </BrowserRouter>
   )
 }
 

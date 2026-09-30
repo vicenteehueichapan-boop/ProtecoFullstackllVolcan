@@ -1,34 +1,28 @@
+import { Container, Nav, Navbar } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
 
 export default function BarraNavegacion() {
   return (
-    <nav className="navbar navbar-expand-md bg-dark" data-bs-theme="dark">
-      <div className="container">
-        <NavLink className="navbar-brand fw-bold" to="/">
+    <Navbar expand="md" bg="dark" data-bs-theme="dark">
+      <Container>
+        <Navbar.Brand as={NavLink} className="fw-bold" to="/">
           Gas El Volcán
-        </NavLink>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navegacion-principal"
-          aria-controls="navegacion-principal"
-          aria-expanded="false"
-          aria-label="Mostrar navegación"
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
-        <div className="collapse navbar-collapse" id="navegacion-principal">
-          <div className="navbar-nav ms-auto">
-            <NavLink className="nav-link" to="/">
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="navegacion-principal" />
+        <Navbar.Collapse id="navegacion-principal">
+          <Nav className="ms-auto">
+            <Nav.Link as={NavLink} to="/" end>
               Inicio
-            </NavLink>
-            <NavLink className="nav-link" to="/catalogo">
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/catalogo">
               Catálogo
-            </NavLink>
-          </div>
-        </div>
-      </div>
-    </nav>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/ingreso">
+              Ingresar
+            </Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   )
 }
