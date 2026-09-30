@@ -10,3 +10,26 @@ body {
   margin: 0;
   background-color: #f8f9fa;
 }
+
+.marca-volcan {
+  color: #c9362b;
+}
+
+.hero-inicio {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffffff 70%);
+}
+
+.imagen-producto {
+  height: 180px;
+  object-fit: contain;
+  padding: 1rem;
+}
+
+.tarjeta-producto {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tarjeta-producto:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 12%);
+}
