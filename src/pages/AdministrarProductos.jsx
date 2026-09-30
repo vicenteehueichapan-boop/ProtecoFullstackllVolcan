@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Alert, Button, Card, Col, Container, Form, Row, Table } from 'react-bootstrap'
+import { Button, Col, Container, Modal, Row, Table } from 'react-bootstrap'
+import FormularioProducto from '../components/organisms/FormularioProducto'
 import { useProductos } from '../hooks/useProductos'
 import imagenAccesorio from '../assets/productos/accesorio.svg'
 
@@ -35,12 +36,14 @@ export default function AdministrarProductos() {
   const [formulario, setFormulario] = useState(PRODUCTO_VACIO)
   const [codigoOriginal, setCodigoOriginal] = useState(null)
   const [mensaje, setMensaje] = useState(null)
+  const [confirmacion, setConfirmacion] = useState(null)
 
   const estaEditando = codigoOriginal !== null
 
   function cambiarCampo(evento) {
     const { name, value } = evento.target
     setFormulario((actual) => ({ ...actual, [name]: value }))
+    setMensaje(null)
   }
 
   function limpiarFormulario() {
@@ -73,96 +76,47 @@ export default function AdministrarProductos() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function eliminar(codigo) {
-    if (!window.confirm(`¿Eliminar el producto ${codigo}?`)) return
-
-    eliminarProducto(codigo)
-    setMensaje({ tipo: 'success', texto: 'Producto eliminado correctamente.' })
-    if (codigoOriginal === codigo) limpiarFormulario()
-  }
-
-  function restaurar() {
-    if (!window.confirm('¿Restaurar el catálogo original del caso?')) return
-
-    restaurarProductos()
-    limpiarFormulario()
-    setMensaje({ tipo: 'success', texto: 'Catálogo original restaurado.' })
+  function confirmarAccion() {
+    try {
+      if (confirmacion.tipo === 'eliminar') {
+        eliminarProducto(confirmacion.codigo)
+        if (codigoOriginal === confirmacion.codigo) limpiarFormulario()
+        setMensaje({ tipo: 'success', texto: 'Producto eliminado correctamente.' })
+      } else {
+        restaurarProductos()
+        limpiarFormulario()
+        setMensaje({ tipo: 'success', texto: 'Catálogo original restaurado.' })
+      }
+    } catch (error) {
+      setMensaje({ tipo: 'danger', texto: error.message })
+    }
+    setConfirmacion(null)
   }
 
   return (
     <Container className="py-5">
       <Row className="g-4">
         <Col lg={4}>
-          <Card className="shadow-sm position-sticky formulario-administracion">
-            <Card.Body>
-              <h1 className="h4">{estaEditando ? 'Editar producto' : 'Nuevo producto'}</h1>
-              <p className="text-secondary small">
-                Los cambios se guardan localmente en este navegador para la demostración de EP2.
-              </p>
-              {mensaje && <Alert variant={mensaje.tipo}>{mensaje.texto}</Alert>}
-              <Form onSubmit={guardar}>
-                <Form.Group className="mb-3" controlId="codigo">
-                  <Form.Label>Código</Form.Label>
-                  <Form.Control name="codigo" value={formulario.codigo} onChange={cambiarCampo} required />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="categoria">
-                  <Form.Label>Categoría</Form.Label>
-                  <Form.Control name="categoria" value={formulario.categoria} onChange={cambiarCampo} required />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="nombre">
-                  <Form.Label>Nombre</Form.Label>
-                  <Form.Control name="nombre" value={formulario.nombre} onChange={cambiarCampo} required />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="descripcion">
-                  <Form.Label>Descripción</Form.Label>
-                  <Form.Control as="textarea" rows={3} name="descripcion" value={formulario.descripcion} onChange={cambiarCampo} required />
-                </Form.Group>
-                <Row>
-                  <Col xs={6}>
-                    <Form.Group className="mb-3" controlId="unidad">
-                      <Form.Label>Unidad</Form.Label>
-                      <Form.Control name="unidad" value={formulario.unidad} onChange={cambiarCampo} required />
-                    </Form.Group>
-                  </Col>
-                  <Col xs={6}>
-                    <Form.Group className="mb-3" controlId="stock">
-                      <Form.Label>Stock</Form.Label>
-                      <Form.Control type="number" min="0" name="stock" value={formulario.stock} onChange={cambiarCampo} required />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col xs={6}>
-                    <Form.Group className="mb-3" controlId="precioResidencial">
-                      <Form.Label>Precio residencial</Form.Label>
-                      <Form.Control type="number" min="0" name="precioResidencial" value={formulario.precioResidencial} onChange={cambiarCampo} required />
-                    </Form.Group>
-                  </Col>
-                  <Col xs={6}>
-                    <Form.Group className="mb-3" controlId="precioComercial">
-                      <Form.Label>Precio comercial</Form.Label>
-                      <Form.Control type="number" min="0" name="precioComercial" value={formulario.precioComercial} onChange={cambiarCampo} required />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <div className="d-flex gap-2">
-                  <Button type="submit">{estaEditando ? 'Guardar cambios' : 'Agregar'}</Button>
-                  {estaEditando && <Button variant="outline-secondary" onClick={limpiarFormulario}>Cancelar</Button>}
-                </div>
-              </Form>
-            </Card.Body>
-          </Card>
+          <FormularioProducto
+            datos={formulario}
+            estaEditando={estaEditando}
+            mensaje={mensaje}
+            onChange={cambiarCampo}
+            onSubmit={guardar}
+            onCancelar={limpiarFormulario}
+          />
         </Col>
         <Col lg={8}>
           <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <div>
-              <h2 className="h3 mb-1">Administración de productos</h2>
+              <h1 className="h3 mb-1">Administración de productos</h1>
               <span className="text-secondary">{productos.length} productos registrados</span>
             </div>
-            <Button variant="outline-secondary" onClick={restaurar}>Restaurar catálogo</Button>
+            <Button variant="outline-secondary" onClick={() => setConfirmacion({ tipo: 'restaurar' })}>Restaurar catálogo</Button>
           </div>
           <div className="table-responsive bg-white shadow-sm rounded">
             <Table hover className="mb-0 align-middle">
+              <caption className="visually-hidden">Productos registrados y acciones de administración</caption>
               <thead>
                 <tr>
                   <th>Código</th>
@@ -180,7 +134,7 @@ export default function AdministrarProductos() {
                     <td>
                       <div className="d-flex gap-2">
                         <Button size="sm" variant="outline-primary" onClick={() => editar(producto)}>Editar</Button>
-                        <Button size="sm" variant="outline-danger" onClick={() => eliminar(producto.codigo)}>Eliminar</Button>
+                        <Button size="sm" variant="outline-danger" onClick={() => setConfirmacion({ tipo: 'eliminar', codigo: producto.codigo })}>Eliminar</Button>
                       </div>
                     </td>
                   </tr>
@@ -190,6 +144,22 @@ export default function AdministrarProductos() {
           </div>
         </Col>
       </Row>
+      <Modal show={confirmacion !== null} onHide={() => setConfirmacion(null)} centered aria-labelledby="titulo-confirmacion-productos">
+        <Modal.Header closeButton closeLabel="Cerrar">
+          <Modal.Title id="titulo-confirmacion-productos">
+            {confirmacion?.tipo === 'eliminar' ? 'Eliminar producto' : 'Restaurar catálogo'}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {confirmacion?.tipo === 'eliminar'
+            ? `¿Eliminar el producto ${confirmacion.codigo}? Dejará de aparecer en el catálogo.`
+            : '¿Restaurar el catálogo original del caso? Se reemplazarán los cambios guardados en este navegador.'}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-secondary" onClick={() => setConfirmacion(null)}>Cancelar</Button>
+          <Button variant="danger" onClick={confirmarAccion}>Confirmar</Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   )
 }

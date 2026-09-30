@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Card, Col, Container, Row } from 'react-bootstrap'
+import { Alert, Button, Card, Col, Container, Row } from 'react-bootstrap'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import ResumenPedido from '../components/molecules/ResumenPedido'
 import FormularioNuevoPedido from '../components/organisms/FormularioNuevoPedido'
@@ -8,20 +8,25 @@ import { usePedidos } from '../hooks/usePedidos'
 import { useProductos } from '../hooks/useProductos'
 
 export default function NuevoPedido() {
-  const { productos } = useProductos()
+  const { productos, recargarProductos } = useProductos()
   const { crearPedido } = usePedidos()
   const navegar = useNavigate()
   const [parametros] = useSearchParams()
   const [borrador, setBorrador] = useState(null)
+  const [errorConfirmacion, setErrorConfirmacion] = useState('')
+
+  function prepararPedido(datos) {
+    setErrorConfirmacion('')
+    setBorrador(datos)
+  }
 
   function confirmarPedido() {
     try {
       const pedidoCreado = crearPedido(borrador)
       navegar(`/pedido-confirmado/${pedidoCreado.id}`)
     } catch (excepcion) {
-      navegar('/pedido-no-realizado', {
-        state: { mensaje: excepcion instanceof Error ? excepcion.message : 'No fue posible crear el pedido.' },
-      })
+      setErrorConfirmacion(excepcion instanceof Error ? excepcion.message : 'No fue posible crear el pedido.')
+      recargarProductos()
     }
   }
 
@@ -34,7 +39,8 @@ export default function NuevoPedido() {
             Registra los datos de entrega y revisa el resumen antes de confirmar.
           </p>
 
-          {borrador ? (
+          {errorConfirmacion && <Alert variant="danger">{errorConfirmacion}</Alert>}
+          {borrador && (
             <Row className="g-4">
               <Col lg={8}><ResumenPedido pedido={borrador} /></Col>
               <Col lg={4}>
@@ -48,18 +54,19 @@ export default function NuevoPedido() {
                 </Card>
               </Col>
             </Row>
-          ) : (
+          )}
+          <div hidden={Boolean(borrador)}>
             <Card className="shadow-sm">
               <Card.Body className="p-4">
                 <FormularioNuevoPedido
                   productos={productos}
                   zonas={zonasDespacho}
-                  alPrepararPedido={setBorrador}
+                  alPrepararPedido={prepararPedido}
                   codigoInicial={parametros.get('producto') ?? ''}
                 />
               </Card.Body>
             </Card>
-          )}
+          </div>
         </Col>
       </Row>
     </Container>

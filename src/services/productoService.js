@@ -73,7 +73,9 @@ export function listarProductos() {
     const productos = JSON.parse(productosGuardados)
 
     if (Array.isArray(productos)) {
-      return productos
+      const productosValidados = productos.map(prepararProducto)
+      const codigos = new Set(productosValidados.map((producto) => producto.codigo))
+      if (codigos.size === productosValidados.length) return productosValidados
     }
   } catch {
     // Si los datos están dañados, se restaura el catálogo inicial más abajo.

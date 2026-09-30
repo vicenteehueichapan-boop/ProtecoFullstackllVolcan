@@ -2,6 +2,7 @@ import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 import App from './App'
+import { actualizarProducto } from './services/productoService'
 
 function irA(ruta) {
   act(() => {
@@ -30,6 +31,14 @@ describe('recorrido completo de un pedido', () => {
 
     expect(screen.getByRole('heading', { name: 'Resumen del pedido' })).toBeInTheDocument()
     expect(screen.getByText(/Cilindro GLP 5 kg × 2/)).toBeInTheDocument()
+
+    await usuario.click(screen.getByRole('button', { name: 'Corregir datos' }))
+    expect(screen.getByLabelText('Nombre del cliente')).toHaveValue('Ana Pérez')
+    expect(screen.getByLabelText('Dirección de entrega')).toHaveValue('Los Aromos 123')
+    expect(screen.getByLabelText('Zona de despacho')).toHaveValue('centro')
+    expect(screen.getByLabelText('Cilindro')).toHaveValue('CL001')
+    expect(screen.getByLabelText('Cantidad')).toHaveValue(2)
+    await usuario.click(screen.getByRole('button', { name: 'Revisar pedido' }))
 
     await usuario.click(screen.getByRole('button', { name: 'Confirmar pedido' }))
 
@@ -63,5 +72,27 @@ describe('recorrido completo de un pedido', () => {
     expect(await screen.findByRole('heading', { name: 'Pedido PED-0001' })).toBeInTheDocument()
     expect(screen.getByText('Repartidor 1')).toBeInTheDocument()
     expect(screen.getByText('Pedido entregado')).toHaveClass('list-group-item-success')
+  })
+
+  it('permite corregir el pedido si el catálogo cambió durante el resumen', async () => {
+    const usuario = userEvent.setup()
+    render(<App />)
+    await usuario.type(screen.getByLabelText('Nombre del cliente'), 'Ana Pérez')
+    await usuario.type(screen.getByLabelText('Dirección de entrega'), 'Los Aromos 123')
+    await usuario.selectOptions(screen.getByLabelText('Zona de despacho'), 'centro')
+    await usuario.selectOptions(screen.getByLabelText('Cilindro'), 'CL001')
+    await usuario.click(screen.getByRole('button', { name: 'Revisar pedido' }))
+
+    actualizarProducto('CL001', { precioResidencial: 7000 })
+    await usuario.click(screen.getByRole('button', { name: 'Confirmar pedido' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('Los datos o precios del catálogo cambiaron')
+    expect(JSON.parse(localStorage.getItem('gas-el-volcan-pedidos'))).toEqual([])
+
+    await usuario.click(screen.getByRole('button', { name: 'Corregir datos' }))
+    expect(screen.getByLabelText('Nombre del cliente')).toHaveValue('Ana Pérez')
+    await usuario.click(screen.getByRole('button', { name: 'Revisar pedido' }))
+    await usuario.click(screen.getByRole('button', { name: 'Confirmar pedido' }))
+    expect(await screen.findByRole('heading', { name: 'Pedido confirmado' })).toBeInTheDocument()
+    expect(JSON.parse(localStorage.getItem('gas-el-volcan-pedidos'))[0].total).toBe(7000)
   })
 })

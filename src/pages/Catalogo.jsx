@@ -29,8 +29,9 @@ export default function Catalogo() {
 
   return (
     <Container as="section" className="py-5">
-      <Row className="align-items-end mb-3">
+      <Row className="align-items-end g-3 mb-4 cabecera-catalogo">
         <Col md={8}>
+          <p className="sobretitulo">Para tu hogar y tu negocio</p>
           <h1>Catálogo de productos</h1>
           <p className="text-secondary">
             Selecciona el tipo de cliente para consultar la tarifa correspondiente.
@@ -48,6 +49,9 @@ export default function Catalogo() {
         alBuscar={(valor) => actualizarParametro('buscar', valor)}
         alCambiarCategoria={(valor) => actualizarParametro('categoria', valor)}
       />
+      <p className="resultado-catalogo" aria-live="polite">
+        {productosFiltrados.length} {productosFiltrados.length === 1 ? 'producto encontrado' : 'productos encontrados'}
+      </p>
       <CatalogoGas productos={productosFiltrados} tipoCliente={tipoCliente} />
     </Container>
   )

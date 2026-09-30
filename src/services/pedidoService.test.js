@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { datosPedido } from '../tests/datosPedido'
+import { actualizarProducto, eliminarProducto } from './productoService'
 import {
   ESTADOS_PEDIDO,
   asignarRepartidor,
@@ -8,14 +10,6 @@ import {
   obtenerPedidoPorId,
   restaurarPedidos,
 } from './pedidoService'
-
-const datosPedido = {
-  cliente: { nombre: 'Ana Pérez', telefono: '912345678' },
-  productos: [{ codigo: 'CL001', cantidad: 1, precioUnitario: 15990 }],
-  direccion: 'Los Aromos 123',
-  comuna: 'Puente Alto',
-  total: 15990,
-}
 
 describe('pedidoService', () => {
   beforeEach(() => {
@@ -83,6 +77,40 @@ describe('pedidoService', () => {
 
     expect(listarPedidos()).toEqual([])
     expect(localStorage.getItem('gas-el-volcan-pedidos')).toBe('[]')
+  })
+
+  it.each([
+    { cliente: { nombre: 'Ana' } },
+    { zona: { id: 'inexistente' } },
+    { tipoCliente: 'inexistente' },
+    { formaPago: 'tarjeta' },
+    { total: 1 },
+    { productos: [{ ...datosPedido.productos[0], cantidad: -1 }] },
+    { productos: [{ ...datosPedido.productos[0], precioUnitario: NaN }] },
+  ])('rechaza datos incoherentes antes de persistir: %j', (cambios) => {
+    expect(() => crearPedido({ ...datosPedido, ...cambios })).toThrow()
+    expect(listarPedidos()).toEqual([])
+  })
+
+  it('revalida stock vigente al confirmar un resumen anterior', () => {
+    actualizarProducto('CL001', { stock: 0 })
+    expect(() => crearPedido(datosPedido)).toThrow('El stock de Cilindro GLP 5 kg cambió')
+    expect(listarPedidos()).toEqual([])
+  })
+
+  it('exige revisar otra vez el resumen si el precio cambió', () => {
+    actualizarProducto('CL001', { precioResidencial: 7000 })
+    expect(() => crearPedido(datosPedido)).toThrow('Los datos o precios del catálogo cambiaron')
+  })
+
+  it('rechaza un cilindro eliminado antes de confirmar', () => {
+    eliminarProducto('CL001')
+    expect(() => crearPedido(datosPedido)).toThrow('Un cilindro del pedido ya no está disponible')
+  })
+
+  it('recupera una lista cuyo JSON es válido pero contiene pedidos incompletos', () => {
+    localStorage.setItem('gas-el-volcan-pedidos', JSON.stringify([{ id: 'PED-0001' }]))
+    expect(listarPedidos()).toEqual([])
   })
 
   it('restaura manualmente el conjunto inicial', () => {

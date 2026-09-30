@@ -15,7 +15,18 @@ export default function Categorias() {
           const cantidad = productos.filter((producto) => producto.categoria === categoria).length
           return (
             <Col md={6} lg={4} key={categoria}>
-              <Card className="h-100"><Card.Body><Card.Title>{categoria}</Card.Title><Card.Text>{cantidad} productos disponibles.</Card.Text><Link to={`/catalogo?categoria=${encodeURIComponent(categoria)}`}>Ver productos</Link></Card.Body></Card>
+              <Card className="h-100">
+                <Card.Body>
+                  <Card.Title as="h2" className="h5">{categoria}</Card.Title>
+                  <Card.Text>{cantidad} productos disponibles.</Card.Text>
+                  <Link
+                    to={`/catalogo?categoria=${encodeURIComponent(categoria)}`}
+                    aria-label={`Ver productos de ${categoria}`}
+                  >
+                    Ver productos
+                  </Link>
+                </Card.Body>
+              </Card>
             </Col>
           )
         })}

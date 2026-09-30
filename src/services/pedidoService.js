@@ -1,4 +1,7 @@
 import pedidosIniciales from '../data/pedidosIniciales'
+import zonasDespacho from '../data/zonasDespacho'
+import { precioSegunCliente } from '../utils/precioSegunCliente'
+import { listarProductos } from './productoService'
 
 const CLAVE_PEDIDOS = 'gas-el-volcan-pedidos'
 
@@ -44,6 +47,64 @@ function validarDatosPedido(datosPedido) {
   if (!Array.isArray(datosPedido.productos) || datosPedido.productos.length === 0) {
     throw new Error('El pedido debe incluir al menos un producto')
   }
+
+  const textoValido = (valor, minimo = 1) => typeof valor === 'string' && valor.trim().length >= minimo
+  if (!textoValido(datosPedido.cliente?.nombre, 3) || !textoValido(datosPedido.cliente?.direccion, 5)) {
+    throw new Error('El nombre y la dirección del cliente no son válidos')
+  }
+  const zona = zonasDespacho.find((item) => item.id === datosPedido.zona?.id)
+  if (!zona || datosPedido.zona.nombre !== zona.nombre || datosPedido.zona.tiempoEstimado !== zona.tiempoEstimado) {
+    throw new Error('La zona de despacho no es válida')
+  }
+  if (!['residencial', 'comercial'].includes(datosPedido.tipoCliente)) {
+    throw new Error('El tipo de cliente no es válido')
+  }
+  if (datosPedido.formaPago !== 'efectivo_al_entregar') {
+    throw new Error('La forma de pago no es válida')
+  }
+  const codigos = new Set()
+  let totalCalculado = 0
+  for (const producto of datosPedido.productos) {
+    if (!textoValido(producto?.codigo) || !textoValido(producto?.nombre)
+      || !Number.isInteger(producto.cantidad) || producto.cantidad < 1
+      || !Number.isFinite(producto.precioUnitario) || producto.precioUnitario < 0
+      || producto.subtotal !== producto.precioUnitario * producto.cantidad
+      || codigos.has(producto.codigo)) {
+      throw new Error('Los productos, cantidades o precios del pedido no son válidos')
+    }
+    codigos.add(producto.codigo)
+    totalCalculado += producto.subtotal
+  }
+  if (!Number.isFinite(datosPedido.total) || datosPedido.total !== totalCalculado) {
+    throw new Error('El total del pedido no coincide con sus productos')
+  }
+}
+
+function validarPedidoGuardado(pedido) {
+  validarDatosPedido(pedido)
+  if (!/^PED-\d{4,}$/.test(pedido.id) || !Object.values(ESTADOS_PEDIDO).includes(pedido.estado)
+    || !Number.isFinite(Date.parse(pedido.fechaCreacion))
+    || !Number.isFinite(Date.parse(pedido.fechaActualizacion))
+    || (pedido.estado === ESTADOS_PEDIDO.PENDIENTE ? pedido.repartidor !== null
+      : typeof pedido.repartidor !== 'string' || pedido.repartidor.trim() === '')) {
+    throw new Error('El pedido guardado tiene una estructura incorrecta')
+  }
+}
+
+function validarCatalogoVigente(datosPedido) {
+  const catalogo = listarProductos()
+  for (const linea of datosPedido.productos) {
+    const producto = catalogo.find((item) => item.codigo === linea.codigo)
+    if (!producto || producto.categoria !== 'Cilindros de Gas') {
+      throw new Error('Un cilindro del pedido ya no está disponible. Revisa el catálogo y prepara nuevamente el pedido.')
+    }
+    if (linea.cantidad > producto.stock) {
+      throw new Error(`El stock de ${producto.nombre} cambió. Solo quedan ${producto.stock} unidades; corrige la cantidad.`)
+    }
+    if (linea.nombre !== producto.nombre || linea.precioUnitario !== precioSegunCliente(producto, datosPedido.tipoCliente)) {
+      throw new Error('Los datos o precios del catálogo cambiaron. Revisa nuevamente el resumen antes de confirmar.')
+    }
+  }
 }
 
 export function listarPedidos() {
@@ -57,6 +118,10 @@ export function listarPedidos() {
     const pedidos = JSON.parse(pedidosGuardados)
 
     if (Array.isArray(pedidos)) {
+      pedidos.forEach(validarPedidoGuardado)
+      if (new Set(pedidos.map((pedido) => pedido.id)).size !== pedidos.length) {
+        throw new Error('Hay identificadores de pedido repetidos')
+      }
       return copiarPedidos(pedidos)
     }
   } catch {
@@ -72,6 +137,7 @@ export function obtenerPedidoPorId(id) {
 
 export function crearPedido(datosPedido) {
   validarDatosPedido(datosPedido)
+  validarCatalogoVigente(datosPedido)
 
   const pedidos = listarPedidos()
   const fechaCreacion = new Date().toISOString()

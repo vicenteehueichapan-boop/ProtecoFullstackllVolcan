@@ -11,6 +11,8 @@ describe('FormularioRegistro', () => {
     await usuario.click(screen.getByRole('button', { name: 'Registrarme' }))
 
     expect(screen.getByText('Ingresa tu nombre completo.')).toBeInTheDocument()
+    expect(screen.getByLabelText('Nombre completo')).toHaveAttribute('aria-invalid', 'true')
+    expect(screen.getByLabelText('Nombre completo')).toHaveAccessibleDescription('Ingresa tu nombre completo.')
     expect(screen.getByText('Ingresa el RUN sin puntos ni guion.')).toBeInTheDocument()
     expect(screen.getByText('Ingresa un correo válido.')).toBeInTheDocument()
     expect(screen.getByText('La contraseña debe tener al menos 6 caracteres.')).toBeInTheDocument()
@@ -50,5 +52,10 @@ describe('FormularioRegistro', () => {
       'Datos válidos. El registro real se conectará al backend en una etapa posterior.',
     )
     expect(screen.queryByText('Ingresa un correo válido.')).not.toBeInTheDocument()
+
+    await usuario.clear(screen.getByLabelText('Correo'))
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    await usuario.click(screen.getByRole('button', { name: 'Registrarme' }))
+    expect(screen.getByLabelText('Correo')).toHaveAccessibleDescription('Ingresa un correo válido.')
   })
 })

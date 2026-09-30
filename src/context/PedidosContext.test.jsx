@@ -2,13 +2,8 @@ import { act, renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { usePedidos } from '../hooks/usePedidos'
 import { ESTADOS_PEDIDO } from '../services/pedidoService'
+import { datosPedido } from '../tests/datosPedido'
 import { PedidosProvider } from './PedidosContext'
-
-const datosPedido = {
-  cliente: { nombre: 'Ana Pérez' },
-  productos: [{ codigo: 'CL001', cantidad: 1, precioUnitario: 15990 }],
-  total: 15990,
-}
 
 function envolverConProvider({ children }) {
   return <PedidosProvider>{children}</PedidosProvider>

@@ -21,6 +21,7 @@ La aplicación incluye:
 
 - Proyecto creado con Vite y React.
 - Diseño adaptable mediante React Bootstrap.
+- Estilos externos compartidos, portada renovada y controles cómodos en móvil, sin incorporar otra biblioteca de interfaz.
 - Navegación entre Inicio, Catálogo, Categorías, Detalle, Registro, Ingreso y los recorridos de pedidos y administración.
 - Componentes organizados con Atomic Design.
 - Diez productos reales tomados del catálogo de la Forma C.
@@ -150,7 +151,9 @@ También se comprueban el CRUD, los códigos duplicados, la secuencia de estados
 
 ## Evidencias de responsividad
 
-La pantalla de ingreso fue revisada en los tres anchos solicitados por la Guía 12:
+Se midieron 14 rutas a 360, 375, 768 y 1280 píxeles: 56 comprobaciones sin desbordamiento horizontal. Se inspeccionaron además capturas de Inicio, Catálogo y Pedido, y se comprobó el menú móvil. Esta revisión no certifica accesibilidad completa.
+
+Las capturas del ingreso en los tres anchos solicitados por la Guía 12 se conservan en:
 
 - `docs/evidencias/ingreso-375.png` — teléfono.
 - `docs/evidencias/ingreso-768.png` — tableta.
@@ -160,7 +163,7 @@ La pantalla de ingreso fue revisada en los tres anchos solicitados por la Guía 
 
 El código vive únicamente en GitHub. El enlace público de Google Drive para la ERS V2 y los demás documentos académicos se incorporará cuando la carpeta del equipo esté disponible.
 
-La entrega descrita en la Guía 13 considera repositorio público, proyecto comprimido, ERS V2 y documento de cobertura. Antes de entregar se debe contrastar esta versión con las instrucciones oficiales de EP2, revisar todas las vistas a 375, 768 y 1280 píxeles y ensayar los 10 minutos de presentación y 5 de preguntas. No se deben atribuir commits a integrantes que no participaron.
+La entrega descrita en la Guía 13 considera repositorio público, proyecto comprimido, ERS V2 y documento de cobertura. Antes de entregar se debe contrastar esta versión con las instrucciones oficiales de EP2 y ensayar los 10 minutos de presentación y 5 de preguntas. No se deben atribuir commits a integrantes que no participaron.
 
 ## Despliegue en AWS
 

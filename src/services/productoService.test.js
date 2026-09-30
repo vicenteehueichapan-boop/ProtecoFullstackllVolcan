@@ -40,6 +40,13 @@ describe('productoService', () => {
     expect(listarProductos()).toHaveLength(10)
   })
 
+  it('recupera datos JSON válidos con productos incompletos o códigos repetidos', () => {
+    localStorage.setItem('gas-el-volcan-productos', JSON.stringify([null]))
+    expect(listarProductos()).toHaveLength(10)
+    localStorage.setItem('gas-el-volcan-productos', JSON.stringify([productoNuevo, productoNuevo]))
+    expect(listarProductos()).toHaveLength(10)
+  })
+
   it('obtiene un producto mediante su código', () => {
     expect(obtenerProductoPorCodigo('cl001')?.nombre).toBe('Cilindro GLP 5 kg')
     expect(obtenerProductoPorCodigo('NO-EXISTE')).toBeNull()

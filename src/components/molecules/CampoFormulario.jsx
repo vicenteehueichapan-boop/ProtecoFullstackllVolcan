@@ -5,8 +5,15 @@ export default function CampoFormulario({ identificador, etiqueta, error, ...pro
   return (
     <Form.Group className="mb-3" controlId={identificador}>
       <Form.Label>{etiqueta}</Form.Label>
-      <CampoEntrada isInvalid={Boolean(error)} {...propiedades} />
-      <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
+      <CampoEntrada
+        isInvalid={Boolean(error)}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${identificador}-error` : undefined}
+        {...propiedades}
+      />
+      <Form.Control.Feedback id={`${identificador}-error`} type="invalid">
+        {error}
+      </Form.Control.Feedback>
     </Form.Group>
   )
 }

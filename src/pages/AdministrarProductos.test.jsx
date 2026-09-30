@@ -86,12 +86,14 @@ describe('AdministrarProductos', () => {
 
   it('elimina un producto solamente después de confirmar', async () => {
     const usuario = userEvent.setup()
-    const confirmar = vi.spyOn(window, 'confirm').mockReturnValue(true)
     renderizarAdministracion()
 
     await usuario.click(within(filaProducto('CL001')).getByRole('button', { name: 'Eliminar' }))
 
-    expect(confirmar).toHaveBeenCalledWith('¿Eliminar el producto CL001?')
+    const dialogo = screen.getByRole('dialog')
+    expect(dialogo).toHaveTextContent('¿Eliminar el producto CL001?')
+    expect(filaProducto('CL001')).toBeInTheDocument()
+    await usuario.click(within(dialogo).getByRole('button', { name: 'Confirmar' }))
     expect(screen.queryByText('CL001')).not.toBeInTheDocument()
     expect(screen.getByText('9 productos registrados')).toBeInTheDocument()
     expect(screen.getByRole('alert')).toHaveTextContent('Producto eliminado correctamente.')
@@ -99,12 +101,11 @@ describe('AdministrarProductos', () => {
 
   it('conserva el producto cuando la eliminación es cancelada', async () => {
     const usuario = userEvent.setup()
-    const confirmar = vi.spyOn(window, 'confirm').mockReturnValue(false)
     renderizarAdministracion()
 
     await usuario.click(within(filaProducto('CL001')).getByRole('button', { name: 'Eliminar' }))
 
-    expect(confirmar).toHaveBeenCalledWith('¿Eliminar el producto CL001?')
+    await usuario.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }))
     expect(filaProducto('CL001')).toBeInTheDocument()
     expect(screen.getByText('10 productos registrados')).toBeInTheDocument()
     expect(screen.queryByText('Producto eliminado correctamente.')).not.toBeInTheDocument()
@@ -112,15 +113,30 @@ describe('AdministrarProductos', () => {
 
   it('mantiene los cambios cuando se cancela la restauración del catálogo', async () => {
     const usuario = userEvent.setup()
-    const confirmar = vi.spyOn(window, 'confirm').mockReturnValue(false)
     renderizarAdministracion()
 
     await completarProducto(usuario)
     await usuario.click(screen.getByRole('button', { name: 'Agregar' }))
     await usuario.click(screen.getByRole('button', { name: 'Restaurar catálogo' }))
 
-    expect(confirmar).toHaveBeenCalledWith('¿Restaurar el catálogo original del caso?')
+    const dialogo = screen.getByRole('dialog')
+    expect(dialogo).toHaveTextContent('¿Restaurar el catálogo original del caso?')
+    await usuario.click(within(dialogo).getByRole('button', { name: 'Cancelar' }))
     expect(filaProducto('CL005')).toBeInTheDocument()
     expect(screen.getByText('11 productos registrados')).toBeInTheDocument()
+  })
+
+  it('restaura el catálogo solamente después de confirmar', async () => {
+    const usuario = userEvent.setup()
+    renderizarAdministracion()
+
+    await completarProducto(usuario)
+    await usuario.click(screen.getByRole('button', { name: 'Agregar' }))
+    await usuario.click(screen.getByRole('button', { name: 'Restaurar catálogo' }))
+    await usuario.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirmar' }))
+
+    expect(screen.queryByText('CL005')).not.toBeInTheDocument()
+    expect(screen.getByText('10 productos registrados')).toBeInTheDocument()
+    expect(screen.getByRole('alert')).toHaveTextContent('Catálogo original restaurado.')
   })
 })
