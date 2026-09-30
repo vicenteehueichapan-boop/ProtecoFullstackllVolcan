@@ -24,6 +24,10 @@ body {
   padding: 1rem;
 }
 
+.imagen-detalle {
+  max-height: 360px;
+}
+
 .tarjeta-producto {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -31,4 +35,12 @@ body {
 .tarjeta-producto:hover {
   transform: translateY(-3px);
   box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 12%);
+}
+
+.formulario-administracion {
+  top: 1rem;
+}
+
+.estado-pedido {
+  text-transform: capitalize;
 }

@@ -17,22 +17,26 @@ Distribuidora de Gas El Volcán entrega cilindros y accesorios a clientes reside
 
 ## Alcance actual
 
-El primer incremento incluye:
+La aplicación incluye:
 
 - Proyecto creado con Vite y React.
 - Diseño adaptable mediante React Bootstrap.
-- Navegación entre Inicio, Catálogo y página no encontrada.
+- Navegación entre Inicio, Catálogo, Categorías, Detalle, Registro, Ingreso y los recorridos de pedidos y administración.
 - Componentes organizados con Atomic Design.
 - Diez productos reales tomados del catálogo de la Forma C.
 - Tarifas residenciales y comerciales.
 - Estado compartido mediante Context.
 - Lectura inicial de productos desde un servicio con `localStorage`.
 - Pantalla de ingreso construida con dos átomos, una molécula y un organismo.
-- Once pruebas unitarias aprobadas con Vitest.
+- CRUD de productos: listar, crear, editar, eliminar y restaurar el catálogo.
+- Pedido de cilindros con dirección, zona, cantidad, resumen, confirmación, éxito y error.
+- Seguimiento por identificador, asignación desde operadora y actualización desde repartidor.
+- Estados ordenados: pendiente → asignado → en camino → entregado.
+- Pruebas unitarias y de comportamiento con Vitest y Testing Library.
 
-El proyecto todavía no incluye el CRUD completo, pedidos, seguimiento, administración ni roles. Esas funciones se desarrollarán durante los siguientes incrementos de la Evaluación Parcial 2.
+Ingreso y registro validan datos, pero todavía no crean cuentas ni autentican. Las vistas del personal permiten demostrar sus responsabilidades y no aplican permisos reales. El selector de repartidor sirve para la demostración. Los datos se conservan solo en este navegador; otro equipo tiene sus propios datos. La cantidad se valida contra el stock, aunque todavía no se reserva ni descuenta inventario al confirmar.
 
-Spring Boot, microservicios, base de datos, AWS y Docker no forman parte de esta etapa. Corresponden a la Evaluación Parcial 3.
+Spring Boot, microservicios, base de datos y Docker corresponden a la Evaluación Parcial 3. El frontend puede publicarse como sitio estático en EC2; ese despliegue sigue pendiente.
 
 ## Requisitos
 
@@ -44,7 +48,7 @@ Spring Boot, microservicios, base de datos, AWS y Docker no forman parte de esta
 Después de descargar o clonar el repositorio, abre una terminal en la carpeta del proyecto y ejecuta:
 
 ```bash
-npm install
+npm ci
 ```
 
 ## Ejecución
@@ -54,6 +58,19 @@ npm run dev
 ```
 
 La terminal mostrará una dirección local. Ábrela en el navegador para recorrer la aplicación.
+
+Esta versión React utiliza Vite: abrir `index.html` con doble clic no ejecuta el proyecto correctamente. Para comprobar la compilación de publicación, ejecuta `npm run build` y después `npm run preview`.
+
+## Demostración práctica
+
+1. Busca un producto en Catálogo, cambia la tarifa y abre el detalle de un cilindro.
+2. Selecciona Solicitar cilindro, completa el formulario, revisa el resumen y confirma.
+3. Guarda el identificador, por ejemplo `PED-0001`, y consulta el seguimiento.
+4. En Área de trabajo → Operadora, asigna el pedido a un repartidor.
+5. En Área de trabajo → Repartidor, selecciona el mismo repartidor y marca En camino y luego Entregado.
+6. Vuelve al seguimiento y recarga para comprobar que el estado persiste.
+7. En Área de trabajo → Productos, agrega un producto ficticio, edítalo y elimínalo. Revisa los cambios en el catálogo.
+8. Muestra los mensajes de error y un envío válido en ingreso y registro.
 
 ## Comprobaciones
 
@@ -87,8 +104,8 @@ npm run build
 src/
 ├── assets/       Recursos gráficos del caso
 ├── components/   Átomos, moléculas, organismos y plantillas
-├── context/      Estado compartido de productos
-├── data/         Datos iniciales del catálogo
+├── context/      Estado compartido de productos y pedidos
+├── data/         Catálogo, zonas y repartidores de demostración
 ├── hooks/        Acceso reutilizable al estado compartido
 ├── pages/        Páginas asociadas a las rutas
 ├── routes/       Navegación de la aplicación
@@ -115,7 +132,7 @@ Los productos provienen del catálogo entregado para la Forma C. El primer incre
 
 ## Estado de las pruebas
 
-Actualmente pasan once pruebas sobre reglas, persistencia, componentes y validaciones. La cobertura se calcula incluyendo todo el código de `src`, aunque todavía existan páginas que se probarán en los siguientes incrementos.
+La cantidad y los porcentajes vigentes se consultan ejecutando las comprobaciones anteriores. La cobertura incluye todo el código de `src`, por lo que también muestra pantallas que aún tienen cobertura parcial. El informe detallado queda en `coverage/index.html`, generado localmente y excluido del repositorio.
 
 Entre los comportamientos comprobados se encuentran:
 
@@ -129,7 +146,7 @@ Entre los comportamientos comprobados se encuentran:
 - Mensajes de validación del formulario de ingreso.
 - Entrega de los datos cuando el formulario es válido.
 
-La cantidad mínima de diez pruebas relevantes ya fue alcanzada. Durante los siguientes incrementos se ampliarán para cubrir el CRUD y el flujo de pedidos.
+También se comprueban el CRUD, los códigos duplicados, la secuencia de estados, los Context, el registro y las cancelaciones de eliminación/restauración. La cantidad mínima de diez pruebas de la ruta ya fue alcanzada. Una suite aprobada no sustituye revisar manualmente los recorridos ni garantiza cobertura total.
 
 ## Evidencias de responsividad
 
@@ -142,6 +159,8 @@ La pantalla de ingreso fue revisada en los tres anchos solicitados por la Guía 
 ## Material complementario
 
 El código vive únicamente en GitHub. El enlace público de Google Drive para la ERS V2 y los demás documentos académicos se incorporará cuando la carpeta del equipo esté disponible.
+
+La entrega descrita en la Guía 13 considera repositorio público, proyecto comprimido, ERS V2 y documento de cobertura. Antes de entregar se debe contrastar esta versión con las instrucciones oficiales de EP2, revisar todas las vistas a 375, 768 y 1280 píxeles y ensayar los 10 minutos de presentación y 5 de preguntas. No se deben atribuir commits a integrantes que no participaron.
 
 ## Despliegue en AWS
 

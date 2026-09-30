@@ -6,7 +6,7 @@ export default function Inicio() {
   return (
     <section className="hero-inicio py-5">
       <Container>
-        <Row className="align-items-center g-5">
+        <Row className="align-items-center gx-4 gy-5">
           <Col lg={6}>
             <p className="text-uppercase fw-semibold marca-volcan">Despacho de gas en Chillán</p>
             <h1 className="display-5 fw-bold">Tu energía llega a casa</h1>

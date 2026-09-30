@@ -1,12 +1,31 @@
 import { useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
+import { useSearchParams } from 'react-router-dom'
+import FiltrosCatalogo from '../components/molecules/FiltrosCatalogo'
 import SelectorTipoCliente from '../components/molecules/SelectorTipoCliente'
-import TarjetaProducto from '../components/molecules/TarjetaProducto'
+import CatalogoGas from '../components/organisms/CatalogoGas'
 import { useProductos } from '../hooks/useProductos'
 
 export default function Catalogo() {
   const { productos } = useProductos()
   const [tipoCliente, setTipoCliente] = useState('residencial')
+  const [parametros, setParametros] = useSearchParams()
+  const busqueda = parametros.get('buscar') ?? ''
+  const categoria = parametros.get('categoria') ?? ''
+  const categorias = [...new Set(productos.map((producto) => producto.categoria))]
+  const textoNormalizado = busqueda.trim().toLocaleLowerCase('es-CL')
+  const productosFiltrados = productos.filter((producto) => {
+    const coincideCategoria = !categoria || producto.categoria === categoria
+    const contenido = `${producto.codigo} ${producto.nombre} ${producto.descripcion}`.toLocaleLowerCase('es-CL')
+    return coincideCategoria && contenido.includes(textoNormalizado)
+  })
+
+  function actualizarParametro(nombre, valor) {
+    const nuevosParametros = new URLSearchParams(parametros)
+    if (valor) nuevosParametros.set(nombre, valor)
+    else nuevosParametros.delete(nombre)
+    setParametros(nuevosParametros)
+  }
 
   return (
     <Container as="section" className="py-5">
@@ -22,13 +41,14 @@ export default function Catalogo() {
         </Col>
       </Row>
 
-      <Row className="g-4">
-        {productos.map((producto) => (
-          <Col xs={12} md={6} lg={4} xl={3} key={producto.codigo}>
-            <TarjetaProducto producto={producto} tipoCliente={tipoCliente} />
-          </Col>
-        ))}
-      </Row>
+      <FiltrosCatalogo
+        busqueda={busqueda}
+        categoria={categoria}
+        categorias={categorias}
+        alBuscar={(valor) => actualizarParametro('buscar', valor)}
+        alCambiarCategoria={(valor) => actualizarParametro('categoria', valor)}
+      />
+      <CatalogoGas productos={productosFiltrados} tipoCliente={tipoCliente} />
     </Container>
   )
 }
