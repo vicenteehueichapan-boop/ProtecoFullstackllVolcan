@@ -33,6 +33,7 @@ La aplicación incluye:
 - Pedido de cilindros con dirección, zona, cantidad, resumen, confirmación, éxito y error.
 - Seguimiento por identificador, asignación desde operadora y actualización desde repartidor.
 - Estados ordenados: pendiente → asignado → en camino → entregado.
+- Asignación validada contra los tres repartidores de demostración; una selección inválida no modifica el pedido guardado.
 - Pruebas unitarias y de comportamiento con Vitest y Testing Library.
 
 Ingreso y registro validan datos, pero todavía no crean cuentas ni autentican. Las vistas del personal permiten demostrar sus responsabilidades y no aplican permisos reales. El selector de repartidor sirve para la demostración. Los datos se conservan solo en este navegador; otro equipo tiene sus propios datos. La cantidad se valida contra el stock, aunque todavía no se reserva ni descuenta inventario al confirmar.

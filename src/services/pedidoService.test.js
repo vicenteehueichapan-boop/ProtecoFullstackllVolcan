@@ -42,17 +42,17 @@ describe('pedidoService', () => {
 
   it('asigna un repartidor y cambia el pedido a asignado', () => {
     const pedido = crearPedido(datosPedido)
-    const actualizado = asignarRepartidor(pedido.id, 'Carlos Soto')
+    const actualizado = asignarRepartidor(pedido.id, 'Repartidor 1')
 
     expect(actualizado).toMatchObject({
-      repartidor: 'Carlos Soto',
+      repartidor: 'Repartidor 1',
       estado: ESTADOS_PEDIDO.ASIGNADO,
     })
   })
 
   it('avanza respetando la secuencia completa de estados', () => {
     const pedido = crearPedido(datosPedido)
-    asignarRepartidor(pedido.id, 'Carlos Soto')
+    asignarRepartidor(pedido.id, 'Repartidor 1')
 
     expect(cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.EN_CAMINO).estado)
       .toBe(ESTADOS_PEDIDO.EN_CAMINO)
@@ -65,6 +65,32 @@ describe('pedidoService', () => {
 
     expect(() => cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.EN_CAMINO))
       .toThrow('El cambio de estado no respeta la secuencia del pedido')
+  })
+
+  it.each(['Repartidor 1', 'Repartidor 2', 'Repartidor 3'])('permite asignar a %s y conserva la asignación', (nombre) => {
+    const pedido = crearPedido(datosPedido)
+
+    asignarRepartidor(pedido.id, nombre)
+
+    expect(obtenerPedidoPorId(pedido.id)).toMatchObject({
+      repartidor: nombre,
+      estado: ESTADOS_PEDIDO.ASIGNADO,
+    })
+  })
+
+  it.each([
+    ['', 'Se debe indicar un repartidor'],
+    ['   ', 'Se debe indicar un repartidor'],
+    [null, 'Se debe indicar un repartidor'],
+    ['Carlos Soto', 'El repartidor seleccionado no está disponible'],
+    ['Repartidor 99', 'El repartidor seleccionado no está disponible'],
+  ])('rechaza repartidor inválido %j sin modificar el pedido', (nombre, mensaje) => {
+    const pedido = crearPedido(datosPedido)
+    const almacenamientoAnterior = localStorage.getItem('gas-el-volcan-pedidos')
+
+    expect(() => asignarRepartidor(pedido.id, nombre)).toThrow(mensaje)
+    expect(localStorage.getItem('gas-el-volcan-pedidos')).toBe(almacenamientoAnterior)
+    expect(obtenerPedidoPorId(pedido.id)).toEqual(pedido)
   })
 
   it('rechaza pedidos sin productos', () => {
@@ -121,7 +147,7 @@ describe('pedidoService', () => {
   })
 
   it('informa cuando se intenta modificar un pedido inexistente', () => {
-    expect(() => asignarRepartidor('PED-9999', 'Carlos Soto'))
+    expect(() => asignarRepartidor('PED-9999', 'Repartidor 1'))
       .toThrow('No se encontró el pedido solicitado')
   })
 })

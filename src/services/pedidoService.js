@@ -1,4 +1,5 @@
 import pedidosIniciales from '../data/pedidosIniciales'
+import repartidores from '../data/repartidores'
 import zonasDespacho from '../data/zonasDespacho'
 import { precioSegunCliente } from '../utils/precioSegunCliente'
 import { listarProductos } from './productoService'
@@ -159,6 +160,10 @@ export function asignarRepartidor(id, repartidor) {
 
   if (nombreRepartidor === '') {
     throw new Error('Se debe indicar un repartidor')
+  }
+
+  if (!repartidores.some((disponible) => disponible.nombre === nombreRepartidor)) {
+    throw new Error('El repartidor seleccionado no está disponible')
   }
 
   return actualizarPedido(id, (pedido) => {

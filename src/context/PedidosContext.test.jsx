@@ -35,14 +35,14 @@ describe('PedidosProvider', () => {
       result.current.crearPedido(datosPedido)
     })
     act(() => {
-      result.current.asignarRepartidor('PED-0001', 'Carlos Soto')
+      result.current.asignarRepartidor('PED-0001', 'Repartidor 1')
     })
     act(() => {
       result.current.cambiarEstado('PED-0001', ESTADOS_PEDIDO.EN_CAMINO)
     })
 
     expect(result.current.pedidos[0]).toMatchObject({
-      repartidor: 'Carlos Soto',
+      repartidor: 'Repartidor 1',
       estado: ESTADOS_PEDIDO.EN_CAMINO,
     })
   })
