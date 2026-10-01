@@ -15,6 +15,7 @@ export default function PiePagina() {
               <Link to="/catalogo">Nuestro catálogo</Link>
               <Link to="/nuevo-pedido">Solicitar gas</Link>
               <Link to="/seguimiento">Consultar pedido</Link>
+              <Link to="/personal">Acceso del personal</Link>
             </nav>
           </Col>
         </Row>

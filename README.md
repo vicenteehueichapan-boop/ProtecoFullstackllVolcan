@@ -23,6 +23,7 @@ La aplicación incluye:
 - Diseño adaptable mediante React Bootstrap.
 - Estilos externos compartidos, portada renovada y controles cómodos en móvil, sin incorporar otra biblioteca de interfaz.
 - Navegación entre Inicio, Catálogo, Categorías, Detalle, Registro, Ingreso y los recorridos de pedidos y administración.
+- Recorrido público de compra separado del área del personal, con plantillas y menús distintos. El acceso del personal está en el pie de la tienda y en `/personal`. Esta separación de interfaz no constituye control de permisos.
 - Componentes organizados con Atomic Design.
 - Diez productos reales tomados del catálogo de la Forma C.
 - Tarifas residenciales y comerciales.
@@ -68,10 +69,10 @@ Esta versión React utiliza Vite: abrir `index.html` con doble clic no ejecuta e
 1. Busca un producto en Catálogo, cambia la tarifa y abre el detalle de un cilindro.
 2. Selecciona Solicitar cilindro, completa el formulario, revisa el resumen y confirma.
 3. Guarda el identificador, por ejemplo `PED-0001`, y consulta el seguimiento.
-4. En Área de trabajo → Operadora, asigna el pedido a un repartidor.
-5. En Área de trabajo → Repartidor, selecciona el mismo repartidor y marca En camino y luego Entregado.
+4. En el pie de la tienda, abre Acceso del personal → Entrar a Operadora y asigna el pedido a un repartidor.
+5. En Elegir área de trabajo → Entrar a Repartidor, selecciona el mismo repartidor y marca En camino y luego Entregado.
 6. Vuelve al seguimiento y recarga para comprobar que el estado persiste.
-7. En Área de trabajo → Productos, agrega un producto ficticio, edítalo y elimínalo. Revisa los cambios en el catálogo.
+7. En el área del personal → Entrar a Administración, agrega un producto ficticio, edítalo y elimínalo. Usa Volver a la tienda para revisar los cambios en el catálogo.
 8. Muestra los mensajes de error y un envío válido en ingreso y registro.
 
 ## Comprobaciones

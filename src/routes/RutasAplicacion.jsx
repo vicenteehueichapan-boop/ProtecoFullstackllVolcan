@@ -1,5 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import PlantillaPublica from '../components/templates/PlantillaPublica'
+import PlantillaPersonal from '../components/templates/PlantillaPersonal'
+import AccesoPersonal from '../pages/AccesoPersonal'
 import Catalogo from '../pages/Catalogo'
 import Inicio from '../pages/Inicio'
 import Ingreso from '../pages/Ingreso'
@@ -30,10 +32,13 @@ export default function RutasAplicacion() {
         <Route path="pedido-no-realizado" element={<PedidoNoRealizado />} />
         <Route path="seguimiento" element={<SeguimientoPedido />} />
         <Route path="seguimiento/:id" element={<SeguimientoPedido />} />
+        <Route path="*" element={<PaginaNoEncontrada />} />
+      </Route>
+      <Route element={<PlantillaPersonal />}>
+        <Route path="personal" element={<AccesoPersonal />} />
         <Route path="administracion/productos" element={<AdministrarProductos />} />
         <Route path="operadora/pedidos" element={<OperadoraPedidos />} />
         <Route path="repartidor/entregas" element={<RepartidorEntregas />} />
-        <Route path="*" element={<PaginaNoEncontrada />} />
       </Route>
     </Routes>
   )
