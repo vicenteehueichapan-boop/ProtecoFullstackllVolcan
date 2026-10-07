@@ -119,6 +119,27 @@ src/
 
 Las páginas coordinan la vista. Los componentes presentan la información. El Context comparte el estado. Los servicios se ocupan de los datos y `localStorage`. Las funciones de `utils` contienen reglas que no dependen de React.
 
+### Composición comprobada en Inicio y Catálogo
+
+```text
+PlantillaPublica → Outlet → Inicio o Catalogo
+Inicio → CoberturaDespacho (organismo) → TarjetaZona (molécula)
+Inicio y Catalogo → CatalogoGas (organismo) → TarjetaProducto (molécula)
+TarjetaProducto → Precio y BotonAccion (átomos)
+```
+
+Inicio selecciona los cilindros y entrega las zonas mediante props; CoberturaDespacho no consulta servicios. Catálogo mantiene la tarifa seleccionada y coordina los filtros; sus funciones buscarProducto y cambiarCategoria reciben los valores de FiltrosCatalogo. Las listas utilizan identificadores estables como claves, no posiciones.
+
+La sintaxis `({ producto, tipoCliente })` desestructura el objeto de props: no representa desorden ni elimina la jerarquía. En BotonAccion, `children` identifica el contenido entre las etiquetas y `...propiedades` permite entregar al control sus eventos, ruta y atributos accesibles. Las etiquetas HTML y los controles de Bootstrap no necesitan un componente propio para cada elemento.
+
+### Trabajo con ramas
+
+Aunque el trabajo es individual, los cambios se preparan en una rama, se revisan con pruebas y se incorporan a main mediante una combinación de ramas o solicitud de incorporación, según la Guía 13. No se reconstruye ni se cambia el historial anterior para simular esa práctica.
+
+### Límites de esta auditoría
+
+Revisión del 7 de octubre de 2026 contra las guías 10–13 recibidas. El flujo de desarrollo remoto en EC2 solicitado por la Guía 10 aún no está acreditado; preparar Nginx no demuestra ese trabajo. También falta el enlace público real de Drive solicitado por la Guía 12 y contrastar la entrega con la pauta oficial EP2 cuando esté disponible. No se declara ausencia total de deuda técnica ni cumplimiento de instrucciones no recibidas.
+
 ## Tecnologías
 
 - React.

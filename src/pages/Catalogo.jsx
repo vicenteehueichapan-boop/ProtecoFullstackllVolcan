@@ -27,6 +27,14 @@ export default function Catalogo() {
     setParametros(nuevosParametros)
   }
 
+  function buscarProducto(valor) {
+    actualizarParametro('buscar', valor)
+  }
+
+  function cambiarCategoria(valor) {
+    actualizarParametro('categoria', valor)
+  }
+
   return (
     <Container as="section" className="py-5">
       <Row className="align-items-end g-3 mb-4 cabecera-catalogo">
@@ -46,8 +54,8 @@ export default function Catalogo() {
         busqueda={busqueda}
         categoria={categoria}
         categorias={categorias}
-        alBuscar={(valor) => actualizarParametro('buscar', valor)}
-        alCambiarCategoria={(valor) => actualizarParametro('categoria', valor)}
+        alBuscar={buscarProducto}
+        alCambiarCategoria={cambiarCategoria}
       />
       <p className="resultado-catalogo" aria-live="polite">
         {productosFiltrados.length} {productosFiltrados.length === 1 ? 'producto encontrado' : 'productos encontrados'}

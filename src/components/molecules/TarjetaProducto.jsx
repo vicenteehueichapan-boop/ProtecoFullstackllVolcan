@@ -1,8 +1,9 @@
-import { Badge, Button, Card } from 'react-bootstrap'
+import { Badge, Card } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { formatearPrecio } from '../../utils/formatearPrecio'
 import { precioSegunCliente } from '../../utils/precioSegunCliente'
 import Precio from '../atoms/Precio'
+import BotonAccion from '../atoms/BotonAccion'
 
 export default function TarjetaProducto({ producto, tipoCliente, enlaceDetalle }) {
   const precio = precioSegunCliente(producto, tipoCliente)
@@ -25,9 +26,9 @@ export default function TarjetaProducto({ producto, tipoCliente, enlaceDetalle }
           {producto.stock === 0 ? 'Sin stock disponible' : stockBajo ? `Últimas ${producto.stock} unidades` : `Stock: ${producto.stock}`}
         </Badge>
         {enlaceDetalle && (
-          <Button as={Link} className="mt-3" variant="outline-danger" to={enlaceDetalle} aria-label={`Ver detalle de ${producto.nombre}`}>
+          <BotonAccion as={Link} className="mt-3" variante="outline-danger" to={enlaceDetalle} aria-label={`Ver detalle de ${producto.nombre}`}>
             Ver detalle
-          </Button>
+          </BotonAccion>
         )}
       </Card.Body>
     </Card>
