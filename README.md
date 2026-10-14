@@ -36,6 +36,8 @@ La aplicación incluye:
 - Estados ordenados: pendiente → asignado → en camino → entregado.
 - Asignación validada contra los tres repartidores de demostración; una selección inválida no modifica el pedido guardado.
 - Pruebas unitarias y de comportamiento con Vitest y Testing Library.
+- Carrito persistente de varios cilindros: agregar, cambiar cantidades, quitar, vaciar con confirmación y seleccionar tarifa.
+- Confirmación del carrito con nombre, apellidos, correo, dirección y zona, seguida de resumen y registro del pedido.
 
 Ingreso y registro validan datos, pero todavía no crean cuentas ni autentican. Las vistas del personal permiten demostrar sus responsabilidades y no aplican permisos reales. El selector de repartidor sirve para la demostración. Los datos se conservan solo en este navegador; otro equipo tiene sus propios datos. La cantidad se valida contra el stock, aunque todavía no se reserva ni descuenta inventario al confirmar.
 
@@ -67,7 +69,7 @@ Esta versión React utiliza Vite: abrir `index.html` con doble clic no ejecuta e
 ## Demostración práctica
 
 1. Busca un producto en Catálogo, cambia la tarifa y abre el detalle de un cilindro.
-2. Selecciona Solicitar cilindro, completa el formulario, revisa el resumen y confirma.
+2. Selecciona Agregar al carrito. Agrega otro cilindro si lo necesitas, ajusta cantidades y tarifa, y recarga para comprobar la persistencia. Continúa con la entrega, completa nombre, apellidos, correo, dirección y zona, revisa todas las líneas y confirma.
 3. Guarda el identificador, por ejemplo `PED-0001`, y consulta el seguimiento.
 4. En el pie de la tienda, abre Acceso del personal → Entrar a Operadora y asigna el pedido a un repartidor.
 5. En Elegir área de trabajo → Entrar a Repartidor, selecciona el mismo repartidor y marca En camino y luego Entregado.
@@ -163,7 +165,31 @@ Un campo controlado recibe value y onChange. preventDefault cancela el envío HT
 
 Fuentes para estudiar: [campos controlados](https://react.dev/reference/react-dom/components/input), [hooks propios](https://react.dev/learn/reusing-logic-with-custom-hooks), [useEffect](https://react.dev/reference/react/useEffect), [validación con React Bootstrap](https://react-bootstrap.github.io/docs/forms/validation/) y [useNavigate](https://reactrouter.com/api/hooks/useNavigate).
 
-Este incremento no completa toda EP2. Siguen pendientes el carrito persistente, datos completos de confirmación, sesión simulada para autocompletar, vistas informativas y ofertas, y módulos administrativos adicionales de la Guía 16. También falta revisar la dependencia directa de Link en otros componentes de presentación frente a la separación de navegación enseñada en la Guía 14. No se incorporó backend, almacenamiento de contraseñas ni una API ficticia para imitar ejemplos.
+En el primer incremento del 14 de octubre todavía faltaban carrito persistente y datos de confirmación. El incremento siguiente, descrito abajo, los incorpora. Siguen pendientes sesión simulada para autocompletar, vistas informativas y ofertas, y módulos administrativos adicionales de la Guía 16. También falta revisar la dependencia directa de Link en otros componentes de presentación frente a la separación de navegación enseñada en la Guía 14. No se incorporó backend, almacenamiento de contraseñas ni una API ficticia para imitar ejemplos.
+
+### Carrito y confirmación: segundo incremento del 14 de octubre
+
+El recorrido principal es Detalle → Carrito → Datos de entrega → Resumen → Pedido confirmado → Seguimiento. Inicio, menú y pie conducen al carrito; el detalle tiene una sola acción de solicitud, Agregar al carrito. La ruta anterior /nuevo-pedido continúa accesible para compatibilidad, pero no se ofrece desde la tienda. Su retirada o migración definitiva sigue pendiente; no se cuenta como la confirmación completa exigida por la Guía 16.
+
+```text
+Carrito (página) → ListaCarrito (organismo) → LineaCarrito (molécula)
+LineaCarrito → BotonAccion (átomo)
+ConfirmarPedido (página) → FormularioEntrega (organismo) → CampoFormulario (molécula)
+Páginas → useCarrito → CarritoProvider → carritoService → localStorage
+```
+
+El carrito guarda códigos, cantidades y tarifa. Los precios y subtotales se derivan del catálogo actual mediante resumirCarrito; al revisar se conserva una instantánea del importe que el servicio de pedidos vuelve a verificar antes de registrar. Cambiar el catálogo no modifica importes de pedidos confirmados.
+
+- Las cantidades deben ser enteros positivos y no superar el stock.
+- Si un cilindro desaparece o queda sin disponibilidad, la línea se conserva para corregirla; no se confirma un carrito inválido.
+- Un carrito malformado no se sobrescribe automáticamente: se muestra el problema y la persona puede vaciarlo con confirmación.
+- El Context solo actualiza las líneas después de una escritura válida; un fallo no se presenta como éxito.
+- Si falla el registro, se conservan selección y datos del formulario. Si el pedido se guarda pero falla el vaciado, se muestra éxito con advertencia para evitar reenviarlo por error.
+- El resumen muestra todas las líneas y subtotales, no solo el primer producto.
+
+Solo se persiste la selección y tarifa del carrito. Los datos personales del formulario no se recuperan tras cerrar o recargar la confirmación. No existe sincronización automática entre pestañas o dispositivos, ni reserva/descuento de stock. La sesión simulada y el autocompletado siguen pendientes. Usa datos ficticios.
+
+La auditoría local exige pruebas, análisis estático, compilación y revisión del diff antes de incorporar. La habilidad auditar-gas-volcan-ep2 orienta la revisión técnica; no es un proceso en segundo plano ni sustituye las comprobaciones. La documentación académica registra qué se revisó y qué sigue pendiente.
 
 ## Tecnologías
 

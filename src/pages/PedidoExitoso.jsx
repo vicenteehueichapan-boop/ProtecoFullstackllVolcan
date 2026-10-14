@@ -1,11 +1,12 @@
-import { Button, Card, Col, Container, Row } from 'react-bootstrap'
-import { Link, useParams } from 'react-router-dom'
+import { Alert, Button, Card, Col, Container, Row } from 'react-bootstrap'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import EtiquetaEstadoPedido from '../components/atoms/EtiquetaEstadoPedido'
 import ResumenPedido from '../components/molecules/ResumenPedido'
 import { usePedidos } from '../hooks/usePedidos'
 
 export default function PedidoExitoso() {
   const { id } = useParams()
+  const { state } = useLocation()
   const { pedidos } = usePedidos()
   const pedido = pedidos.find((item) => item.id === id)
 
@@ -14,7 +15,7 @@ export default function PedidoExitoso() {
       <Container className="py-5 text-center">
         <h1>Pedido no encontrado</h1>
         <p>No fue posible recuperar el pedido solicitado.</p>
-        <Button as={Link} to="/nuevo-pedido" variant="danger">Crear un pedido</Button>
+        <Button as={Link} to="/carrito" variant="danger">Crear un pedido</Button>
       </Container>
     )
   }
@@ -23,6 +24,7 @@ export default function PedidoExitoso() {
     <Container as="section" className="py-5">
       <Row className="justify-content-center">
         <Col lg={8}>
+          {state?.aviso && <Alert variant="warning">{state.aviso}</Alert>}
           <Card border="success" className="mb-4">
             <Card.Body>
               <Card.Title as="h1" className="h3">Pedido confirmado</Card.Title>

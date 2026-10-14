@@ -23,8 +23,8 @@ export default function BarraNavegacion() {
               Ingresar
             </Nav.Link>
             <Nav.Link as={NavLink} to="/registro" eventKey="registro">Registrarse</Nav.Link>
-            <Nav.Link as={NavLink} to="/nuevo-pedido" eventKey="pedido" className="accion-pedido">Pedir gas</Nav.Link>
             <Nav.Link as={NavLink} to="/seguimiento" eventKey="seguimiento">Seguimiento</Nav.Link>
+            <Nav.Link as={NavLink} to="/carrito" eventKey="carrito" className="accion-pedido">Mi carrito</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

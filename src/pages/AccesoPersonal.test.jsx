@@ -12,7 +12,7 @@ describe('separación entre tienda y personal', () => {
   it('mantiene el menú de compra sin herramientas del personal', () => {
     render(<App />)
     const tienda = within(screen.getByRole('navigation', { name: 'Navegación de la tienda' }))
-    expect(tienda.getByRole('link', { name: 'Pedir gas' })).toHaveAttribute('href', '/nuevo-pedido')
+    expect(tienda.getByRole('link', { name: 'Mi carrito' })).toHaveAttribute('href', '/carrito')
     expect(tienda.queryByText('Área de trabajo')).not.toBeInTheDocument()
     expect(tienda.queryByRole('link', { name: 'Operadora' })).not.toBeInTheDocument()
     expect(tienda.queryByRole('link', { name: 'Repartidor' })).not.toBeInTheDocument()

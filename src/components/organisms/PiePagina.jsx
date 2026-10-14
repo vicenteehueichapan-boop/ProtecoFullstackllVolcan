@@ -13,7 +13,7 @@ export default function PiePagina() {
           <Col md={6}>
             <nav aria-label="Enlaces del pie de página" className="enlaces-pie">
               <Link to="/catalogo">Nuestro catálogo</Link>
-              <Link to="/nuevo-pedido">Solicitar gas</Link>
+              <Link to="/carrito">Solicitar gas</Link>
               <Link to="/seguimiento">Consultar pedido</Link>
               <Link to="/personal">Acceso del personal</Link>
             </nav>

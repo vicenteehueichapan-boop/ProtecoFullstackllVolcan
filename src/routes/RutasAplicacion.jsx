@@ -3,6 +3,8 @@ import PlantillaPublica from '../components/templates/PlantillaPublica'
 import PlantillaPersonal from '../components/templates/PlantillaPersonal'
 import AccesoPersonal from '../pages/AccesoPersonal'
 import Catalogo from '../pages/Catalogo'
+import Carrito from '../pages/Carrito'
+import ConfirmarPedido from '../pages/ConfirmarPedido'
 import Inicio from '../pages/Inicio'
 import Ingreso from '../pages/Ingreso'
 import PaginaNoEncontrada from '../pages/PaginaNoEncontrada'
@@ -23,6 +25,8 @@ export default function RutasAplicacion() {
       <Route element={<PlantillaPublica />}>
         <Route index element={<Inicio />} />
         <Route path="catalogo" element={<Catalogo />} />
+        <Route path="carrito" element={<Carrito />} />
+        <Route path="confirmar-pedido" element={<ConfirmarPedido />} />
         <Route path="categorias" element={<Categorias />} />
         <Route path="productos/:codigo" element={<DetalleProducto />} />
         <Route path="ingreso" element={<Ingreso />} />
