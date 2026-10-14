@@ -145,3 +145,12 @@ export function restaurarProductos() {
   guardarProductos(productos)
   return productos
 }
+
+export function incorporarProductosDelCaso() {
+  const productos = listarProductos()
+  const codigos = new Set(productos.map((producto) => producto.codigo))
+  const faltantes = copiarProductosIniciales().filter((producto) => !codigos.has(producto.codigo))
+  const completos = [...productos, ...faltantes]
+  guardarProductos(completos)
+  return completos
+}

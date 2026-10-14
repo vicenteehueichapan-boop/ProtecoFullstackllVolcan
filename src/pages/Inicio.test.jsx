@@ -18,7 +18,7 @@ describe('Inicio', () => {
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(5)
     await userEvent.click(screen.getByRole('link', { name: 'Ver todo el catálogo' }))
     expect(screen.getByRole('heading', { name: 'Catálogo de productos' })).toBeInTheDocument()
-    expect(screen.getByText('10 productos encontrados')).toBeInTheDocument()
+    expect(screen.getByText('14 productos encontrados')).toBeInTheDocument()
     expect(document.title).toBe('Catálogo | Gas El Volcán')
   })
 })

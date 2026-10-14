@@ -18,6 +18,7 @@ import SeguimientoPedido from '../pages/SeguimientoPedido'
 import OperadoraPedidos from '../pages/OperadoraPedidos'
 import RepartidorEntregas from '../pages/RepartidorEntregas'
 import PedidoNoRealizado from '../pages/PedidoNoRealizado'
+import AccesoPorRol from './AccesoPorRol'
 
 export default function RutasAplicacion() {
   return (
@@ -40,9 +41,15 @@ export default function RutasAplicacion() {
       </Route>
       <Route element={<PlantillaPersonal />}>
         <Route path="personal" element={<AccesoPersonal />} />
-        <Route path="administracion/productos" element={<AdministrarProductos />} />
-        <Route path="operadora/pedidos" element={<OperadoraPedidos />} />
-        <Route path="repartidor/entregas" element={<RepartidorEntregas />} />
+        <Route element={<AccesoPorRol roles={['administracion']} />}>
+          <Route path="administracion/productos" element={<AdministrarProductos />} />
+        </Route>
+        <Route element={<AccesoPorRol roles={['operadora']} />}>
+          <Route path="operadora/pedidos" element={<OperadoraPedidos />} />
+        </Route>
+        <Route element={<AccesoPorRol roles={['repartidor']} />}>
+          <Route path="repartidor/entregas" element={<RepartidorEntregas />} />
+        </Route>
       </Route>
     </Routes>
   )

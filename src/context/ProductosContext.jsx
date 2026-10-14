@@ -4,6 +4,7 @@ import {
   crearProducto as crearProductoEnServicio,
   eliminarProducto as eliminarProductoEnServicio,
   listarProductos,
+  incorporarProductosDelCaso as incorporarEnServicio,
   restaurarProductos as restaurarProductosEnServicio,
 } from '../services/productoService'
 import { ProductosContext } from './productosContextoBase'
@@ -50,6 +51,12 @@ export function ProductosProvider({ children }) {
     return productosRestaurados
   }, [])
 
+  const incorporarProductosDelCaso = useCallback(() => {
+    const completos = incorporarEnServicio()
+    setProductos(completos)
+    return completos
+  }, [])
+
   const valorContexto = useMemo(
     () => ({
       productos,
@@ -58,6 +65,7 @@ export function ProductosProvider({ children }) {
       eliminarProducto,
       restaurarProductos,
       recargarProductos,
+      incorporarProductosDelCaso,
     }),
     [
       productos,
@@ -66,6 +74,7 @@ export function ProductosProvider({ children }) {
       eliminarProducto,
       restaurarProductos,
       recargarProductos,
+      incorporarProductosDelCaso,
     ],
   )
 

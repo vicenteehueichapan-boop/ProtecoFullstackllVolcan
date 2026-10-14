@@ -4,6 +4,7 @@ import {
   crearProducto,
   eliminarProducto,
   listarProductos,
+  incorporarProductosDelCaso,
   obtenerProductoPorCodigo,
   restaurarProductos,
 } from './productoService'
@@ -25,8 +26,23 @@ describe('productoService', () => {
     localStorage.clear()
   })
 
-  it('inicializa el catálogo con diez productos', () => {
-    expect(listarProductos()).toHaveLength(10)
+  it('inicializa el catálogo con catorce productos', () => {
+    expect(listarProductos()).toHaveLength(14)
+  })
+
+  it('completa registros faltantes sin reemplazar ediciones ni productos propios', () => {
+    actualizarProducto('CL001', { stock: 7, precioResidencial: 7200 })
+    eliminarProducto('RG003')
+    eliminarProducto('MG002')
+    eliminarProducto('MG003')
+    eliminarProducto('AC002')
+    crearProducto(productoNuevo)
+    expect(listarProductos()).toHaveLength(11)
+    expect(incorporarProductosDelCaso()).toHaveLength(15)
+    expect(obtenerProductoPorCodigo('CL001')).toMatchObject({ stock: 7, precioResidencial: 7200 })
+    expect(obtenerProductoPorCodigo('PR001')).toMatchObject(productoNuevo)
+    expect(obtenerProductoPorCodigo('AC002')).toMatchObject({ precioResidencial: 1490, precioComercial: 1200, stock: 60 })
+    expect(incorporarProductosDelCaso()).toHaveLength(15)
   })
 
   it('recupera los productos guardados', () => {
@@ -37,14 +53,14 @@ describe('productoService', () => {
   it('restaura el catálogo cuando el almacenamiento no contiene una lista', () => {
     localStorage.setItem('gas-el-volcan-productos', JSON.stringify({ codigo: 'incorrecto' }))
 
-    expect(listarProductos()).toHaveLength(10)
+    expect(listarProductos()).toHaveLength(14)
   })
 
   it('recupera datos JSON válidos con productos incompletos o códigos repetidos', () => {
     localStorage.setItem('gas-el-volcan-productos', JSON.stringify([null]))
-    expect(listarProductos()).toHaveLength(10)
+    expect(listarProductos()).toHaveLength(14)
     localStorage.setItem('gas-el-volcan-productos', JSON.stringify([productoNuevo, productoNuevo]))
-    expect(listarProductos()).toHaveLength(10)
+    expect(listarProductos()).toHaveLength(14)
   })
 
   it('obtiene un producto mediante su código', () => {
@@ -56,7 +72,7 @@ describe('productoService', () => {
     const productoCreado = crearProducto({ ...productoNuevo, codigo: ' pr001 ' })
 
     expect(productoCreado.codigo).toBe('PR001')
-    expect(listarProductos()).toHaveLength(11)
+    expect(listarProductos()).toHaveLength(15)
     expect(obtenerProductoPorCodigo('PR001')).toEqual(productoCreado)
   })
 
@@ -91,7 +107,7 @@ describe('productoService', () => {
 
     expect(productoEliminado.codigo).toBe('CL001')
     expect(obtenerProductoPorCodigo('CL001')).toBeNull()
-    expect(listarProductos()).toHaveLength(9)
+    expect(listarProductos()).toHaveLength(13)
   })
 
   it('informa cuando se intenta modificar un producto inexistente', () => {
@@ -109,7 +125,7 @@ describe('productoService', () => {
 
     const productosRestaurados = restaurarProductos()
 
-    expect(productosRestaurados).toHaveLength(10)
+    expect(productosRestaurados).toHaveLength(14)
     expect(obtenerProductoPorCodigo('CL001')).not.toBeNull()
     expect(obtenerProductoPorCodigo('PR001')).toBeNull()
   })

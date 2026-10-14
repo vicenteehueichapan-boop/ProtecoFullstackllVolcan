@@ -23,9 +23,9 @@ La aplicación incluye:
 - Diseño adaptable mediante React Bootstrap.
 - Estilos externos compartidos, portada renovada y controles cómodos en móvil, sin incorporar otra biblioteca de interfaz.
 - Navegación entre Inicio, Catálogo, Categorías, Detalle, Registro, Ingreso y los recorridos de pedidos y administración.
-- Recorrido público de compra separado del área del personal, con plantillas y menús distintos. El acceso del personal está en el pie de la tienda y en `/personal`. Esta separación de interfaz no constituye control de permisos.
+- Recorrido público de compra separado del área del personal, con plantillas y menús distintos. El acceso del personal está en el pie de la tienda y en `/personal`. Las rutas exigen un perfil de demostración del personal y verifican su rol; no es autenticación real de servidor.
 - Componentes organizados con Atomic Design.
-- Diez productos reales tomados del catálogo de la Forma C.
+- Los catorce productos del Excel Forma C, con sus códigos, nombres, descripciones, categorías, unidades, tarifas y existencias iniciales.
 - Tarifas residenciales y comerciales.
 - Estado compartido mediante Context.
 - Lectura inicial de productos desde un servicio con `localStorage`.
@@ -39,7 +39,7 @@ La aplicación incluye:
 - Carrito persistente de varios cilindros: agregar, cambiar cantidades, quitar, vaciar con confirmación y seleccionar tarifa.
 - Confirmación del carrito con nombre, apellidos, correo, dirección y zona, seguida de resumen y registro del pedido.
 
-Ingreso y registro validan datos, pero todavía no crean cuentas ni autentican. Las vistas del personal permiten demostrar sus responsabilidades y no aplican permisos reales. El selector de repartidor sirve para la demostración. Los datos se conservan solo en este navegador; otro equipo tiene sus propios datos. La cantidad se valida contra el stock, aunque todavía no se reserva ni descuenta inventario al confirmar.
+Ingreso y registro de compradores validan datos, pero todavía no crean cuentas ni autentican. Acceso del personal usa una sesión de demostración en memoria: identifica un correo ficticio, valida el formato del formulario y limita rutas por rol. No verifica contraseñas ni identidad. Al recargar o salir se pierde la sesión. El repartidor ve únicamente los pedidos del perfil activo, sin selector de otros repartidores. Los datos se conservan solo en este navegador; otro equipo tiene sus propios datos. La cantidad se valida contra el stock, aunque todavía no se reserva ni descuenta inventario al confirmar.
 
 Spring Boot, microservicios, base de datos y Docker corresponden a la Evaluación Parcial 3. El frontend puede publicarse como sitio estático en EC2; ese despliegue sigue pendiente.
 
@@ -71,10 +71,10 @@ Esta versión React utiliza Vite: abrir `index.html` con doble clic no ejecuta e
 1. Busca un producto en Catálogo, cambia la tarifa y abre el detalle de un cilindro.
 2. Selecciona Agregar al carrito. Agrega otro cilindro si lo necesitas, ajusta cantidades y tarifa, y recarga para comprobar la persistencia. Continúa con la entrega, completa nombre, apellidos, correo, dirección y zona, revisa todas las líneas y confirma.
 3. Guarda el identificador, por ejemplo `PED-0001`, y consulta el seguimiento.
-4. En el pie de la tienda, abre Acceso del personal → Entrar a Operadora y asigna el pedido a un repartidor.
-5. En Elegir área de trabajo → Entrar a Repartidor, selecciona el mismo repartidor y marca En camino y luego Entregado.
+4. En el pie, abre Acceso del personal. Usa operadora@ejemplo.cl y un texto ficticio de al menos seis caracteres en Contraseña. Solo se valida su formato, no se verifica como credencial. Entra a Operadora y asigna el pedido a un repartidor.
+5. En Mi área de trabajo, cierra la sesión del personal. Ingresa con repartidor1@ejemplo.cl (o repartidor2/repartidor3, según la asignación), entra a Repartidor y marca En camino y luego Entregado. No podrá consultar entregas de los otros perfiles desde esta vista.
 6. Vuelve al seguimiento y recarga para comprobar que el estado persiste.
-7. En el área del personal → Entrar a Administración, agrega un producto ficticio, edítalo y elimínalo. Usa Volver a la tienda para revisar los cambios en el catálogo.
+7. Cierra la sesión anterior y entra con administracion@ejemplo.cl. En Administración, agrega un producto ficticio, edítalo y elimínalo. Usa Volver a la tienda para revisar los cambios en el catálogo.
 8. Muestra los mensajes de error y un envío válido en ingreso y registro.
 
 ## Comprobaciones
@@ -203,7 +203,9 @@ La auditoría local exige pruebas, análisis estático, compilación y revisión
 
 ## Datos del caso
 
-Los productos provienen del catálogo entregado para la Forma C. El primer incremento utiliza diez registros de las cuatro categorías principales. Los precios se guardan como números y la función `precioSegunCliente` decide qué tarifa corresponde mostrar.
+Los productos provienen del catálogo entregado para la Forma C. El catálogo inicial contiene los catorce registros de Productos y Tarifas!A4:H17. Las cinco zonas proceden de la segunda hoja. El Excel no se modifica ni se interpreta como información de usuarios o credenciales: esos datos no están en el archivo. Las imágenes son ilustraciones locales, no fotografías entregadas en el catálogo.
+
+Si el navegador conserva la versión antigua de diez productos, Administración ofrece Incorporar faltantes del Excel. Con confirmación añade los códigos ausentes sin reemplazar productos editados o propios. También reincorpora productos del caso eliminados anteriormente; la advertencia lo explica. Restaurar catálogo es diferente: reemplaza todos los datos por el original y también requiere confirmación. Los precios se guardan como números y la función `precioSegunCliente` decide qué tarifa corresponde mostrar.
 
 ## Estado de las pruebas
 
@@ -214,7 +216,7 @@ Entre los comportamientos comprobados se encuentran:
 - Precio residencial.
 - Precio comercial.
 - Rechazo de un tipo de cliente desconocido.
-- Inicialización de diez productos.
+- Inicialización de catorce productos y comparación de códigos, tarifas y stock contra una transcripción independiente del Excel.
 - Recuperación de los productos almacenados.
 - Restauración del catálogo cuando el almacenamiento contiene una estructura incorrecta.
 - Presentación de datos y tarifas en la tarjeta de producto.
@@ -237,10 +239,20 @@ Las capturas del ingreso en los tres anchos solicitados por la Guía 12 se conse
 
 El código vive únicamente en GitHub. El enlace público de Google Drive para la ERS V2 y los demás documentos académicos se incorporará cuando la carpeta del equipo esté disponible.
 
-La entrega descrita en la Guía 13 considera repositorio público, proyecto comprimido, ERS V2 y documento de cobertura. Antes de entregar se debe contrastar esta versión con las instrucciones oficiales de EP2 y ensayar los 10 minutos de presentación y 5 de preguntas. No se deben atribuir commits a integrantes que no participaron.
+La entrega descrita en la Guía 13 considera repositorio público, proyecto comprimido, ERS V2 y documento de cobertura. Antes de entregar se debe contrastar esta versión con las instrucciones oficiales de EP2 y ensayar los 15 minutos de presentación y 5 de preguntas de la Guía 16. No se deben atribuir commits a integrantes que no participaron.
 
 ## Despliegue en AWS
 
 La instancia EC2 del equipo se utilizará como entorno remoto y posteriormente podrá publicar la compilación estática del frontend. El despliegue todavía no está realizado. Cuando se configure, el servidor deberá devolver `index.html` para rutas como `/catalogo` e `/ingreso`, de modo que React Router también funcione al actualizar directamente esas direcciones.
 
 El archivo `deploy/nginx-gas-volcan.conf` deja preparada esa regla de navegación. No contiene direcciones privadas, usuarios ni claves.
+
+### Catálogo y acceso del personal: tercer incremento del 14 de octubre
+
+El catálogo inicial se completó con los catorce registros del Excel. No se importan usuarios, teléfonos ni credenciales desde el libro: no contiene esas hojas. El registro inicial se mantiene en data, los servicios gestionan el CRUD, Context comparte los cambios y las páginas coordinan las acciones.
+
+Acceso del personal identifica perfiles ficticios por correo. La contraseña solo valida el formato del formulario y no verifica identidad. Usa texto inventado, nunca una contraseña real. No se guardan contraseñas ni la sesión en localStorage. AccesoPorRol exige sesión y rol en las rutas existentes; una sesión de operadora no abre administración, y cada repartidor ve su propia asignación. La sesión se pierde al recargar. Los correos de demostración se muestran en esa pantalla para poder defender cada recorrido.
+
+Los apartados anteriores identificados como primer o segundo incremento describen sus estados históricos. El selector de repartidor ya fue retirado. La sesión de compradores y autocompletado siguen pendientes, al igual que las vistas informativas/destacados, los módulos administrativos adicionales de la Guía 16 y el cierre de EC2 y entregables. No se declara EP2 terminada. El carrito continúa limitado a cilindros: agregar otros artículos del catálogo está pendiente de resolver frente a la Guía 16.
+
+La revisión agregó 13 casos y conservó los anteriores: 151 pruebas en 28 archivos con cobertura, análisis estático y compilación aprobados. La cobertura no acredita ausencia de errores. Se comprobaron catálogo y personal en tres anchos y se revisaron capturas; no es una auditoría completa de accesibilidad o seguridad.

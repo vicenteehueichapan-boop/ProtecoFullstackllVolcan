@@ -4,7 +4,7 @@ import BotonAccion from '../atoms/BotonAccion'
 import CampoFormulario from '../molecules/CampoFormulario'
 import { validarIngreso } from '../../utils/validaciones'
 
-export default function FormularioIngreso({ alIngresar }) {
+export default function FormularioIngreso({ alIngresar, etiquetaCorreo = 'Correo institucional' }) {
   const [correo, setCorreo] = useState('')
   const [clave, setClave] = useState('')
   const [errores, setErrores] = useState({})
@@ -23,7 +23,7 @@ export default function FormularioIngreso({ alIngresar }) {
     <Form noValidate onSubmit={manejarEnvio}>
       <CampoFormulario
         identificador="correo"
-        etiqueta="Correo institucional"
+        etiqueta={etiquetaCorreo}
         tipo="email"
         value={correo}
         onChange={(evento) => setCorreo(evento.target.value)}
