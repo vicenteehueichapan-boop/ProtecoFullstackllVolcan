@@ -4,9 +4,11 @@ import heroDespacho from '../assets/hero-despacho.svg'
 import CatalogoGas from '../components/organisms/CatalogoGas'
 import CoberturaDespacho from '../components/organisms/CoberturaDespacho'
 import { useProductos } from '../hooks/useProductos'
+import { useTituloPagina } from '../hooks/useTituloPagina'
 import zonasDespacho from '../data/zonasDespacho'
 
 export default function Inicio() {
+  useTituloPagina('Inicio')
   const { productos } = useProductos()
   const cilindros = productos.filter((producto) => producto.categoria === 'Cilindros de Gas').slice(0, 4)
 
