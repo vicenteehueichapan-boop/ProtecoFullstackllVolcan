@@ -5,8 +5,10 @@ import FiltrosCatalogo from '../components/molecules/FiltrosCatalogo'
 import SelectorTipoCliente from '../components/molecules/SelectorTipoCliente'
 import CatalogoGas from '../components/organisms/CatalogoGas'
 import { useProductos } from '../hooks/useProductos'
+import { useTituloPagina } from '../hooks/useTituloPagina'
 
 export default function Catalogo() {
+  useTituloPagina('Catálogo')
   const { productos } = useProductos()
   const [tipoCliente, setTipoCliente] = useState('residencial')
   const [parametros, setParametros] = useSearchParams()

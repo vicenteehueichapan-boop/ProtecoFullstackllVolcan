@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Alert, Form } from 'react-bootstrap'
 import BotonAccion from '../atoms/BotonAccion'
 import CampoFormulario from '../molecules/CampoFormulario'
+import { validarRegistro } from '../../utils/validaciones'
 
 const datosVacios = {
   nombre: '',
@@ -10,16 +11,6 @@ const datosVacios = {
   clave: '',
   confirmarClave: '',
   tipoCliente: 'residencial',
-}
-
-function validar(datos) {
-  const errores = {}
-  if (datos.nombre.trim().length < 3) errores.nombre = 'Ingresa tu nombre completo.'
-  if (!/^\d{7,8}[0-9kK]$/.test(datos.run)) errores.run = 'Ingresa el RUN sin puntos ni guion.'
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.correo)) errores.correo = 'Ingresa un correo válido.'
-  if (datos.clave.length < 6) errores.clave = 'La contraseña debe tener al menos 6 caracteres.'
-  if (datos.confirmarClave !== datos.clave) errores.confirmarClave = 'Las contraseñas deben coincidir.'
-  return errores
 }
 
 export default function FormularioRegistro() {
@@ -32,13 +23,13 @@ export default function FormularioRegistro() {
     setRegistrado(false)
     // Si ya se intentó enviar, actualiza las indicaciones mientras se corrige.
     if (Object.keys(errores).length > 0) {
-      setErrores(validar({ ...datos, [campo]: valor }))
+      setErrores(validarRegistro({ ...datos, [campo]: valor }))
     }
   }
 
   function manejarEnvio(evento) {
     evento.preventDefault()
-    const nuevosErrores = validar(datos)
+    const nuevosErrores = validarRegistro(datos)
     setErrores(nuevosErrores)
     setRegistrado(Object.keys(nuevosErrores).length === 0)
   }

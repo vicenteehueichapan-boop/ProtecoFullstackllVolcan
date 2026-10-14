@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { Alert, Button, Card, Col, Container, Form, ListGroup, Row } from 'react-bootstrap'
+import { Alert, Card, Col, Container, ListGroup, Row } from 'react-bootstrap'
 import { useNavigate, useParams } from 'react-router-dom'
 import EtiquetaEstadoPedido from '../components/atoms/EtiquetaEstadoPedido'
+import BuscadorPedido from '../components/molecules/BuscadorPedido'
 import { usePedidos } from '../hooks/usePedidos'
 
 const PASOS = [
@@ -15,14 +15,11 @@ export default function SeguimientoPedido() {
   const { id } = useParams()
   const navegar = useNavigate()
   const { pedidos } = usePedidos()
-  const [consulta, setConsulta] = useState(id ?? '')
   const pedido = id ? pedidos.find((item) => item.id === id) : null
   const indiceActual = pedido ? PASOS.findIndex((paso) => paso.valor === pedido.estado) : -1
 
-  function buscar(evento) {
-    evento.preventDefault()
-    const identificador = consulta.trim().toUpperCase()
-    if (identificador) navegar(`/seguimiento/${identificador}`)
+  function buscar(identificador) {
+    navegar(`/seguimiento/${encodeURIComponent(identificador)}`)
   }
 
   return (
@@ -30,15 +27,8 @@ export default function SeguimientoPedido() {
       <Row className="justify-content-center">
         <Col lg={8}>
           <h1>Seguimiento del pedido</h1>
-          <Form className="d-flex gap-2 my-4" onSubmit={buscar}>
-            <Form.Control
-              aria-label="Número del pedido"
-              placeholder="Ejemplo: PED-0001"
-              value={consulta}
-              onChange={(evento) => setConsulta(evento.target.value)}
-            />
-            <Button type="submit" variant="danger">Buscar</Button>
-          </Form>
+          {/* La clave reinicia solo el buscador cuando cambia el pedido de la ruta. */}
+          <BuscadorPedido key={id ?? ''} identificadorInicial={id ?? ''} alBuscar={buscar} />
 
           {id && !pedido && (
             <Alert variant="warning">No encontramos un pedido con el número {id}.</Alert>
