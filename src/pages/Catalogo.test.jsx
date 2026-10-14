@@ -45,15 +45,17 @@ describe('navegación y filtros del catálogo', () => {
     expect(screen.getByText('10 productos encontrados')).toBeInTheDocument()
   })
 
-  it('conecta detalle y formulario con el cilindro preseleccionado', async () => {
+  it('conecta el detalle con el carrito y el cilindro seleccionado', async () => {
     const usuario = userEvent.setup()
     render(<App />)
 
     await usuario.click(screen.getByRole('button', { name: 'Ver detalle de Cilindro GLP 11 kg' }))
     expect(screen.getByRole('heading', { level: 1, name: 'Cilindro GLP 11 kg' })).toBeInTheDocument()
 
-    await usuario.click(screen.getByRole('button', { name: 'Solicitar cilindro' }))
-    expect(screen.getByLabelText('Cilindro')).toHaveValue('CL002')
+    await usuario.click(screen.getByRole('button', { name: 'Agregar al carrito' }))
+    expect(screen.getByRole('heading', { level: 1, name: 'Mi carrito' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Cilindro GLP 11 kg' })).toBeInTheDocument()
+    expect(screen.getByText('Cantidad: 1')).toBeInTheDocument()
   })
 
   it('muestra una salida útil cuando el código del detalle no existe', () => {

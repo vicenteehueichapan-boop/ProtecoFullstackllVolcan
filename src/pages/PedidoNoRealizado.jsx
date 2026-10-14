@@ -10,7 +10,7 @@ export default function PedidoNoRealizado() {
       <Alert variant="danger">
         {state?.mensaje ?? 'No se pudo guardar el pedido. Revisa los datos e intenta nuevamente.'}
       </Alert>
-      <Button as={Link} to="/nuevo-pedido" variant="danger">Volver al formulario</Button>
+      <Button as={Link} to="/carrito" variant="danger">Volver al carrito</Button>
     </Container>
   )
 }

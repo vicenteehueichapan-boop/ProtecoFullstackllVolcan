@@ -24,7 +24,7 @@ export default function Inicio() {
                 Encuentra el cilindro que necesitas, revisa tu tarifa y sigue tu pedido hasta la puerta de tu casa.
               </p>
               <div className="d-flex flex-wrap gap-3">
-                <Button as={Link} variant="danger" size="lg" to="/nuevo-pedido">Pedir gas ahora</Button>
+                <Button as={Link} variant="danger" size="lg" to="/carrito">Pedir gas ahora</Button>
                 <Button as={Link} variant="outline-secondary" size="lg" to="/catalogo">Explorar catálogo</Button>
               </div>
               <p className="nota-inicio">Clientes residenciales y comerciales · Pago en efectivo al entregar</p>
