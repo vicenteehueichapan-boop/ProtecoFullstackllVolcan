@@ -5,19 +5,21 @@ import FormularioIngreso from './FormularioIngreso'
 
 describe('FormularioIngreso', () => {
   it('muestra mensajes cuando se envía vacío', async () => {
-    render(<FormularioIngreso alIngresar={vi.fn()} />)
+    const alIngresar = vi.fn()
+    render(<FormularioIngreso alIngresar={alIngresar} />)
 
     await userEvent.click(screen.getByRole('button', { name: 'Ingresar' }))
 
     expect(screen.getByText('Ingresa un correo válido.')).toBeInTheDocument()
-    expect(screen.getByText('La contraseña debe tener al menos 4 caracteres.')).toBeInTheDocument()
+    expect(screen.getByText('La contraseña debe tener al menos 6 caracteres.')).toBeInTheDocument()
+    expect(alIngresar).not.toHaveBeenCalled()
   })
 
   it('mantiene el mensaje para un correo inválido', async () => {
     render(<FormularioIngreso alIngresar={vi.fn()} />)
 
     await userEvent.type(screen.getByLabelText('Correo institucional'), 'correo-invalido')
-    await userEvent.type(screen.getByLabelText('Contraseña'), '1234')
+    await userEvent.type(screen.getByLabelText('Contraseña'), '123456')
     await userEvent.click(screen.getByRole('button', { name: 'Ingresar' }))
 
     expect(screen.getByText('Ingresa un correo válido.')).toBeInTheDocument()
@@ -28,12 +30,12 @@ describe('FormularioIngreso', () => {
     render(<FormularioIngreso alIngresar={alIngresar} />)
 
     await userEvent.type(screen.getByLabelText('Correo institucional'), 'estudiante@duocuc.cl')
-    await userEvent.type(screen.getByLabelText('Contraseña'), '1234')
+    await userEvent.type(screen.getByLabelText('Contraseña'), '123456')
     await userEvent.click(screen.getByRole('button', { name: 'Ingresar' }))
 
     expect(alIngresar).toHaveBeenCalledWith({
       correo: 'estudiante@duocuc.cl',
-      clave: '1234',
+      clave: '123456',
     })
   })
 })

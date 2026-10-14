@@ -2,20 +2,7 @@ import { useState } from 'react'
 import { Form } from 'react-bootstrap'
 import BotonAccion from '../atoms/BotonAccion'
 import CampoFormulario from '../molecules/CampoFormulario'
-
-function validar(correo, clave) {
-  const errores = {}
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-    errores.correo = 'Ingresa un correo válido.'
-  }
-
-  if (clave.length < 4) {
-    errores.clave = 'La contraseña debe tener al menos 4 caracteres.'
-  }
-
-  return errores
-}
+import { validarIngreso } from '../../utils/validaciones'
 
 export default function FormularioIngreso({ alIngresar }) {
   const [correo, setCorreo] = useState('')
@@ -24,7 +11,7 @@ export default function FormularioIngreso({ alIngresar }) {
 
   function manejarEnvio(evento) {
     evento.preventDefault()
-    const nuevosErrores = validar(correo, clave)
+    const nuevosErrores = validarIngreso(correo, clave)
     setErrores(nuevosErrores)
 
     if (Object.keys(nuevosErrores).length === 0) {
