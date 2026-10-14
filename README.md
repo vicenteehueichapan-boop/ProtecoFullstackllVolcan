@@ -77,6 +77,15 @@ Esta versión React utiliza Vite: abrir `index.html` con doble clic no ejecuta e
 
 ## Comprobaciones
 
+También están disponibles los nombres de comandos usados en las guías 15 y 16:
+
+```bash
+npm run test:run
+npm run test:cov
+```
+
+Son equivalentes a `npm test` y `npm run test:coverage`. Para limitar memoria se puede añadir `-- --maxWorkers=1 --no-file-parallelism`; esto conserva el aislamiento entre archivos.
+
 Ejecutar las pruebas unitarias:
 
 ```bash
@@ -139,6 +148,22 @@ Aunque el trabajo es individual, los cambios se preparan en una rama, se revisan
 ### Límites de esta auditoría
 
 Revisión del 7 de octubre de 2026 contra las guías 10–13 recibidas. El flujo de desarrollo remoto en EC2 solicitado por la Guía 10 aún no está acreditado; preparar Nginx no demuestra ese trabajo. También falta el enlace público real de Drive solicitado por la Guía 12 y contrastar la entrega con la pauta oficial EP2 cuando esté disponible. No se declara ausencia total de deuda técnica ni cumplimiento de instrucciones no recibidas.
+
+### Incremento del 14 de octubre: hooks, validación y seguimiento
+
+Se recibieron las guías 14, 15 y 16. La referencia anterior a instrucciones EP2 no recibidas describe la revisión histórica del 7 de octubre, no el estado actual.
+
+- `utils/validaciones.js` reúne reglas puras de ingreso y registro: no modifica estado, no navega y no accede al almacenamiento. Ambos formularios requieren una contraseña de al menos seis caracteres.
+- CampoFormulario presenta valor, cambios y error. FormularioIngreso conserva el estado, valida todos los campos y solo llama a alIngresar si son válidos; Ingreso decide qué mostrar después. Todavía no existe autenticación ni sesión simulada.
+- `useTituloPagina` usa useEffect para sincronizar la pestaña con el título recibido. Se llama sin condiciones en Inicio y Catálogo; su dependencia es titulo y su limpieza restaura el valor anterior.
+- BuscadorPedido es una molécula sin dependencias de React Router. Su estado contiene el texto escrito y alBuscar avisa a la página. SeguimientoPedido lee useParams y navega con useNavigate. Su key cambia con el identificador de la ruta para reiniciar solo el buscador al volver o avanzar en el historial.
+- Las pruebas verifican reglas, límites, callback válido/inválido, actualización y limpieza del hook, y navegación atrás/adelante entre dos pedidos.
+
+Un campo controlado recibe value y onChange. preventDefault cancela el envío HTML que recargaría la página; los errores viven en un objeto de estado y CampoFormulario usa isInvalid y retroalimentación junto al campo. useState devuelve el valor actual y una función para actualizarlo. Un efecto con dependencias se repite cuando estas cambian; con [] se configura al montar, y sin arreglo se ejecuta tras cada renderizado. Los hooks se llaman en el nivel superior de componentes u otros hooks, no dentro de condiciones ni manejadores.
+
+Fuentes para estudiar: [campos controlados](https://react.dev/reference/react-dom/components/input), [hooks propios](https://react.dev/learn/reusing-logic-with-custom-hooks), [useEffect](https://react.dev/reference/react/useEffect), [validación con React Bootstrap](https://react-bootstrap.github.io/docs/forms/validation/) y [useNavigate](https://reactrouter.com/api/hooks/useNavigate).
+
+Este incremento no completa toda EP2. Siguen pendientes el carrito persistente, datos completos de confirmación, sesión simulada para autocompletar, vistas informativas y ofertas, y módulos administrativos adicionales de la Guía 16. También falta revisar la dependencia directa de Link en otros componentes de presentación frente a la separación de navegación enseñada en la Guía 14. No se incorporó backend, almacenamiento de contraseñas ni una API ficticia para imitar ejemplos.
 
 ## Tecnologías
 
