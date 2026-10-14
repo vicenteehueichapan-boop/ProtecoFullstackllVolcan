@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ProductosProvider } from '../context/ProductosContext'
 import AdministrarProductos from './AdministrarProductos'
+import { eliminarProducto, actualizarProducto } from '../services/productoService'
 
 function renderizarAdministracion() {
   return render(
@@ -13,13 +14,16 @@ function renderizarAdministracion() {
 }
 
 async function completarProducto(usuario, codigo = 'CL005') {
-  await usuario.type(screen.getByLabelText('Código'), codigo)
-  await usuario.type(screen.getByLabelText('Categoría'), 'Cilindros de Gas')
-  await usuario.type(screen.getByLabelText('Nombre'), 'Cilindro GLP 2 kg')
-  await usuario.type(
-    screen.getByLabelText('Descripción'),
-    'Cilindro compacto para hogares y emprendimientos de Chillán.',
-  )
+  // Pegar textos reproduce una entrada de usuario sin simular cada tecla.
+  // Así los casos de CRUD no dependen de la velocidad del equipo con cobertura.
+  for (const [etiqueta, valor] of [
+    ['Código', codigo], ['Categoría', 'Cilindros de Gas'],
+    ['Nombre', 'Cilindro GLP 2 kg'],
+    ['Descripción', 'Cilindro compacto para hogares y emprendimientos de Chillán.'],
+  ]) {
+    await usuario.click(screen.getByLabelText(etiqueta))
+    await usuario.paste(valor)
+  }
   await usuario.clear(screen.getByLabelText('Stock'))
   await usuario.type(screen.getByLabelText('Stock'), '18')
   await usuario.clear(screen.getByLabelText('Precio residencial'))
@@ -50,8 +54,23 @@ describe('AdministrarProductos', () => {
     await usuario.click(screen.getByRole('button', { name: 'Agregar' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent('Producto agregado correctamente.')
-    expect(screen.getByText('11 productos registrados')).toBeInTheDocument()
+    expect(screen.getByText('15 productos registrados')).toBeInTheDocument()
     expect(within(filaProducto('CL005')).getByText('Cilindro GLP 2 kg')).toBeInTheDocument()
+  })
+
+  it('incorpora faltantes del Excel solo después de confirmar, conservando ediciones', async () => {
+    eliminarProducto('AC002')
+    actualizarProducto('CL001', { stock: 7 })
+    const usuario = userEvent.setup()
+    renderizarAdministracion()
+    await usuario.click(screen.getByRole('button', { name: 'Incorporar 1 faltantes del Excel' }))
+    await usuario.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }))
+    expect(screen.queryByText('AC002')).not.toBeInTheDocument()
+    await usuario.click(screen.getByRole('button', { name: 'Incorporar 1 faltantes del Excel' }))
+    await usuario.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirmar' }))
+    expect(screen.getByText('AC002')).toBeInTheDocument()
+    expect(within(filaProducto('CL001')).getByText('7')).toBeInTheDocument()
+    expect(screen.getByRole('alert')).toHaveTextContent('Se conservaron los productos existentes')
   })
 
   it('muestra el error del negocio cuando se intenta repetir un código', async () => {
@@ -64,7 +83,7 @@ describe('AdministrarProductos', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Ya existe un producto con el código CL001',
     )
-    expect(screen.getByText('10 productos registrados')).toBeInTheDocument()
+    expect(screen.getByText('14 productos registrados')).toBeInTheDocument()
   })
 
   it('edita un producto y refleja el cambio en la tabla', async () => {
@@ -95,7 +114,7 @@ describe('AdministrarProductos', () => {
     expect(filaProducto('CL001')).toBeInTheDocument()
     await usuario.click(within(dialogo).getByRole('button', { name: 'Confirmar' }))
     expect(screen.queryByText('CL001')).not.toBeInTheDocument()
-    expect(screen.getByText('9 productos registrados')).toBeInTheDocument()
+    expect(screen.getByText('13 productos registrados')).toBeInTheDocument()
     expect(screen.getByRole('alert')).toHaveTextContent('Producto eliminado correctamente.')
   })
 
@@ -107,7 +126,7 @@ describe('AdministrarProductos', () => {
 
     await usuario.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }))
     expect(filaProducto('CL001')).toBeInTheDocument()
-    expect(screen.getByText('10 productos registrados')).toBeInTheDocument()
+    expect(screen.getByText('14 productos registrados')).toBeInTheDocument()
     expect(screen.queryByText('Producto eliminado correctamente.')).not.toBeInTheDocument()
   })
 
@@ -123,7 +142,7 @@ describe('AdministrarProductos', () => {
     expect(dialogo).toHaveTextContent('¿Restaurar el catálogo original del caso?')
     await usuario.click(within(dialogo).getByRole('button', { name: 'Cancelar' }))
     expect(filaProducto('CL005')).toBeInTheDocument()
-    expect(screen.getByText('11 productos registrados')).toBeInTheDocument()
+    expect(screen.getByText('15 productos registrados')).toBeInTheDocument()
   })
 
   it('restaura el catálogo solamente después de confirmar', async () => {
@@ -136,7 +155,7 @@ describe('AdministrarProductos', () => {
     await usuario.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirmar' }))
 
     expect(screen.queryByText('CL005')).not.toBeInTheDocument()
-    expect(screen.getByText('10 productos registrados')).toBeInTheDocument()
+    expect(screen.getByText('14 productos registrados')).toBeInTheDocument()
     expect(screen.getByRole('alert')).toHaveTextContent('Catálogo original restaurado.')
   })
 })

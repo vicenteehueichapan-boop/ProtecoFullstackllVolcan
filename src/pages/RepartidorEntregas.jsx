@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
-import { Alert, Col, Container, Form, Row } from 'react-bootstrap'
+import { Alert, Col, Container, Row } from 'react-bootstrap'
 import ListaEntregas from '../components/organisms/ListaEntregas'
-import repartidores from '../data/repartidores'
 import { usePedidos } from '../hooks/usePedidos'
+import { useSesionPersonal } from '../hooks/useSesionPersonal'
 
 export default function RepartidorEntregas() {
   const { pedidos, cambiarEstado } = usePedidos()
-  const [repartidorActivo, setRepartidorActivo] = useState(repartidores[0].nombre)
+  const { personal } = useSesionPersonal()
+  const repartidorActivo = personal.nombre
   const [mensaje, setMensaje] = useState(null)
   const entregas = useMemo(
     () => pedidos.filter((pedido) => pedido.repartidor === repartidorActivo),
@@ -35,20 +36,7 @@ export default function RepartidorEntregas() {
           </p>
         </Col>
         <Col md={4}>
-          <Form.Group controlId="repartidor-activo">
-            <Form.Label>Repartidor de demostración</Form.Label>
-            <Form.Select
-              value={repartidorActivo}
-              onChange={(evento) => {
-                setRepartidorActivo(evento.target.value)
-                setMensaje(null)
-              }}
-            >
-              {repartidores.map((repartidor) => (
-                <option key={repartidor.id} value={repartidor.nombre}>{repartidor.nombre}</option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+          <p className="mb-0">Perfil activo: <strong>{repartidorActivo}</strong></p>
         </Col>
       </Row>
 

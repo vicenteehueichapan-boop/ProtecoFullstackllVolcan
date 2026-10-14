@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 import App from './App'
 import { actualizarProducto } from './services/productoService'
+import { ingresarPersonalEnPrueba } from './tests/ingresarPersonal'
 
 function irA(ruta) {
   act(() => {
@@ -45,6 +46,7 @@ describe('recorrido completo de un pedido', () => {
     expect(await screen.findByRole('heading', { name: 'Pedido confirmado' })).toBeInTheDocument()
     expect(screen.getByText('PED-0001')).toBeInTheDocument()
 
+    await ingresarPersonalEnPrueba(usuario, 'operadora@ejemplo.cl')
     irA('/operadora/pedidos')
     expect(await screen.findByRole('heading', { name: 'Pedidos del día' })).toBeInTheDocument()
 
@@ -60,6 +62,11 @@ describe('recorrido completo de un pedido', () => {
     expect(screen.getByText('El pedido PED-0001 fue asignado correctamente.'))
       .toBeInTheDocument()
 
+    await ingresarPersonalEnPrueba(usuario, 'repartidor2@ejemplo.cl')
+    irA('/repartidor/entregas')
+    expect(screen.queryByText('PED-0001')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Repartidor de demostración')).not.toBeInTheDocument()
+    await ingresarPersonalEnPrueba(usuario, 'repartidor1@ejemplo.cl')
     irA('/repartidor/entregas')
     expect(await screen.findByRole('heading', { name: 'Mis entregas' })).toBeInTheDocument()
     await usuario.click(screen.getByRole('button', { name: 'Marcar en camino' }))

@@ -28,7 +28,7 @@ describe('navegación y filtros del catálogo', () => {
     await usuario.selectOptions(screen.getByLabelText('Categoría'), 'Reguladores')
     await usuario.selectOptions(screen.getByLabelText('Tipo de cliente'), 'comercial')
 
-    expect(screen.getByText('2 productos encontrados')).toBeInTheDocument()
+    expect(screen.getByText('3 productos encontrados')).toBeInTheDocument()
     expect(screen.getByText('$8.200')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Cilindro GLP 5 kg' })).not.toBeInTheDocument()
   })
@@ -42,7 +42,7 @@ describe('navegación y filtros del catálogo', () => {
     expect(screen.getByText('No encontramos productos con los filtros seleccionados.')).toBeInTheDocument()
 
     await usuario.clear(buscador)
-    expect(screen.getByText('10 productos encontrados')).toBeInTheDocument()
+    expect(screen.getByText('14 productos encontrados')).toBeInTheDocument()
   })
 
   it('conecta el detalle con el carrito y el cilindro seleccionado', async () => {

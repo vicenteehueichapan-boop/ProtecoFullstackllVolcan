@@ -3,6 +3,7 @@ import { Button, Col, Container, Modal, Row, Table } from 'react-bootstrap'
 import FormularioProducto from '../components/organisms/FormularioProducto'
 import { useProductos } from '../hooks/useProductos'
 import imagenAccesorio from '../assets/productos/accesorio.svg'
+import productosIniciales from '../data/productosIniciales'
 
 const PRODUCTO_VACIO = {
   codigo: '',
@@ -32,6 +33,7 @@ export default function AdministrarProductos() {
     actualizarProducto,
     eliminarProducto,
     restaurarProductos,
+    incorporarProductosDelCaso,
   } = useProductos()
   const [formulario, setFormulario] = useState(PRODUCTO_VACIO)
   const [codigoOriginal, setCodigoOriginal] = useState(null)
@@ -39,6 +41,7 @@ export default function AdministrarProductos() {
   const [confirmacion, setConfirmacion] = useState(null)
 
   const estaEditando = codigoOriginal !== null
+  const faltantes = productosIniciales.filter((original) => !productos.some((producto) => producto.codigo === original.codigo))
 
   function cambiarCampo(evento) {
     const { name, value } = evento.target
@@ -82,6 +85,9 @@ export default function AdministrarProductos() {
         eliminarProducto(confirmacion.codigo)
         if (codigoOriginal === confirmacion.codigo) limpiarFormulario()
         setMensaje({ tipo: 'success', texto: 'Producto eliminado correctamente.' })
+      } else if (confirmacion.tipo === 'completar') {
+        incorporarProductosDelCaso()
+        setMensaje({ tipo: 'success', texto: 'Productos faltantes del Excel incorporados. Se conservaron los productos existentes.' })
       } else {
         restaurarProductos()
         limpiarFormulario()
@@ -113,6 +119,7 @@ export default function AdministrarProductos() {
               <span className="text-secondary">{productos.length} productos registrados</span>
             </div>
             <Button variant="outline-secondary" onClick={() => setConfirmacion({ tipo: 'restaurar' })}>Restaurar catálogo</Button>
+            {faltantes.length > 0 && <Button variant="outline-primary" onClick={() => setConfirmacion({ tipo: 'completar' })}>Incorporar {faltantes.length} faltantes del Excel</Button>}
           </div>
           <div className="table-responsive bg-white shadow-sm rounded">
             <Table hover className="mb-0 align-middle">
@@ -147,13 +154,15 @@ export default function AdministrarProductos() {
       <Modal show={confirmacion !== null} onHide={() => setConfirmacion(null)} centered aria-labelledby="titulo-confirmacion-productos">
         <Modal.Header closeButton closeLabel="Cerrar">
           <Modal.Title id="titulo-confirmacion-productos">
-            {confirmacion?.tipo === 'eliminar' ? 'Eliminar producto' : 'Restaurar catálogo'}
+            {confirmacion?.tipo === 'eliminar' ? 'Eliminar producto' : confirmacion?.tipo === 'completar' ? 'Completar catálogo del Excel' : 'Restaurar catálogo'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {confirmacion?.tipo === 'eliminar'
             ? `¿Eliminar el producto ${confirmacion.codigo}? Dejará de aparecer en el catálogo.`
-            : '¿Restaurar el catálogo original del caso? Se reemplazarán los cambios guardados en este navegador.'}
+            : confirmacion?.tipo === 'completar'
+              ? `¿Incorporar ${faltantes.length} productos del Excel que no están en el catálogo? Los productos existentes conservarán sus cambios. También se reincorporarán los que hayas eliminado del caso.`
+              : '¿Restaurar el catálogo original del caso? Se reemplazarán los cambios guardados en este navegador.'}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-secondary" onClick={() => setConfirmacion(null)}>Cancelar</Button>
