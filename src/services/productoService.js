@@ -1,3 +1,4 @@
+import codigosDestacadosIniciales from '../data/destacadosIniciales'
 import productosIniciales from '../data/productosIniciales'
 
 const CLAVE_PRODUCTOS = 'gas-el-volcan-productos'
@@ -35,6 +36,10 @@ function validarProducto(producto) {
   if (!Number.isInteger(producto.stock)) {
     throw new Error('El stock debe ser un número entero')
   }
+
+  if (producto.destacado !== undefined && typeof producto.destacado !== 'boolean') {
+    throw new Error('El campo destacado debe ser verdadero o falso')
+  }
 }
 
 function prepararProducto(producto) {
@@ -47,6 +52,7 @@ function prepararProducto(producto) {
     nombre: producto.nombre.trim(),
     descripcion: producto.descripcion.trim(),
     unidad: producto.unidad.trim(),
+    destacado: producto.destacado === true,
   }
 
   return productoPreparado
@@ -57,7 +63,10 @@ function guardarProductos(productos) {
 }
 
 function copiarProductosIniciales() {
-  return productosIniciales.map((producto) => ({ ...producto }))
+  return productosIniciales.map((producto) => ({
+    ...producto,
+    destacado: codigosDestacadosIniciales.includes(producto.codigo),
+  }))
 }
 
 function leerProductosGuardados() {
@@ -81,9 +90,20 @@ export function listarProductos() {
     const productos = JSON.parse(productosGuardados)
 
     if (Array.isArray(productos)) {
+      // Migración: un catálogo guardado antes de existir el campo destacado no lo trae en
+      // ningún producto. Se marcan los destacados iniciales y se conserva todo lo demás.
+      const esquemaAnterior = productos.every((producto) => producto && !('destacado' in producto))
       const productosValidados = productos.map(prepararProducto)
       const codigos = new Set(productosValidados.map((producto) => producto.codigo))
-      if (codigos.size === productosValidados.length) return productosValidados
+      if (codigos.size === productosValidados.length) {
+        if (!esquemaAnterior) return productosValidados
+        const migrados = productosValidados.map((producto) => ({
+          ...producto,
+          destacado: codigosDestacadosIniciales.includes(producto.codigo),
+        }))
+        guardarProductos(migrados)
+        return migrados
+      }
     }
   } catch {
     // El mensaje de abajo explica el problema; los datos dañados no se tocan.

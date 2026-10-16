@@ -46,6 +46,19 @@ describe('AdministrarProductos', () => {
     vi.restoreAllMocks()
   })
 
+  it('marca un producto como destacado y lo deja guardado', async () => {
+    const usuario = userEvent.setup()
+    renderizarAdministracion()
+
+    await usuario.click(within(filaProducto('CL001')).getByRole('button', { name: 'Editar' }))
+    expect(screen.getByLabelText('Destacar en la tienda')).not.toBeChecked()
+    await usuario.click(screen.getByLabelText('Destacar en la tienda'))
+    await usuario.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+
+    expect(JSON.parse(localStorage.getItem('gas-el-volcan-productos')).find((p) => p.codigo === 'CL001').destacado).toBe(true)
+    expect(within(filaProducto('CL001')).getByText('Destacado')).toBeInTheDocument()
+  })
+
   it('crea un producto y lo incorpora a la tabla', async () => {
     const usuario = userEvent.setup()
     renderizarAdministracion()
