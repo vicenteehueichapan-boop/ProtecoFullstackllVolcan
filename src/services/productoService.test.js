@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   actualizarProducto,
   crearProducto,
+  descontarStock,
+  devolverStock,
   eliminarProducto,
   listarProductos,
   incorporarProductosDelCaso,
@@ -71,6 +73,24 @@ describe('productoService', () => {
     expect(obtenerProductoPorCodigo('CL001').destacado).toBe(true)
     expect(obtenerProductoPorCodigo('CL002').destacado).toBe(false)
     expect(() => actualizarProducto('CL001', { destacado: 'sí' })).toThrow('destacado')
+  })
+
+  it('descuenta y devuelve stock de varias líneas a la vez', () => {
+    descontarStock([{ codigo: 'CL001', cantidad: 5 }, { codigo: 'RG001', cantidad: 2 }])
+    expect(obtenerProductoPorCodigo('CL001').stock).toBe(75)
+    expect(obtenerProductoPorCodigo('RG001').stock).toBe(43)
+
+    devolverStock([{ codigo: 'CL001', cantidad: 5 }, { codigo: 'RG001', cantidad: 2 }])
+    expect(obtenerProductoPorCodigo('CL001').stock).toBe(80)
+    expect(obtenerProductoPorCodigo('RG001').stock).toBe(45)
+  })
+
+  it('no cambia ningún stock si una línea no alcanza o no existe', () => {
+    expect(() => descontarStock([{ codigo: 'CL001', cantidad: 1 }, { codigo: 'AC003', cantidad: 9 }]))
+      .toThrow('No hay stock suficiente de Detector de gas a batería')
+    expect(() => descontarStock([{ codigo: 'CL001', cantidad: 1 }, { codigo: 'ZZ999', cantidad: 1 }]))
+      .toThrow('ZZ999')
+    expect(obtenerProductoPorCodigo('CL001').stock).toBe(80)
   })
 
   it('recupera los productos guardados', () => {

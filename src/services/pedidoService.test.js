@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { datosPedido } from '../tests/datosPedido'
-import { actualizarProducto, eliminarProducto } from './productoService'
+import { actualizarProducto, eliminarProducto, obtenerProductoPorCodigo } from './productoService'
 import {
   ESTADOS_PEDIDO,
   asignarRepartidor,
@@ -79,6 +79,43 @@ describe('pedidoService', () => {
       .toBe(ESTADOS_PEDIDO.EN_CAMINO)
     expect(cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.ENTREGADO).estado)
       .toBe(ESTADOS_PEDIDO.ENTREGADO)
+  })
+
+  it('descuenta del stock las cantidades del pedido al registrarlo', () => {
+    crearPedido({ ...datosPedido, productos: [{ ...datosPedido.productos[0], cantidad: 3, subtotal: 19500 }], total: 19500 })
+
+    expect(obtenerProductoPorCodigo('CL001').stock).toBe(77)
+  })
+
+  it('devuelve el stock si no se puede guardar el pedido', () => {
+    const original = Storage.prototype.setItem
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (clave, valor) {
+      if (clave === 'gas-el-volcan-pedidos') throw new Error('Sin espacio')
+      return original.call(this, clave, valor)
+    })
+
+    expect(() => crearPedido(datosPedido)).toThrow('Sin espacio')
+    expect(obtenerProductoPorCodigo('CL001').stock).toBe(80)
+  })
+
+  it('registra el cobro en efectivo al marcar el pedido como entregado', () => {
+    const pedido = crearPedido(datosPedido)
+    asignarRepartidor(pedido.id, 'Repartidor 1')
+    expect(cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.EN_CAMINO).cobro).toBeUndefined()
+
+    const entregado = cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.ENTREGADO)
+
+    expect(entregado.cobro).toEqual({ monto: 6500, fecha: entregado.fechaActualizacion })
+  })
+
+  it('sigue leyendo pedidos entregados antes de registrar cobros', () => {
+    const pedido = crearPedido(datosPedido)
+    asignarRepartidor(pedido.id, 'Repartidor 1')
+    cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.EN_CAMINO)
+    const { cobro: _cobro, ...anterior } = cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.ENTREGADO)
+    localStorage.setItem('gas-el-volcan-pedidos', JSON.stringify([anterior]))
+
+    expect(listarPedidos()[0].cobro).toBeUndefined()
   })
 
   it('rechaza saltos o retrocesos en la secuencia de estados', () => {

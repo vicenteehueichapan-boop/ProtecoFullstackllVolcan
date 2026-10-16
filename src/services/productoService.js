@@ -167,6 +167,36 @@ export function eliminarProducto(codigo) {
   return productoEliminado
 }
 
+// Suma (signo 1) o resta (signo -1) las cantidades de varias líneas. Primero calcula todos
+// los cambios y recién al final guarda: si una línea falla, no se modifica ningún stock.
+function ajustarStock(lineas, signo) {
+  const productos = listarProductos()
+  for (const linea of lineas) {
+    if (!productos.some((producto) => producto.codigo === linea.codigo)) {
+      throw new Error(`No existe un producto con el código ${linea.codigo}`)
+    }
+  }
+  const actualizados = productos.map((producto) => {
+    const linea = lineas.find((item) => item.codigo === producto.codigo)
+    if (!linea) return producto
+    const stock = producto.stock + signo * linea.cantidad
+    if (stock < 0) throw new Error(`No hay stock suficiente de ${producto.nombre}`)
+    return { ...producto, stock }
+  })
+  guardarProductos(actualizados)
+}
+
+// Al registrar un pedido se descuenta su stock: así el stock visible ya considera lo
+// comprometido y no se aceptan pedidos que no se podrían entregar.
+export function descontarStock(lineas) {
+  ajustarStock(lineas, -1)
+}
+
+// Revierte un descuento cuando el pedido no se pudo guardar.
+export function devolverStock(lineas) {
+  ajustarStock(lineas, 1)
+}
+
 export function restaurarProductos() {
   const productos = copiarProductosIniciales()
   guardarProductos(productos)
