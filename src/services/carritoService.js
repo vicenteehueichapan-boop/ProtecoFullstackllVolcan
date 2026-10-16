@@ -41,8 +41,8 @@ function guardarCarrito(carrito) {
 
 function comprobarCantidad(codigo, cantidad) {
   const producto = obtenerProductoPorCodigo(codigo)
-  if (!producto || producto.categoria !== 'Cilindros de Gas') {
-    throw new Error('Solo puedes solicitar cilindros disponibles en el catálogo.')
+  if (!producto) {
+    throw new Error('El producto ya no está disponible en el catálogo.')
   }
   if (!Number.isSafeInteger(cantidad) || cantidad < 1 || cantidad > producto.stock) {
     throw new Error(`La cantidad de ${producto.nombre} debe estar entre 1 y ${producto.stock}.`)
@@ -65,7 +65,7 @@ export function cambiarCantidadCarrito(codigo, cantidad) {
   codigo = String(codigo ?? '').trim().toUpperCase()
   const carrito = leerCarrito()
   if (!carrito.lineas.some((linea) => linea.codigo === codigo)) {
-    throw new Error('El cilindro no está en el carrito.')
+    throw new Error('El producto no está en el carrito.')
   }
   comprobarCantidad(codigo, cantidad)
   return guardarCarrito({

@@ -15,6 +15,13 @@ describe('resumirCarrito', () => {
     expect(carrito).toEqual(antes)
   })
 
+  it('permite confirmar un accesorio junto a los cilindros', () => {
+    const regulador = { codigo: 'RG001', nombre: 'Regulador', categoria: 'Reguladores', stock: 5, precioResidencial: 8990, precioComercial: 8200 }
+    const conRegulador = { ...carrito, lineas: [...carrito.lineas, { codigo: 'RG001', cantidad: 1 }] }
+
+    expect(resumirCarrito(conRegulador, [...productos, regulador])).toMatchObject({ total: 33990, puedeConfirmar: true })
+  })
+
   it('bloquea la confirmación cuando el carrito está vacío', () => {
     expect(resumirCarrito({ ...carrito, lineas: [] }, productos)).toMatchObject({ total: 0, puedeConfirmar: false })
   })

@@ -164,9 +164,22 @@ describe('pedidoService', () => {
     expect(() => crearPedido(datosPedido)).toThrow('Los datos o precios del catálogo cambiaron')
   })
 
-  it('rechaza un cilindro eliminado antes de confirmar', () => {
+  it('registra un pedido que combina cilindros y accesorios', () => {
+    const conRegulador = {
+      ...datosPedido,
+      productos: [
+        ...datosPedido.productos,
+        { codigo: 'RG001', nombre: 'Regulador doméstico estándar', cantidad: 1, precioUnitario: 8990, subtotal: 8990 },
+      ],
+      total: 6500 + 8990,
+    }
+
+    expect(crearPedido(conRegulador).total).toBe(15490)
+  })
+
+  it('rechaza un producto eliminado antes de confirmar', () => {
     eliminarProducto('CL001')
-    expect(() => crearPedido(datosPedido)).toThrow('Un cilindro del pedido ya no está disponible')
+    expect(() => crearPedido(datosPedido)).toThrow('Un producto del pedido ya no está disponible')
   })
 
   it('conserva una lista cuyo JSON es válido pero contiene pedidos incompletos', () => {

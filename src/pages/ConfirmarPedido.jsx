@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import BotonAccion from '../components/atoms/BotonAccion'
 import ResumenPedido from '../components/molecules/ResumenPedido'
 import FormularioEntrega from '../components/organisms/FormularioEntrega'
+import ResultadoPedidoFallido from '../components/organisms/ResultadoPedidoFallido'
 import zonasDespacho from '../data/zonasDespacho'
 import { useCarrito } from '../hooks/useCarrito'
 import { usePedidos } from '../hooks/usePedidos'
@@ -76,7 +77,13 @@ export default function ConfirmarPedido() {
       <h1>Datos de entrega</h1>
       <p>Completa los datos y revisa el importe antes de registrar el pedido. El pago se realiza en efectivo al entregar.</p>
       {error && <Alert variant="danger">{error}</Alert>}
-      {errorConfirmacion && <Alert variant="danger">{errorConfirmacion}</Alert>}
+      {errorConfirmacion && (
+        <ResultadoPedidoFallido
+          mensaje={errorConfirmacion}
+          alReintentar={() => setErrorConfirmacion('')}
+          alRevisarCarrito={() => navegar('/carrito')}
+        />
+      )}
       {!resumen.puedeConfirmar || error ? (
         <Alert variant="warning">El carrito está vacío o necesita correcciones. <Link to="/carrito">Revisar mi carrito</Link></Alert>
       ) : (
@@ -92,7 +99,8 @@ export default function ConfirmarPedido() {
           )}
         </>
       )}
-      <div hidden={!resumen.puedeConfirmar || Boolean(error) || Boolean(borrador)}>
+      {/* El formulario se oculta (sin desmontarse) para conservar lo escrito al reintentar. */}
+      <div hidden={!resumen.puedeConfirmar || Boolean(error) || Boolean(borrador) || Boolean(errorConfirmacion)}>
         {!cuenta && (
           <p className="border rounded p-3 bg-light">
             ¿Tienes cuenta? <Link to="/ingreso" state={{ desde: '/confirmar-pedido' }}>Ingresa</Link> para

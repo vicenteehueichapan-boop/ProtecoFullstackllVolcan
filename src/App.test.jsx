@@ -2,7 +2,6 @@ import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 import App from './App'
-import { actualizarProducto } from './services/productoService'
 import { ingresarPersonalEnPrueba } from './tests/ingresarPersonal'
 
 function irA(ruta) {
@@ -15,7 +14,7 @@ function irA(ruta) {
 describe('recorrido completo de un pedido', () => {
   beforeEach(() => {
     localStorage.clear()
-    window.history.replaceState({}, '', '/nuevo-pedido')
+    window.history.replaceState({}, '', '/')
   })
 
   it('conecta cuenta, carrito, operadora, repartidor, historial y seguimiento', async () => {
@@ -90,28 +89,6 @@ describe('recorrido completo de un pedido', () => {
     expect(screen.getByText('Repartidor 1')).toBeInTheDocument()
     expect(screen.getByText('Pedido entregado')).toHaveClass('list-group-item-success')
   }, 20000)
-
-  it('permite corregir el pedido si el catálogo cambió durante el resumen', async () => {
-    const usuario = userEvent.setup()
-    render(<App />)
-    await usuario.type(screen.getByLabelText('Nombre del cliente'), 'Ana Pérez')
-    await usuario.type(screen.getByLabelText('Dirección de entrega'), 'Los Aromos 123')
-    await usuario.selectOptions(screen.getByLabelText('Zona de despacho'), 'centro')
-    await usuario.selectOptions(screen.getByLabelText('Cilindro'), 'CL001')
-    await usuario.click(screen.getByRole('button', { name: 'Revisar pedido' }))
-
-    actualizarProducto('CL001', { precioResidencial: 7000 })
-    await usuario.click(screen.getByRole('button', { name: 'Confirmar pedido' }))
-    expect(screen.getByRole('alert')).toHaveTextContent('Los datos o precios del catálogo cambiaron')
-    expect(JSON.parse(localStorage.getItem('gas-el-volcan-pedidos'))).toEqual([])
-
-    await usuario.click(screen.getByRole('button', { name: 'Corregir datos' }))
-    expect(screen.getByLabelText('Nombre del cliente')).toHaveValue('Ana Pérez')
-    await usuario.click(screen.getByRole('button', { name: 'Revisar pedido' }))
-    await usuario.click(screen.getByRole('button', { name: 'Confirmar pedido' }))
-    expect(await screen.findByRole('heading', { name: 'Pedido confirmado' })).toBeInTheDocument()
-    expect(JSON.parse(localStorage.getItem('gas-el-volcan-pedidos'))[0].total).toBe(7000)
-  })
 })
 
 describe('datos guardados dañados', () => {
