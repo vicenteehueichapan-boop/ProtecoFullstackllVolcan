@@ -8,8 +8,10 @@ import {
   listarProductos,
   incorporarProductosDelCaso,
   obtenerProductoPorCodigo,
+  renombrarCategoria,
   restaurarProductos,
 } from './productoService'
+import { listarCategorias } from './categoriaService'
 
 const productoNuevo = {
   codigo: 'PR001',
@@ -91,6 +93,51 @@ describe('productoService', () => {
     expect(() => descontarStock([{ codigo: 'CL001', cantidad: 1 }, { codigo: 'ZZ999', cantidad: 1 }]))
       .toThrow('ZZ999')
     expect(obtenerProductoPorCodigo('CL001').stock).toBe(80)
+  })
+
+  it('solo acepta productos de una categoría existente', () => {
+    expect(() => crearProducto({ ...productoNuevo, categoria: 'Inventada' }))
+      .toThrow(expect.objectContaining({ campo: 'categoria' }))
+    expect(() => actualizarProducto('CL001', { categoria: 'Inventada' })).toThrow('categoría existente')
+  })
+
+  it('renombra una categoría en todos sus productos', () => {
+    renombrarCategoria('Accesorios', { nombre: 'Accesorios del hogar', descripcion: '' })
+
+    const accesorios = listarProductos().filter((producto) => producto.categoria === 'Accesorios del hogar')
+    expect(accesorios.map((producto) => producto.codigo)).toEqual(['AC001', 'AC002', 'AC003'])
+    expect(listarCategorias().some((categoria) => categoria.nombre === 'Accesorios')).toBe(false)
+  })
+
+  it('revierte el nombre de la categoría si no se pueden guardar los productos', () => {
+    listarProductos()
+    const original = Storage.prototype.setItem
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (clave, valor) {
+      if (clave === 'gas-el-volcan-productos') throw new Error('Sin espacio')
+      return original.call(this, clave, valor)
+    })
+
+    expect(() => renombrarCategoria('Accesorios', { nombre: 'Otra', descripcion: '' })).toThrow('Sin espacio')
+    expect(listarCategorias().some((categoria) => categoria.nombre === 'Accesorios')).toBe(true)
+  })
+
+  it('al restaurar el catálogo original vuelve también a las categorías del Excel', () => {
+    renombrarCategoria('Accesorios', { nombre: 'Accesorios del hogar', descripcion: '' })
+
+    restaurarProductos()
+
+    expect(listarCategorias().map((categoria) => categoria.nombre)).toEqual([
+      'Cilindros de Gas', 'Reguladores', 'Mangueras y Conexiones', 'Accesorios',
+    ])
+  })
+
+  it('incorpora a la lista la categoría de un producto guardado antes de este módulo', () => {
+    const anterior = listarProductos().map((producto) => (producto.codigo === 'AC002' ? { ...producto, categoria: 'Repuestos' } : producto))
+    localStorage.setItem('gas-el-volcan-productos', JSON.stringify(anterior))
+
+    listarProductos()
+
+    expect(listarCategorias().map((categoria) => categoria.nombre)).toContain('Repuestos')
   })
 
   it('recupera los productos guardados', () => {

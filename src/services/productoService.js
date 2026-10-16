@@ -1,5 +1,9 @@
 import codigosDestacadosIniciales from '../data/destacadosIniciales'
 import productosIniciales from '../data/productosIniciales'
+import { errorDeCampo } from '../utils/errorDeCampo'
+import {
+  actualizarCategoria, asegurarCategorias, existeCategoria, listarCategorias, restaurarCategorias,
+} from './categoriaService'
 
 const CLAVE_PRODUCTOS = 'gas-el-volcan-productos'
 
@@ -77,7 +81,7 @@ function leerProductosGuardados() {
   }
 }
 
-export function listarProductos() {
+function leerCatalogo() {
   const productosGuardados = leerProductosGuardados()
 
   if (productosGuardados === null) {
@@ -113,6 +117,20 @@ export function listarProductos() {
   throw new Error('El catálogo guardado está dañado. No se modificó; administración puede revisarlo o restaurar el catálogo original.')
 }
 
+export function listarProductos() {
+  const productos = leerCatalogo()
+  // Toda categoría usada por un producto debe estar en la lista de categorías.
+  asegurarCategorias(productos.map((producto) => producto.categoria))
+  return productos
+}
+
+// Un producto solo puede pertenecer a una categoría registrada (Guía 16: categorías).
+function comprobarCategoria(producto) {
+  if (!existeCategoria(producto.categoria)) {
+    throw errorDeCampo('categoria', 'Selecciona una categoría existente.')
+  }
+}
+
 export function obtenerProductoPorCodigo(codigo) {
   const codigoBuscado = normalizarCodigo(codigo)
   return listarProductos().find((producto) => producto.codigo === codigoBuscado) ?? null
@@ -121,6 +139,7 @@ export function obtenerProductoPorCodigo(codigo) {
 export function crearProducto(producto) {
   const nuevoProducto = prepararProducto(producto)
   const productos = listarProductos()
+  comprobarCategoria(nuevoProducto)
 
   if (productos.some((item) => item.codigo === nuevoProducto.codigo)) {
     throw new Error(`Ya existe un producto con el código ${nuevoProducto.codigo}`)
@@ -140,6 +159,7 @@ export function actualizarProducto(codigo, cambios) {
   }
 
   const productoActualizado = prepararProducto({ ...productos[indice], ...cambios })
+  comprobarCategoria(productoActualizado)
   const codigoRepetido = productos.some(
     (producto, posicion) => posicion !== indice && producto.codigo === productoActualizado.codigo,
   )
@@ -152,6 +172,23 @@ export function actualizarProducto(codigo, cambios) {
   productosActualizados[indice] = productoActualizado
   guardarProductos(productosActualizados)
   return productoActualizado
+}
+
+// Renombra una categoría y la actualiza en todos sus productos. Si no se pueden guardar
+// los productos, la categoría vuelve a su nombre anterior para no quedar desalineadas.
+export function renombrarCategoria(nombreActual, datos) {
+  const productos = listarProductos()
+  const anterior = listarCategorias().find((categoria) => categoria.nombre === nombreActual)
+  const editada = actualizarCategoria(nombreActual, datos)
+  try {
+    guardarProductos(productos.map((producto) => (
+      producto.categoria === nombreActual ? { ...producto, categoria: editada.nombre } : producto
+    )))
+  } catch (excepcion) {
+    actualizarCategoria(editada.nombre, anterior)
+    throw excepcion
+  }
+  return editada
 }
 
 export function eliminarProducto(codigo) {
@@ -199,6 +236,7 @@ export function devolverStock(lineas) {
 
 export function restaurarProductos() {
   const productos = copiarProductosIniciales()
+  restaurarCategorias()
   guardarProductos(productos)
   return productos
 }

@@ -30,6 +30,7 @@ function prepararNumeros(producto) {
 export default function AdministrarProductos() {
   const {
     productos,
+    categorias,
     crearProducto,
     actualizarProducto,
     eliminarProducto,
@@ -107,6 +108,7 @@ export default function AdministrarProductos() {
         <Col lg={4}>
           <FormularioProducto
             datos={formulario}
+            categorias={categorias}
             estaEditando={estaEditando}
             mensaje={mensaje}
             onChange={cambiarCampo}
