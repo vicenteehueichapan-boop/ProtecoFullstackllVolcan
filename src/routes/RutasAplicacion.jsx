@@ -14,6 +14,8 @@ import Registro from '../pages/Registro'
 import MisPedidos from '../pages/MisPedidos'
 import Blog from '../pages/Blog'
 import DetalleBlog from '../pages/DetalleBlog'
+import Nosotros from '../pages/Nosotros'
+import Contacto from '../pages/Contacto'
 import AdministrarProductos from '../pages/AdministrarProductos'
 import PedidoExitoso from '../pages/PedidoExitoso'
 import SeguimientoPedido from '../pages/SeguimientoPedido'
@@ -36,6 +38,8 @@ export default function RutasAplicacion() {
         <Route path="mis-pedidos" element={<MisPedidos />} />
         <Route path="blog" element={<Blog />} />
         <Route path="blog/:slug" element={<DetalleBlog />} />
+        <Route path="nosotros" element={<Nosotros />} />
+        <Route path="contacto" element={<Contacto />} />
         <Route path="pedido-confirmado/:id" element={<PedidoExitoso />} />
         <Route path="seguimiento" element={<SeguimientoPedido />} />
         <Route path="seguimiento/:id" element={<SeguimientoPedido />} />
