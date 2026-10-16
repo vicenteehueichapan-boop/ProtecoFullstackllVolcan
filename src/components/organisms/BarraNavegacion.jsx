@@ -1,4 +1,4 @@
-import { Container, Nav, Navbar } from 'react-bootstrap'
+import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import { esClicSimple } from '../../utils/esClicSimple'
 
 const ENLACES_PUBLICOS = [
@@ -6,10 +6,15 @@ const ENLACES_PUBLICOS = [
   { ruta: '/catalogo', texto: 'Catálogo' },
   { ruta: '/categorias', texto: 'Categorías' },
   { ruta: '/destacados', texto: 'Destacados' },
+  { ruta: '/seguimiento', texto: 'Seguimiento' },
+]
+
+// Vistas informativas agrupadas en un menú desplegable: con todas sueltas, la barra no
+// cabía en una fila a 1280 px.
+const ENLACES_INFORMACION = [
   { ruta: '/nosotros', texto: 'Nosotros' },
   { ruta: '/blog', texto: 'Blog' },
   { ruta: '/contacto', texto: 'Contacto' },
-  { ruta: '/seguimiento', texto: 'Seguimiento' },
 ]
 
 // Organismo sin router (Guía 14): la plantilla le entrega la ruta actual, la función
@@ -52,6 +57,23 @@ export default function BarraNavegacion({ rutaActual, alNavegar, cliente, alSali
         <Navbar.Collapse id="navegacion-principal">
           <Nav className="ms-auto">
             {ENLACES_PUBLICOS.map(({ ruta, texto }) => enlace(ruta, texto))}
+            <NavDropdown
+              title="Información"
+              id="menu-informacion"
+              active={ENLACES_INFORMACION.some(({ ruta }) => estaActivo(ruta))}
+            >
+              {ENLACES_INFORMACION.map(({ ruta, texto }) => (
+                <NavDropdown.Item
+                  key={ruta}
+                  href={ruta}
+                  onClick={(evento) => seguir(evento, ruta)}
+                  active={estaActivo(ruta)}
+                  aria-current={estaActivo(ruta) ? 'page' : undefined}
+                >
+                  {texto}
+                </NavDropdown.Item>
+              ))}
+            </NavDropdown>
             {cliente ? (
               <>
                 {enlace('/mis-pedidos', 'Mis pedidos')}
