@@ -1,7 +1,15 @@
 import { Col, Container, Row } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import EnlaceInterno from '../atoms/EnlaceInterno'
 
-export default function PiePagina() {
+const ENLACES_PIE = [
+  { ruta: '/catalogo', texto: 'Nuestro catálogo' },
+  { ruta: '/carrito', texto: 'Solicitar gas' },
+  { ruta: '/seguimiento', texto: 'Consultar pedido' },
+  { ruta: '/personal', texto: 'Acceso del personal' },
+]
+
+// Organismo sin router: recibe alNavegar desde la plantilla (Guía 14).
+export default function PiePagina({ alNavegar }) {
   return (
     <footer className="pie-volcan mt-auto">
       <Container>
@@ -12,10 +20,9 @@ export default function PiePagina() {
           </Col>
           <Col md={6}>
             <nav aria-label="Enlaces del pie de página" className="enlaces-pie">
-              <Link to="/catalogo">Nuestro catálogo</Link>
-              <Link to="/carrito">Solicitar gas</Link>
-              <Link to="/seguimiento">Consultar pedido</Link>
-              <Link to="/personal">Acceso del personal</Link>
+              {ENLACES_PIE.map(({ ruta, texto }) => (
+                <EnlaceInterno key={ruta} ruta={ruta} alNavegar={alNavegar}>{texto}</EnlaceInterno>
+              ))}
             </nav>
           </Col>
         </Row>

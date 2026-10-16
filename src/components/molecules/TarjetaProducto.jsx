@@ -1,11 +1,11 @@
 import { Badge, Card } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
 import { formatearPrecio } from '../../utils/formatearPrecio'
 import { precioSegunCliente } from '../../utils/precioSegunCliente'
 import Precio from '../atoms/Precio'
-import BotonAccion from '../atoms/BotonAccion'
+import EnlaceInterno from '../atoms/EnlaceInterno'
 
-export default function TarjetaProducto({ producto, tipoCliente, enlaceDetalle }) {
+// alNavegar llega desde la página: la tarjeta no conoce el router (Guía 14).
+export default function TarjetaProducto({ producto, tipoCliente, enlaceDetalle, alNavegar }) {
   const precio = precioSegunCliente(producto, tipoCliente)
   const stockBajo = producto.stock <= 10
 
@@ -26,9 +26,14 @@ export default function TarjetaProducto({ producto, tipoCliente, enlaceDetalle }
           {producto.stock === 0 ? 'Sin stock disponible' : stockBajo ? `Últimas ${producto.stock} unidades` : `Stock: ${producto.stock}`}
         </Badge>
         {enlaceDetalle && (
-          <BotonAccion as={Link} className="mt-3" variante="outline-danger" to={enlaceDetalle} aria-label={`Ver detalle de ${producto.nombre}`}>
+          <EnlaceInterno
+            ruta={enlaceDetalle}
+            alNavegar={alNavegar}
+            className="btn btn-outline-danger mt-3"
+            aria-label={`Ver detalle de ${producto.nombre}`}
+          >
             Ver detalle
-          </BotonAccion>
+          </EnlaceInterno>
         )}
       </Card.Body>
     </Card>

@@ -1,16 +1,16 @@
-import { Alert, Button, Card, Col, Container, Row } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import EtiquetaEstadoPedido from '../components/atoms/EtiquetaEstadoPedido'
+import { Alert, Col, Container, Row } from 'react-bootstrap'
+import { Link, useNavigate } from 'react-router-dom'
+import TarjetaPedido from '../components/molecules/TarjetaPedido'
 import { usePedidos } from '../hooks/usePedidos'
 import { useSesionCliente } from '../hooks/useSesionCliente'
 import { useTituloPagina } from '../hooks/useTituloPagina'
-import { formatearPrecio } from '../utils/formatearPrecio'
 
 // Historial del cliente con sesión: solo sus pedidos, del más reciente al más antiguo.
 export default function MisPedidos() {
   useTituloPagina('Mis pedidos')
   const { cliente } = useSesionCliente()
   const { pedidos } = usePedidos()
+  const navegar = useNavigate()
 
   if (!cliente) {
     return (
@@ -24,6 +24,7 @@ export default function MisPedidos() {
     )
   }
 
+  // Se calcula durante el renderizado (sin useEffect): es un dato derivado de pedidos.
   const propios = pedidos
     .filter((pedido) => pedido.clienteId === cliente.id)
     .sort((a, b) => b.fechaCreacion.localeCompare(a.fechaCreacion))
@@ -40,20 +41,7 @@ export default function MisPedidos() {
         <Row className="g-3">
           {propios.map((pedido) => (
             <Col md={6} key={pedido.id}>
-              <Card className="h-100 shadow-sm">
-                <Card.Body>
-                  <div className="d-flex justify-content-between gap-2 mb-2">
-                    <Card.Title as="h2" className="h5 mb-0">Pedido {pedido.id}</Card.Title>
-                    <EtiquetaEstadoPedido estado={pedido.estado} />
-                  </div>
-                  <p className="mb-1">{new Date(pedido.fechaCreacion).toLocaleString('es-CL')}</p>
-                  <p className="mb-1">{pedido.productos.map((linea) => `${linea.nombre} × ${linea.cantidad}`).join(', ')}</p>
-                  <p className="fw-bold">Total: {formatearPrecio(pedido.total)}</p>
-                  <Button as={Link} to={`/seguimiento/${pedido.id}`} size="sm" variant="outline-danger">
-                    Ver seguimiento de {pedido.id}
-                  </Button>
-                </Card.Body>
-              </Card>
+              <TarjetaPedido pedido={pedido} alNavegar={navegar} />
             </Col>
           ))}
         </Row>
