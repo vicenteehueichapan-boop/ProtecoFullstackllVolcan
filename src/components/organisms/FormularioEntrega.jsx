@@ -6,8 +6,9 @@ import { validarEntrega } from '../../utils/validarEntrega'
 
 const ENTREGA_VACIA = { nombre: '', apellidos: '', correo: '', direccion: '', zonaId: '' }
 
-export default function FormularioEntrega({ zonas, alPreparar }) {
-  const [datos, setDatos] = useState(ENTREGA_VACIA)
+// datosIniciales (opcional) llega desde la página cuando hay una cuenta con sesión.
+export default function FormularioEntrega({ zonas, alPreparar, datosIniciales }) {
+  const [datos, setDatos] = useState(() => ({ ...ENTREGA_VACIA, ...datosIniciales }))
   const [errores, setErrores] = useState({})
 
   function cambiar(campo, valor) {

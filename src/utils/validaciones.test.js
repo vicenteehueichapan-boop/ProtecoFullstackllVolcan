@@ -25,13 +25,14 @@ describe('validaciones puras de formularios', () => {
 
   it('valida el registro sin modificar el objeto recibido', () => {
     const datos = Object.freeze({
-      nombre: 'Ana Pérez', run: '123456785', correo: 'ana@ejemplo.cl',
+      nombre: 'Ana', apellidos: 'Pérez', run: '123456785', correo: 'ana@ejemplo.cl',
       clave: '123456', confirmarClave: '123456',
     })
     expect(validarRegistro(datos)).toEqual({})
-    expect(validarRegistro({ ...datos, nombre: ' ', run: '12.345.678-5', confirmarClave: '' }))
+    expect(validarRegistro({ ...datos, nombre: ' ', apellidos: 'P', run: '12.345.678-5', confirmarClave: '' }))
       .toMatchObject({
-        nombre: 'Ingresa tu nombre completo.',
+        nombre: 'Ingresa tu nombre.',
+        apellidos: 'Ingresa tus apellidos.',
         run: 'Ingresa el RUN sin puntos ni guion.',
         confirmarClave: 'Las contraseñas deben coincidir.',
       })

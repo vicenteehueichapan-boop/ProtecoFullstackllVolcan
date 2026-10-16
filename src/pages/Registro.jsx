@@ -1,7 +1,27 @@
-import { Card, Col, Container, Row } from 'react-bootstrap'
+import { useState } from 'react'
+import { Alert, Card, Col, Container, Row } from 'react-bootstrap'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import FormularioRegistro from '../components/organisms/FormularioRegistro'
+import { useSesionCliente } from '../hooks/useSesionCliente'
+import { useTituloPagina } from '../hooks/useTituloPagina'
 
 export default function Registro() {
+  useTituloPagina('Crear cuenta')
+  const { registrar } = useSesionCliente()
+  const navegar = useNavigate()
+  const { state } = useLocation()
+  const [error, setError] = useState('')
+
+  // El formulario ya validó los datos; aquí se guarda la cuenta y se decide adónde ir.
+  function crearCuenta(datos) {
+    try {
+      registrar(datos)
+      navegar(state?.desde ?? '/catalogo', { replace: true })
+    } catch (excepcion) {
+      setError(excepcion.message)
+    }
+  }
+
   return (
     <Container className="py-5">
       <Row className="justify-content-center">
@@ -10,9 +30,13 @@ export default function Registro() {
             <Card.Body className="p-4">
               <h1 className="h3 mb-3">Crear cuenta</h1>
               <p className="text-secondary">
-                Los datos se validan en React y no se envían a un servidor durante EP2.
+                Con tu cuenta, la entrega se completa sola y puedes revisar tus pedidos.
+                Es una cuenta de demostración guardada en este navegador: la contraseña solo
+                se valida, no se guarda. No uses una contraseña real.
               </p>
-              <FormularioRegistro />
+              {error && <Alert variant="danger">{error}</Alert>}
+              <FormularioRegistro alRegistrar={crearCuenta} />
+              <p className="mt-3 mb-0">¿Ya tienes cuenta? <Link to="/ingreso" state={state}>Ingresa aquí</Link></p>
             </Card.Body>
           </Card>
         </Col>

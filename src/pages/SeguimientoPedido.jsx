@@ -1,8 +1,10 @@
 import { Alert, Card, Col, Container, ListGroup, Row } from 'react-bootstrap'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import EtiquetaEstadoPedido from '../components/atoms/EtiquetaEstadoPedido'
 import BuscadorPedido from '../components/molecules/BuscadorPedido'
 import { usePedidos } from '../hooks/usePedidos'
+import { useSesionCliente } from '../hooks/useSesionCliente'
+import { puedeVerPedido } from '../utils/puedeVerPedido'
 
 const PASOS = [
   { valor: 'pendiente', texto: 'Pedido recibido' },
@@ -13,13 +15,18 @@ const PASOS = [
 
 export default function SeguimientoPedido() {
   const { id } = useParams()
+  const { state } = useLocation()
   const navegar = useNavigate()
   const { pedidos } = usePedidos()
-  const pedido = id ? pedidos.find((item) => item.id === id) : null
+  const { cliente } = useSesionCliente()
+  // El correo viaja en el estado del historial, nunca en la dirección (URL).
+  const correo = state?.correo ?? ''
+  const encontrado = id ? pedidos.find((item) => item.id === id) : null
+  const pedido = puedeVerPedido(encontrado, { cliente, correo }) ? encontrado : null
   const indiceActual = pedido ? PASOS.findIndex((paso) => paso.valor === pedido.estado) : -1
 
-  function buscar(identificador) {
-    navegar(`/seguimiento/${encodeURIComponent(identificador)}`)
+  function buscar({ identificador, correo: correoBuscado }) {
+    navegar(`/seguimiento/${encodeURIComponent(identificador)}`, { state: { correo: correoBuscado } })
   }
 
   return (
@@ -27,11 +34,22 @@ export default function SeguimientoPedido() {
       <Row className="justify-content-center">
         <Col lg={8}>
           <h1>Seguimiento del pedido</h1>
-          {/* La clave reinicia solo el buscador cuando cambia el pedido de la ruta. */}
-          <BuscadorPedido key={id ?? ''} identificadorInicial={id ?? ''} alBuscar={buscar} />
+          <p className="text-secondary mb-0">
+            Escribe el número y el correo que usaste al pedir. Si ingresaste con tu cuenta, basta el número.
+          </p>
+          {/* La clave reinicia el buscador cuando cambia el pedido de la ruta. */}
+          <BuscadorPedido
+            key={`${id ?? ''}|${correo}`}
+            identificadorInicial={id ?? ''}
+            correoInicial={correo || cliente?.correo || ''}
+            alBuscar={buscar}
+          />
 
+          {/* El mismo aviso para "no existe" y "correo distinto": no revela qué pedidos existen. */}
           {id && !pedido && (
-            <Alert variant="warning">No encontramos un pedido con el número {id}.</Alert>
+            <Alert variant="warning">
+              No encontramos un pedido {id} asociado a ese correo o a tu cuenta.
+            </Alert>
           )}
 
           {pedido && (

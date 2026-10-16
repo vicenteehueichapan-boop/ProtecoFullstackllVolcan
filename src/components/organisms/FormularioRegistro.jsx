@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Alert, Form } from 'react-bootstrap'
+import { Col, Form, Row } from 'react-bootstrap'
 import BotonAccion from '../atoms/BotonAccion'
 import CampoFormulario from '../molecules/CampoFormulario'
 import { validarRegistro } from '../../utils/validaciones'
 
 const datosVacios = {
   nombre: '',
+  apellidos: '',
   run: '',
   correo: '',
   clave: '',
@@ -13,14 +14,14 @@ const datosVacios = {
   tipoCliente: 'residencial',
 }
 
-export default function FormularioRegistro() {
+// El formulario es dueño de los campos y de sus errores. Solo avisa a la página
+// (alRegistrar) cuando todo es válido; la página decide qué pasa después.
+export default function FormularioRegistro({ alRegistrar }) {
   const [datos, setDatos] = useState(datosVacios)
   const [errores, setErrores] = useState({})
-  const [registrado, setRegistrado] = useState(false)
 
   function cambiar(campo, valor) {
     setDatos((actuales) => ({ ...actuales, [campo]: valor }))
-    setRegistrado(false)
     // Si ya se intentó enviar, actualiza las indicaciones mientras se corrige.
     if (Object.keys(errores).length > 0) {
       setErrores(validarRegistro({ ...datos, [campo]: valor }))
@@ -31,24 +32,37 @@ export default function FormularioRegistro() {
     evento.preventDefault()
     const nuevosErrores = validarRegistro(datos)
     setErrores(nuevosErrores)
-    setRegistrado(Object.keys(nuevosErrores).length === 0)
+    if (Object.keys(nuevosErrores).length === 0) {
+      // La contraseña no se entrega: en EP2 solo se valida su formato.
+      const { nombre, apellidos, run, correo, tipoCliente } = datos
+      alRegistrar({ nombre, apellidos, run, correo, tipoCliente })
+    }
   }
 
   return (
     <Form noValidate onSubmit={manejarEnvio}>
-      {registrado && (
-        <Alert variant="success">
-          Datos válidos. El registro real se conectará al backend en una etapa posterior.
-        </Alert>
-      )}
-      <CampoFormulario
-        identificador="nombre-registro"
-        etiqueta="Nombre completo"
-        value={datos.nombre}
-        onChange={(evento) => cambiar('nombre', evento.target.value)}
-        error={errores.nombre}
-        autoComplete="name"
-      />
+      <Row className="gx-md-3">
+        <Col md={6}>
+          <CampoFormulario
+            identificador="nombre-registro"
+            etiqueta="Nombre"
+            value={datos.nombre}
+            onChange={(evento) => cambiar('nombre', evento.target.value)}
+            error={errores.nombre}
+            autoComplete="given-name"
+          />
+        </Col>
+        <Col md={6}>
+          <CampoFormulario
+            identificador="apellidos-registro"
+            etiqueta="Apellidos"
+            value={datos.apellidos}
+            onChange={(evento) => cambiar('apellidos', evento.target.value)}
+            error={errores.apellidos}
+            autoComplete="family-name"
+          />
+        </Col>
+      </Row>
       <CampoFormulario
         identificador="run-registro"
         etiqueta="RUN sin puntos ni guion"
