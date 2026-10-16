@@ -1,21 +1,14 @@
-import personalDemostracion from '../data/personalDemostracion'
 import zonasDespacho from '../data/zonasDespacho'
+import { errorDeCampo } from '../utils/errorDeCampo'
 import { validarCorreo } from '../utils/validaciones'
+import { listarPersonal } from './personalService'
 
 // Cuentas de clientes simuladas para EP2. La contraseña NO se guarda ni se compara:
 // el correo identifica la cuenta, igual que en el acceso del personal. No es seguridad real;
 // la autenticación con servidor corresponde a la Evaluación Parcial 3.
 const CLAVE_CLIENTES = 'gas-el-volcan-clientes'
 const CLAVE_SESION = 'gas-el-volcan-sesion-cliente'
-const CAMPOS_EDITABLES = ['nombre', 'apellidos', 'tipoCliente', 'direccion', 'zonaId']
-
-// Error que indica a qué campo del formulario corresponde, para que la página
-// pueda mostrarlo junto a ese campo (Guía 14) y no en un aviso general.
-function errorDeCampo(campo, mensaje) {
-  const error = new Error(mensaje)
-  error.campo = campo
-  return error
-}
+const CAMPOS_EDITABLES = ['nombre', 'apellidos', 'tipoCliente', 'direccion', 'zonaId', 'activo']
 
 function normalizarCorreo(correo) {
   return String(correo ?? '').trim().toLowerCase()
@@ -40,6 +33,9 @@ function validarCliente(cliente) {
   if (cliente.zonaId !== '' && !zonasDespacho.some((zona) => zona.id === cliente.zonaId)) {
     throw errorDeCampo('zonaId', 'La zona de despacho no es válida.')
   }
+  if (cliente.activo !== undefined && typeof cliente.activo !== 'boolean') {
+    throw errorDeCampo('activo', 'El estado de la cuenta no es válido.')
+  }
 }
 
 function guardarClientes(clientes) {
@@ -59,7 +55,10 @@ export function listarClientes() {
       })
       const ids = new Set(clientes.map((cliente) => cliente.id))
       const correos = new Set(clientes.map((cliente) => cliente.correo))
-      if (ids.size === clientes.length && correos.size === clientes.length) return clientes
+      // Las cuentas creadas antes de existir el estado activo se consideran activas.
+      if (ids.size === clientes.length && correos.size === clientes.length) {
+        return clientes.map((cliente) => ({ ...cliente, activo: cliente.activo !== false }))
+      }
     }
   } catch {
     // El mensaje de abajo explica el problema; los datos dañados no se tocan.
@@ -81,10 +80,12 @@ export function registrarCliente(datos) {
     tipoCliente: datos?.tipoCliente,
     direccion: '',
     zonaId: '',
+    activo: true,
   }
   validarCliente(cliente)
 
-  if (personalDemostracion.some((perfil) => perfil.correo === cliente.correo)) {
+  // Un comprador no puede usar el correo de un perfil del personal (ni obtener su rol).
+  if (listarPersonal().some((perfil) => perfil.correo === cliente.correo)) {
     throw errorDeCampo('correo', 'Ese correo está reservado para el personal. Usa tu correo personal.')
   }
   const clientes = listarClientes()
@@ -120,6 +121,7 @@ export function actualizarCliente(id, cambios) {
 export function iniciarSesionCliente(correo) {
   const cliente = listarClientes().find((item) => item.correo === normalizarCorreo(correo))
   if (!cliente) throw errorDeCampo('correo', 'No existe una cuenta con ese correo. Revisa el dato o regístrate.')
+  if (!cliente.activo) throw errorDeCampo('correo', 'Esta cuenta está desactivada. Escríbenos desde Contacto para revisarla.')
   localStorage.setItem(CLAVE_SESION, cliente.id)
   return { ...cliente }
 }
@@ -127,7 +129,10 @@ export function iniciarSesionCliente(correo) {
 // Solo se guarda el identificador de la cuenta, nunca una contraseña ni un token.
 export function leerSesionCliente() {
   const id = leerTexto(CLAVE_SESION)
-  return id === null ? null : obtenerCliente(id)
+  if (id === null) return null
+  const cliente = obtenerCliente(id)
+  // Si administración desactivó la cuenta, la sesión deja de valer.
+  return cliente?.activo ? cliente : null
 }
 
 export function cerrarSesionCliente() {

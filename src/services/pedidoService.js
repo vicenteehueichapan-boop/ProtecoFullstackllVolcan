@@ -1,8 +1,8 @@
 import pedidosIniciales from '../data/pedidosIniciales'
-import repartidores from '../data/repartidores'
 import zonasDespacho from '../data/zonasDespacho'
 import { precioSegunCliente } from '../utils/precioSegunCliente'
 import { descontarStock, devolverStock, listarProductos } from './productoService'
+import { listarPersonal } from './personalService'
 
 const CLAVE_PEDIDOS = 'gas-el-volcan-pedidos'
 
@@ -94,6 +94,10 @@ function validarPedidoGuardado(pedido) {
       : typeof pedido.repartidor !== 'string' || pedido.repartidor.trim() === '')) {
     throw new Error('El pedido guardado tiene una estructura incorrecta')
   }
+  // Los pedidos asignados antes de guardar el identificador del repartidor no lo tienen.
+  if (pedido.repartidorId !== undefined && (typeof pedido.repartidorId !== 'string' || pedido.repartidorId === '')) {
+    throw new Error('El repartidor del pedido guardado no es válido')
+  }
   // Los pedidos entregados antes de registrar cobros no tienen este dato: es opcional.
   if (pedido.cobro !== undefined
     && (!Number.isFinite(pedido.cobro?.monto) || !Number.isFinite(Date.parse(pedido.cobro?.fecha)))) {
@@ -180,14 +184,18 @@ export function crearPedido(datosPedido) {
   return copiarPedidos(pedido)
 }
 
-export function asignarRepartidor(id, repartidor) {
-  const nombreRepartidor = String(repartidor ?? '').trim()
+export function asignarRepartidor(id, repartidorId) {
+  const idRepartidor = String(repartidorId ?? '').trim()
 
-  if (nombreRepartidor === '') {
+  if (idRepartidor === '') {
     throw new Error('Se debe indicar un repartidor')
   }
 
-  if (!repartidores.some((disponible) => disponible.nombre === nombreRepartidor)) {
+  // Solo un perfil activo con rol repartidor puede recibir pedidos.
+  const repartidor = listarPersonal().find(
+    (perfil) => perfil.id === idRepartidor && perfil.rol === 'repartidor' && perfil.activo,
+  )
+  if (!repartidor) {
     throw new Error('El repartidor seleccionado no está disponible')
   }
 
@@ -196,9 +204,12 @@ export function asignarRepartidor(id, repartidor) {
       throw new Error('Solo se puede asignar un repartidor a un pedido pendiente')
     }
 
+    // Se guarda el identificador (para filtrar sus entregas) y el nombre de ese momento,
+    // como registro de quién recibió el pedido aunque después cambie su perfil.
     return {
       ...pedido,
-      repartidor: nombreRepartidor,
+      repartidorId: repartidor.id,
+      repartidor: repartidor.nombre,
       estado: ESTADOS_PEDIDO.ASIGNADO,
       fechaActualizacion: new Date().toISOString(),
     }

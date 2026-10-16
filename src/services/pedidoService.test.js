@@ -10,6 +10,7 @@ import {
   obtenerPedidoPorId,
   restaurarPedidos,
 } from './pedidoService'
+import { actualizarPersonal } from './personalService'
 
 describe('pedidoService', () => {
   beforeEach(() => {
@@ -63,9 +64,10 @@ describe('pedidoService', () => {
 
   it('asigna un repartidor y cambia el pedido a asignado', () => {
     const pedido = crearPedido(datosPedido)
-    const actualizado = asignarRepartidor(pedido.id, 'Repartidor 1')
+    const actualizado = asignarRepartidor(pedido.id, 'repartidor-1')
 
     expect(actualizado).toMatchObject({
+      repartidorId: 'repartidor-1',
       repartidor: 'Repartidor 1',
       estado: ESTADOS_PEDIDO.ASIGNADO,
     })
@@ -73,7 +75,7 @@ describe('pedidoService', () => {
 
   it('avanza respetando la secuencia completa de estados', () => {
     const pedido = crearPedido(datosPedido)
-    asignarRepartidor(pedido.id, 'Repartidor 1')
+    asignarRepartidor(pedido.id, 'repartidor-1')
 
     expect(cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.EN_CAMINO).estado)
       .toBe(ESTADOS_PEDIDO.EN_CAMINO)
@@ -100,7 +102,7 @@ describe('pedidoService', () => {
 
   it('registra el cobro en efectivo al marcar el pedido como entregado', () => {
     const pedido = crearPedido(datosPedido)
-    asignarRepartidor(pedido.id, 'Repartidor 1')
+    asignarRepartidor(pedido.id, 'repartidor-1')
     expect(cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.EN_CAMINO).cobro).toBeUndefined()
 
     const entregado = cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.ENTREGADO)
@@ -110,12 +112,19 @@ describe('pedidoService', () => {
 
   it('sigue leyendo pedidos entregados antes de registrar cobros', () => {
     const pedido = crearPedido(datosPedido)
-    asignarRepartidor(pedido.id, 'Repartidor 1')
+    asignarRepartidor(pedido.id, 'repartidor-1')
     cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.EN_CAMINO)
     const { cobro: _cobro, ...anterior } = cambiarEstadoPedido(pedido.id, ESTADOS_PEDIDO.ENTREGADO)
     localStorage.setItem('gas-el-volcan-pedidos', JSON.stringify([anterior]))
 
     expect(listarPedidos()[0].cobro).toBeUndefined()
+  })
+
+  it('no asigna a un repartidor desactivado por administración', () => {
+    const pedido = crearPedido(datosPedido)
+    actualizarPersonal('repartidor-2', { activo: false })
+
+    expect(() => asignarRepartidor(pedido.id, 'repartidor-2')).toThrow('no está disponible')
   })
 
   it('rechaza saltos o retrocesos en la secuencia de estados', () => {
@@ -125,13 +134,14 @@ describe('pedidoService', () => {
       .toThrow('El cambio de estado no respeta la secuencia del pedido')
   })
 
-  it.each(['Repartidor 1', 'Repartidor 2', 'Repartidor 3'])('permite asignar a %s y conserva la asignación', (nombre) => {
+  it.each([1, 2, 3])('permite asignar al repartidor %i y conserva la asignación', (numero) => {
     const pedido = crearPedido(datosPedido)
 
-    asignarRepartidor(pedido.id, nombre)
+    asignarRepartidor(pedido.id, `repartidor-${numero}`)
 
     expect(obtenerPedidoPorId(pedido.id)).toMatchObject({
-      repartidor: nombre,
+      repartidorId: `repartidor-${numero}`,
+      repartidor: `Repartidor ${numero}`,
       estado: ESTADOS_PEDIDO.ASIGNADO,
     })
   })
@@ -140,8 +150,8 @@ describe('pedidoService', () => {
     ['', 'Se debe indicar un repartidor'],
     ['   ', 'Se debe indicar un repartidor'],
     [null, 'Se debe indicar un repartidor'],
-    ['Carlos Soto', 'El repartidor seleccionado no está disponible'],
-    ['Repartidor 99', 'El repartidor seleccionado no está disponible'],
+    ['repartidor-99', 'El repartidor seleccionado no está disponible'],
+    ['operadora-demo', 'El repartidor seleccionado no está disponible'],
   ])('rechaza repartidor inválido %j sin modificar el pedido', (nombre, mensaje) => {
     const pedido = crearPedido(datosPedido)
     const almacenamientoAnterior = localStorage.getItem('gas-el-volcan-pedidos')
@@ -242,7 +252,7 @@ describe('pedidoService', () => {
   })
 
   it('informa cuando se intenta modificar un pedido inexistente', () => {
-    expect(() => asignarRepartidor('PED-9999', 'Repartidor 1'))
+    expect(() => asignarRepartidor('PED-9999', 'repartidor-1'))
       .toThrow('No se encontró el pedido solicitado')
   })
 })

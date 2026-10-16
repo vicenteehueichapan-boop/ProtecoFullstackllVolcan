@@ -5,6 +5,7 @@ import RutasAplicacion from './routes/RutasAplicacion'
 import { CarritoProvider } from './context/CarritoContext'
 import { SesionPersonalProvider } from './context/SesionPersonalContext'
 import { SesionClienteProvider } from './context/SesionClienteContext'
+import { UsuariosProvider } from './context/UsuariosContext'
 
 function App() {
   return (
@@ -12,9 +13,11 @@ function App() {
       <ProductosProvider>
         <PedidosProvider>
           <CarritoProvider>
-            <SesionClienteProvider>
-              <SesionPersonalProvider><RutasAplicacion /></SesionPersonalProvider>
-            </SesionClienteProvider>
+            <UsuariosProvider>
+              <SesionClienteProvider>
+                <SesionPersonalProvider><RutasAplicacion /></SesionPersonalProvider>
+              </SesionClienteProvider>
+            </UsuariosProvider>
           </CarritoProvider>
         </PedidosProvider>
       </ProductosProvider>

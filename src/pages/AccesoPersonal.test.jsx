@@ -23,7 +23,7 @@ describe('separación entre tienda y personal', () => {
     const usuario = userEvent.setup()
     render(<App />)
     await ingresarPersonalEnPrueba(usuario, 'cliente@ejemplo.cl')
-    expect(screen.getByText('El correo no corresponde a un perfil de demostración del personal.')).toBeInTheDocument()
+    expect(screen.getByText('El correo no corresponde a un perfil del personal.')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Entrar a/ })).not.toBeInTheDocument()
   })
 

@@ -40,7 +40,11 @@ export default function ListaPedidosDelDia({
                 {pedido.cliente.nombre}
                 <div className="small text-secondary">{pedido.cliente.direccion}</div>
               </td>
-              <td>{pedido.productos[0]?.nombre} × {pedido.productos[0]?.cantidad}</td>
+              <td>
+                <ul className="list-unstyled mb-0">
+                  {pedido.productos.map((linea) => <li key={linea.codigo}>{linea.nombre} × {linea.cantidad}</li>)}
+                </ul>
+              </td>
               <td><EtiquetaEstadoPedido estado={pedido.estado} /></td>
               <td style={{ minWidth: '220px' }}>
                 {pedido.estado === 'pendiente' ? (
@@ -52,7 +56,7 @@ export default function ListaPedidosDelDia({
                     >
                       <option value="">Seleccionar</option>
                       {repartidores.map((repartidor) => (
-                        <option key={repartidor.id} value={repartidor.nombre}>
+                        <option key={repartidor.id} value={repartidor.id}>
                           {repartidor.nombre}
                         </option>
                       ))}

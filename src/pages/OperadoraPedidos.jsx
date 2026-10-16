@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Alert, Container } from 'react-bootstrap'
 import ListaPedidosDelDia from '../components/organisms/ListaPedidosDelDia'
-import repartidores from '../data/repartidores'
 import { usePedidos } from '../hooks/usePedidos'
+import { useUsuarios } from '../hooks/useUsuarios'
 
 function correspondeAHoy(fecha) {
   const fechaPedido = new Date(fecha)
@@ -12,6 +12,9 @@ function correspondeAHoy(fecha) {
 
 export default function OperadoraPedidos() {
   const { pedidos, asignarRepartidor } = usePedidos()
+  const { personal } = useUsuarios()
+  // Solo los repartidores activos pueden recibir pedidos.
+  const repartidores = personal.filter((perfil) => perfil.rol === 'repartidor' && perfil.activo)
   const [selecciones, setSelecciones] = useState({})
   const [mensaje, setMensaje] = useState(null)
   const pedidosDelDia = useMemo(
