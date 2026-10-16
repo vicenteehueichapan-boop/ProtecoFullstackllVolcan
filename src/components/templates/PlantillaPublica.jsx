@@ -1,3 +1,4 @@
+import { Container } from 'react-bootstrap'
 import { Outlet, useNavigate } from 'react-router-dom'
 import BarraNavegacion from '../organisms/BarraNavegacion'
 import PiePagina from '../organisms/PiePagina'
@@ -22,7 +23,9 @@ export default function PlantillaPublica() {
       <a href="#contenido-principal" className="saltar-contenido">Saltar al contenido</a>
       <BarraNavegacion cliente={cliente} alSalir={cerrarSesion} />
       <main id="contenido-principal" className="flex-grow-1" tabIndex={-1}>
-        <AvisoAlmacenamiento errores={[errorProductos, errorPedidos, errorClientes]} />
+        <Container>
+          <AvisoAlmacenamiento errores={[errorProductos, errorPedidos, errorClientes]} />
+        </Container>
         <Outlet />
       </main>
       <PiePagina />
