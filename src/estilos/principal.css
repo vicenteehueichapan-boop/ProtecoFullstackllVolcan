@@ -194,3 +194,16 @@ a:focus-visible, button:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+/* Panel de administración: menú lateral desde lg y en filas en pantallas chicas. */
+.menu-administracion { position: sticky; top: 1rem; background: #ffffff; border: 1px solid var(--volcan-borde); border-radius: var(--volcan-radio); padding: 0.6rem; flex-wrap: wrap; }
+.menu-administracion .nav-link { color: var(--volcan-texto); font-size: 0.92rem; border-radius: 0.6rem; }
+.menu-administracion .nav-link.active { background: var(--volcan-acento); color: #ffffff; }
+.tarjeta-indicador .valor-indicador { color: var(--volcan-tinta); font-size: 1.9rem; font-weight: 750; line-height: 1.1; }
+@media (max-width: 991.98px) {
+  .menu-administracion { position: static; }
+}
+
+/* Los textos visually-hidden usan posición absoluta: sin esto escapan del contenedor
+   desplazable de la tabla y ensanchan la página en móviles. */
+.table-responsive { position: relative; }

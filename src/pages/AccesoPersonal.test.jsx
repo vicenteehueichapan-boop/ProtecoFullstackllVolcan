@@ -84,7 +84,7 @@ describe('separación entre tienda y personal', () => {
   })
 
   it.each([
-    ['Administración', 'Administración de productos', 'administracion@ejemplo.cl'],
+    ['Administración', 'Panel de administración', 'administracion@ejemplo.cl'],
     ['Operadora', 'Pedidos del día', 'operadora@ejemplo.cl'],
     ['Repartidor', 'Mis entregas', 'repartidor1@ejemplo.cl'],
   ])('abre el área %s con la plantilla del personal', async (area, titulo, correo) => {

@@ -5,7 +5,7 @@ import { useSesionPersonal } from '../hooks/useSesionPersonal'
 import personalDemostracion from '../data/personalDemostracion'
 
 const areasPersonal = [
-  { rol: 'administracion', nombre: 'Administración', descripcion: 'Mantener los productos, sus tarifas y disponibilidad.', ruta: '/administracion/productos' },
+  { rol: 'administracion', nombre: 'Administración', descripcion: 'Panel con pedidos, catálogo, categorías, usuarios, reportes y perfil.', ruta: '/administracion' },
   { rol: 'operadora', nombre: 'Operadora', descripcion: 'Revisar los pedidos del día y asignar un repartidor.', ruta: '/operadora/pedidos' },
   { rol: 'repartidor', nombre: 'Repartidor', descripcion: 'Consultar mis entregas asignadas y actualizar su avance.', ruta: '/repartidor/entregas' },
 ]

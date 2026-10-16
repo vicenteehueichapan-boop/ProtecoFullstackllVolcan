@@ -1,13 +1,14 @@
 import { Badge, Card } from 'react-bootstrap'
 import { formatearPrecio } from '../../utils/formatearPrecio'
 import { precioSegunCliente } from '../../utils/precioSegunCliente'
+import { esStockCritico } from '../../utils/stockCritico'
 import Precio from '../atoms/Precio'
 import EnlaceInterno from '../atoms/EnlaceInterno'
 
 // alNavegar llega desde la página: la tarjeta no conoce el router (Guía 14).
 export default function TarjetaProducto({ producto, tipoCliente, enlaceDetalle, alNavegar }) {
   const precio = precioSegunCliente(producto, tipoCliente)
-  const stockBajo = producto.stock <= 10
+  const stockBajo = esStockCritico(producto)
 
   return (
     <Card as="article" className="h-100 tarjeta-producto">
