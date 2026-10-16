@@ -103,3 +103,21 @@ describe('recorrido completo de un pedido', () => {
     expect(JSON.parse(localStorage.getItem('gas-el-volcan-pedidos'))[0].total).toBe(7000)
   })
 })
+
+describe('datos guardados dañados', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    window.history.replaceState({}, '', '/')
+  })
+
+  it('muestra un aviso en la tienda en vez de dejar la página en blanco', () => {
+    localStorage.setItem('gas-el-volcan-pedidos', '[{"id":"PED-0001"}]')
+    localStorage.setItem('gas-el-volcan-productos', '{')
+    render(<App />)
+
+    const aviso = screen.getByText('No pudimos leer algunos datos guardados en este navegador.').closest('[role="alert"]')
+    expect(aviso).toHaveTextContent('El catálogo guardado está dañado')
+    expect(aviso).toHaveTextContent('Los pedidos guardados están dañados')
+    expect(localStorage.getItem('gas-el-volcan-pedidos')).toBe('[{"id":"PED-0001"}]')
+  })
+})

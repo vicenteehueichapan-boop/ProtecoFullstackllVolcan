@@ -9,13 +9,24 @@ import {
 } from '../services/productoService'
 import { ProductosContext } from './productosContextoBase'
 
+// Si el catálogo guardado está dañado, la tienda sigue abierta con un aviso
+// y los datos quedan intactos hasta que administración los restaure.
+function leerCatalogo() {
+  try {
+    return { productos: listarProductos(), error: '' }
+  } catch (excepcion) {
+    return { productos: [], error: excepcion.message }
+  }
+}
+
 export function ProductosProvider({ children }) {
-  const [productos, setProductos] = useState(() => listarProductos())
+  const [catalogo, setCatalogo] = useState(leerCatalogo)
+  const { productos, error: errorProductos } = catalogo
 
   const recargarProductos = useCallback(() => {
-    const productosGuardados = listarProductos()
-    setProductos(productosGuardados)
-    return productosGuardados
+    const lectura = leerCatalogo()
+    setCatalogo(lectura)
+    return lectura.productos
   }, [])
 
   const crearProducto = useCallback(
@@ -47,19 +58,20 @@ export function ProductosProvider({ children }) {
 
   const restaurarProductos = useCallback(() => {
     const productosRestaurados = restaurarProductosEnServicio()
-    setProductos(productosRestaurados)
+    setCatalogo({ productos: productosRestaurados, error: '' })
     return productosRestaurados
   }, [])
 
   const incorporarProductosDelCaso = useCallback(() => {
     const completos = incorporarEnServicio()
-    setProductos(completos)
+    setCatalogo({ productos: completos, error: '' })
     return completos
   }, [])
 
   const valorContexto = useMemo(
     () => ({
       productos,
+      errorProductos,
       crearProducto,
       actualizarProducto,
       eliminarProducto,
@@ -69,6 +81,7 @@ export function ProductosProvider({ children }) {
     }),
     [
       productos,
+      errorProductos,
       crearProducto,
       actualizarProducto,
       eliminarProducto,

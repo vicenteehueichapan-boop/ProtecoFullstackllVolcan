@@ -108,8 +108,16 @@ function validarCatalogoVigente(datosPedido) {
   }
 }
 
+function leerPedidosGuardados() {
+  try {
+    return localStorage.getItem(CLAVE_PEDIDOS)
+  } catch {
+    throw new Error('No se pudo leer el almacenamiento del navegador. Revisa sus permisos y vuelve a intentarlo.')
+  }
+}
+
 export function listarPedidos() {
-  const pedidosGuardados = localStorage.getItem(CLAVE_PEDIDOS)
+  const pedidosGuardados = leerPedidosGuardados()
 
   if (pedidosGuardados === null) {
     return restaurarPedidos()
@@ -120,16 +128,16 @@ export function listarPedidos() {
 
     if (Array.isArray(pedidos)) {
       pedidos.forEach(validarPedidoGuardado)
-      if (new Set(pedidos.map((pedido) => pedido.id)).size !== pedidos.length) {
-        throw new Error('Hay identificadores de pedido repetidos')
+      if (new Set(pedidos.map((pedido) => pedido.id)).size === pedidos.length) {
+        return copiarPedidos(pedidos)
       }
-      return copiarPedidos(pedidos)
     }
   } catch {
-    // El almacenamiento se restaura más abajo si su contenido está dañado.
+    // El mensaje de abajo explica el problema; los datos dañados no se tocan.
   }
 
-  return restaurarPedidos()
+  // No se restaura en silencio: borraría pedidos reales que todavía se pueden revisar.
+  throw new Error('Los pedidos guardados están dañados. No se modificaron; administración debe revisarlos antes de registrar o cambiar pedidos.')
 }
 
 export function obtenerPedidoPorId(id) {

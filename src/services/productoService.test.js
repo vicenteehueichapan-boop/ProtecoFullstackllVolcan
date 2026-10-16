@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   actualizarProducto,
   crearProducto,
@@ -50,16 +50,38 @@ describe('productoService', () => {
     expect(listarProductos()[0].codigo).toBe('CL001')
   })
 
-  it('restaura el catálogo cuando el almacenamiento no contiene una lista', () => {
-    localStorage.setItem('gas-el-volcan-productos', JSON.stringify({ codigo: 'incorrecto' }))
+  it.each([
+    ['un texto que no es JSON', '{'],
+    ['un objeto en vez de una lista', JSON.stringify({ codigo: 'incorrecto' })],
+    ['un producto incompleto', JSON.stringify([null])],
+    ['códigos repetidos', JSON.stringify([productoNuevo, productoNuevo])],
+  ])('informa el catálogo dañado (%s) sin reemplazarlo', (_caso, guardado) => {
+    localStorage.setItem('gas-el-volcan-productos', guardado)
 
-    expect(listarProductos()).toHaveLength(14)
+    expect(() => listarProductos()).toThrow('El catálogo guardado está dañado')
+    expect(localStorage.getItem('gas-el-volcan-productos')).toBe(guardado)
   })
 
-  it('recupera datos JSON válidos con productos incompletos o códigos repetidos', () => {
-    localStorage.setItem('gas-el-volcan-productos', JSON.stringify([null]))
-    expect(listarProductos()).toHaveLength(14)
-    localStorage.setItem('gas-el-volcan-productos', JSON.stringify([productoNuevo, productoNuevo]))
+  it('no aplica cambios sobre un catálogo dañado', () => {
+    const guardado = JSON.stringify([productoNuevo, productoNuevo])
+    localStorage.setItem('gas-el-volcan-productos', guardado)
+
+    expect(() => crearProducto({ ...productoNuevo, codigo: 'PR009' })).toThrow('El catálogo guardado está dañado')
+    expect(() => incorporarProductosDelCaso()).toThrow('El catálogo guardado está dañado')
+    expect(localStorage.getItem('gas-el-volcan-productos')).toBe(guardado)
+  })
+
+  it('informa cuando el navegador no permite leer el catálogo', () => {
+    const lectura = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('Bloqueado') })
+
+    expect(() => listarProductos()).toThrow('No se pudo leer el almacenamiento')
+    lectura.mockRestore()
+  })
+
+  it('repara un catálogo dañado solo con una restauración explícita', () => {
+    localStorage.setItem('gas-el-volcan-productos', '{')
+
+    expect(restaurarProductos()).toHaveLength(14)
     expect(listarProductos()).toHaveLength(14)
   })
 
