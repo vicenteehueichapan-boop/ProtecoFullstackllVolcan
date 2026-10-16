@@ -47,6 +47,20 @@ describe('PedidosProvider', () => {
     })
   })
 
+  it('informa pedidos dañados sin borrarlos y los repara solo al restaurar', () => {
+    localStorage.setItem('gas-el-volcan-pedidos', '{')
+    const { result } = renderHook(() => usePedidos(), { wrapper: envolverConProvider })
+
+    expect(result.current.pedidos).toEqual([])
+    expect(result.current.errorPedidos).toContain('Los pedidos guardados están dañados')
+    expect(() => act(() => result.current.crearPedido(datosPedido))).toThrow('dañados')
+    expect(localStorage.getItem('gas-el-volcan-pedidos')).toBe('{')
+
+    act(() => result.current.restaurarPedidos())
+    expect(result.current.errorPedidos).toBe('')
+    expect(result.current.pedidos).toEqual([])
+  })
+
   it('exige utilizar el hook dentro de su proveedor', () => {
     expect(() => renderHook(() => usePedidos())).toThrow(
       'usePedidos debe utilizarse dentro de PedidosProvider',

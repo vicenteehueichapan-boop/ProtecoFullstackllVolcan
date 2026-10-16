@@ -60,8 +60,16 @@ function copiarProductosIniciales() {
   return productosIniciales.map((producto) => ({ ...producto }))
 }
 
+function leerProductosGuardados() {
+  try {
+    return localStorage.getItem(CLAVE_PRODUCTOS)
+  } catch {
+    throw new Error('No se pudo leer el almacenamiento del navegador. Revisa sus permisos y vuelve a intentarlo.')
+  }
+}
+
 export function listarProductos() {
-  const productosGuardados = localStorage.getItem(CLAVE_PRODUCTOS)
+  const productosGuardados = leerProductosGuardados()
 
   if (productosGuardados === null) {
     const productos = copiarProductosIniciales()
@@ -78,12 +86,11 @@ export function listarProductos() {
       if (codigos.size === productosValidados.length) return productosValidados
     }
   } catch {
-    // Si los datos están dañados, se restaura el catálogo inicial más abajo.
+    // El mensaje de abajo explica el problema; los datos dañados no se tocan.
   }
 
-  const productos = copiarProductosIniciales()
-  guardarProductos(productos)
-  return productos
+  // No se restaura en silencio: se perderían los cambios hechos por administración.
+  throw new Error('El catálogo guardado está dañado. No se modificó; administración puede revisarlo o restaurar el catálogo original.')
 }
 
 export function obtenerProductoPorCodigo(codigo) {

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { datosPedido } from '../tests/datosPedido'
 import { actualizarProducto, eliminarProducto } from './productoService'
 import {
@@ -15,6 +15,7 @@ describe('pedidoService', () => {
   beforeEach(() => {
     localStorage.clear()
   })
+  afterEach(() => vi.restoreAllMocks())
 
   it('inicia sin pedidos simulados', () => {
     expect(listarPedidos()).toEqual([])
@@ -98,11 +99,25 @@ describe('pedidoService', () => {
       .toThrow('El pedido debe incluir al menos un producto')
   })
 
-  it('restaura los pedidos cuando el almacenamiento está dañado', () => {
+  it('informa el almacenamiento dañado sin borrar su contenido', () => {
     localStorage.setItem('gas-el-volcan-pedidos', '{contenido incorrecto')
 
-    expect(listarPedidos()).toEqual([])
-    expect(localStorage.getItem('gas-el-volcan-pedidos')).toBe('[]')
+    expect(() => listarPedidos()).toThrow('Los pedidos guardados están dañados')
+    expect(localStorage.getItem('gas-el-volcan-pedidos')).toBe('{contenido incorrecto')
+  })
+
+  it('no registra un pedido nuevo encima de pedidos dañados', () => {
+    const guardados = JSON.stringify([crearPedido(datosPedido), { id: 'PED-0002' }])
+    localStorage.setItem('gas-el-volcan-pedidos', guardados)
+
+    expect(() => crearPedido(datosPedido)).toThrow('Los pedidos guardados están dañados')
+    expect(localStorage.getItem('gas-el-volcan-pedidos')).toBe(guardados)
+  })
+
+  it('informa cuando el navegador no permite leer el almacenamiento', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('Bloqueado') })
+
+    expect(() => listarPedidos()).toThrow('No se pudo leer el almacenamiento')
   })
 
   it.each([
@@ -134,8 +149,18 @@ describe('pedidoService', () => {
     expect(() => crearPedido(datosPedido)).toThrow('Un cilindro del pedido ya no está disponible')
   })
 
-  it('recupera una lista cuyo JSON es válido pero contiene pedidos incompletos', () => {
-    localStorage.setItem('gas-el-volcan-pedidos', JSON.stringify([{ id: 'PED-0001' }]))
+  it('conserva una lista cuyo JSON es válido pero contiene pedidos incompletos', () => {
+    const guardados = JSON.stringify([{ id: 'PED-0001' }])
+    localStorage.setItem('gas-el-volcan-pedidos', guardados)
+
+    expect(() => listarPedidos()).toThrow('Los pedidos guardados están dañados')
+    expect(localStorage.getItem('gas-el-volcan-pedidos')).toBe(guardados)
+  })
+
+  it('repara los pedidos dañados solo con una restauración explícita', () => {
+    localStorage.setItem('gas-el-volcan-pedidos', '{')
+
+    expect(restaurarPedidos()).toEqual([])
     expect(listarPedidos()).toEqual([])
   })
 
