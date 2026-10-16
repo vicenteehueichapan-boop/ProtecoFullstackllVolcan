@@ -5,6 +5,7 @@ const ENLACES_PUBLICOS = [
   { ruta: '/', texto: 'Inicio' },
   { ruta: '/catalogo', texto: 'Catálogo' },
   { ruta: '/categorias', texto: 'Categorías' },
+  { ruta: '/blog', texto: 'Blog' },
   { ruta: '/seguimiento', texto: 'Seguimiento' },
 ]
 
