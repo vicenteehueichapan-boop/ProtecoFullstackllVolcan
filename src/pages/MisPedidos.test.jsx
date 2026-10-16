@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { iniciarSesionCliente, registrarCliente } from '../services/clienteService'
 import { crearPedido } from '../services/pedidoService'
 import { datosPedido } from '../tests/datosPedido'
@@ -7,10 +7,9 @@ import { renderizarConSesion } from '../tests/renderizarConSesion'
 import MisPedidos from './MisPedidos'
 
 describe('página Mis pedidos', () => {
-  beforeEach(() => {
-    localStorage.clear()
-    vi.useRealTimers()
-  })
+  beforeEach(() => localStorage.clear())
+  // Se restaura en afterEach: así el reloj vuelve a ser real aunque una aserción falle.
+  afterEach(() => vi.useRealTimers())
 
   it('pide ingresar cuando no hay sesión', () => {
     renderizarConSesion(<MisPedidos />, { ruta: '/mis-pedidos' })
@@ -27,7 +26,6 @@ describe('página Mis pedidos', () => {
     crearPedido({ ...datosPedido, clienteId: otro.id })
     vi.setSystemTime(new Date('2026-10-21T10:00:00'))
     crearPedido({ ...datosPedido, clienteId: ana.id })
-    vi.useRealTimers()
     iniciarSesionCliente('ana@correo.cl')
 
     renderizarConSesion(<MisPedidos />, { ruta: '/mis-pedidos' })
