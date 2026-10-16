@@ -12,13 +12,17 @@ export default function Registro() {
   const { state } = useLocation()
   const [error, setError] = useState('')
 
-  // El formulario ya validó los datos; aquí se guarda la cuenta y se decide adónde ir.
+  // El formulario ya validó el formato; aquí se guarda la cuenta y se decide adónde ir.
+  // Si el servicio rechaza un dato, se devuelve { campo: mensaje } para mostrarlo junto al campo.
   function crearCuenta(datos) {
     try {
       registrar(datos)
       navegar(state?.desde ?? '/catalogo', { replace: true })
+      return {}
     } catch (excepcion) {
+      if (excepcion.campo) return { [excepcion.campo]: excepcion.message }
       setError(excepcion.message)
+      return {}
     }
   }
 

@@ -35,7 +35,10 @@ export default function FormularioRegistro({ alRegistrar }) {
     if (Object.keys(nuevosErrores).length === 0) {
       // La contraseña no se entrega: en EP2 solo se valida su formato.
       const { nombre, apellidos, run, correo, tipoCliente } = datos
-      alRegistrar({ nombre, apellidos, run, correo, tipoCliente })
+      // La página puede responder con errores del servicio (por ejemplo, un correo ya
+      // registrado). El formulario sigue siendo el dueño de los errores y los muestra
+      // junto a su campo.
+      setErrores(alRegistrar({ nombre, apellidos, run, correo, tipoCliente }) ?? {})
     }
   }
 

@@ -31,7 +31,7 @@ describe('página Registro', () => {
     renderizarConSesion(<Registro />, { ruta: '/registro' })
     await completarRegistro('camila@correo.cl')
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Ya existe una cuenta con ese correo')
+    expect(screen.getByLabelText('Correo')).toHaveAccessibleDescription('Ya existe una cuenta con ese correo.')
     expect(screen.getByLabelText('Ruta actual')).toHaveTextContent('/registro')
     expect(leerSesionCliente()).toBeNull()
   })
@@ -40,6 +40,6 @@ describe('página Registro', () => {
     renderizarConSesion(<Registro />, { ruta: '/registro' })
     await completarRegistro('administracion@ejemplo.cl')
 
-    expect(screen.getByRole('alert')).toHaveTextContent('reservado para el personal')
+    expect(screen.getByLabelText('Correo')).toHaveAccessibleDescription(/reservado para el personal/)
   })
 })

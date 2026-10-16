@@ -39,7 +39,7 @@ describe('página Ingreso', () => {
     renderizarConSesion(<Ingreso />, { ruta: '/ingreso' })
     await ingresar('nadie@correo.cl')
 
-    expect(screen.getByRole('alert')).toHaveTextContent('No existe una cuenta con ese correo')
+    expect(screen.getByLabelText('Correo')).toHaveAccessibleDescription(/No existe una cuenta con ese correo/)
     expect(screen.getByLabelText('Ruta actual')).toHaveTextContent('/ingreso')
   })
 

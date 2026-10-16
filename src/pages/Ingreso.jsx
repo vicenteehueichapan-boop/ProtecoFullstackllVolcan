@@ -12,12 +12,16 @@ export default function Ingreso() {
   const { state } = useLocation()
   const [error, setError] = useState('')
 
+  // Devuelve { campo: mensaje } cuando el servicio rechaza el dato, para verlo junto al campo.
   function recibirIngreso({ correo }) {
     try {
       ingresar(correo)
       navegar(state?.desde ?? '/mis-pedidos', { replace: true })
+      return {}
     } catch (excepcion) {
+      if (excepcion.campo) return { [excepcion.campo]: excepcion.message }
       setError(excepcion.message)
+      return {}
     }
   }
 

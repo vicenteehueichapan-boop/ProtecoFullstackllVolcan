@@ -58,4 +58,20 @@ describe('FormularioRegistro', () => {
       correo: 'camila.sepulveda@correo.cl', tipoCliente: 'comercial',
     })
   })
+
+  it('muestra junto al RUN el rechazo con que responde la página', async () => {
+    const usuario = userEvent.setup()
+    const alRegistrar = vi.fn().mockReturnValue({ run: 'Ya existe una cuenta con ese RUN.' })
+    render(<FormularioRegistro alRegistrar={alRegistrar} />)
+
+    await usuario.type(screen.getByLabelText('Nombre'), 'Camila')
+    await usuario.type(screen.getByLabelText('Apellidos'), 'Sepúlveda')
+    await usuario.type(screen.getByLabelText('RUN sin puntos ni guion'), '12345678K')
+    await usuario.type(screen.getByLabelText('Correo'), 'camila@correo.cl')
+    await usuario.type(screen.getByLabelText('Contraseña'), 'volcan2026')
+    await usuario.type(screen.getByLabelText('Confirmar contraseña'), 'volcan2026')
+    await usuario.click(screen.getByRole('button', { name: 'Registrarme' }))
+
+    expect(screen.getByLabelText('RUN sin puntos ni guion')).toHaveAccessibleDescription('Ya existe una cuenta con ese RUN.')
+  })
 })

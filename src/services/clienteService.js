@@ -9,6 +9,14 @@ const CLAVE_CLIENTES = 'gas-el-volcan-clientes'
 const CLAVE_SESION = 'gas-el-volcan-sesion-cliente'
 const CAMPOS_EDITABLES = ['nombre', 'apellidos', 'tipoCliente', 'direccion', 'zonaId']
 
+// Error que indica a qué campo del formulario corresponde, para que la página
+// pueda mostrarlo junto a ese campo (Guía 14) y no en un aviso general.
+function errorDeCampo(campo, mensaje) {
+  const error = new Error(mensaje)
+  error.campo = campo
+  return error
+}
+
 function normalizarCorreo(correo) {
   return String(correo ?? '').trim().toLowerCase()
 }
@@ -23,14 +31,14 @@ function leerTexto(clave) {
 
 function validarCliente(cliente) {
   if (!cliente || typeof cliente !== 'object') throw new Error('Los datos de la cuenta no son válidos.')
-  if (typeof cliente.nombre !== 'string' || cliente.nombre.trim().length < 2) throw new Error('Ingresa tu nombre.')
-  if (typeof cliente.apellidos !== 'string' || cliente.apellidos.trim().length < 2) throw new Error('Ingresa tus apellidos.')
-  if (!/^\d{7,8}[0-9K]$/.test(cliente.run)) throw new Error('Ingresa el RUN sin puntos ni guion.')
-  if (validarCorreo(cliente.correo)) throw new Error('Ingresa un correo válido.')
-  if (!['residencial', 'comercial'].includes(cliente.tipoCliente)) throw new Error('El tipo de cliente no es válido.')
-  if (typeof cliente.direccion !== 'string') throw new Error('La dirección no es válida.')
+  if (typeof cliente.nombre !== 'string' || cliente.nombre.trim().length < 2) throw errorDeCampo('nombre', 'Ingresa tu nombre.')
+  if (typeof cliente.apellidos !== 'string' || cliente.apellidos.trim().length < 2) throw errorDeCampo('apellidos', 'Ingresa tus apellidos.')
+  if (!/^\d{7,8}[0-9K]$/.test(cliente.run)) throw errorDeCampo('run', 'Ingresa el RUN sin puntos ni guion.')
+  if (validarCorreo(cliente.correo)) throw errorDeCampo('correo', 'Ingresa un correo válido.')
+  if (!['residencial', 'comercial'].includes(cliente.tipoCliente)) throw errorDeCampo('tipoCliente', 'El tipo de cliente no es válido.')
+  if (typeof cliente.direccion !== 'string') throw errorDeCampo('direccion', 'La dirección no es válida.')
   if (cliente.zonaId !== '' && !zonasDespacho.some((zona) => zona.id === cliente.zonaId)) {
-    throw new Error('La zona de despacho no es válida.')
+    throw errorDeCampo('zonaId', 'La zona de despacho no es válida.')
   }
 }
 
@@ -77,11 +85,11 @@ export function registrarCliente(datos) {
   validarCliente(cliente)
 
   if (personalDemostracion.some((perfil) => perfil.correo === cliente.correo)) {
-    throw new Error('Ese correo está reservado para el personal. Usa tu correo personal.')
+    throw errorDeCampo('correo', 'Ese correo está reservado para el personal. Usa tu correo personal.')
   }
   const clientes = listarClientes()
-  if (clientes.some((item) => item.correo === cliente.correo)) throw new Error('Ya existe una cuenta con ese correo.')
-  if (clientes.some((item) => item.run === cliente.run)) throw new Error('Ya existe una cuenta con ese RUN.')
+  if (clientes.some((item) => item.correo === cliente.correo)) throw errorDeCampo('correo', 'Ya existe una cuenta con ese correo.')
+  if (clientes.some((item) => item.run === cliente.run)) throw errorDeCampo('run', 'Ya existe una cuenta con ese RUN.')
 
   const ultimo = clientes.reduce((mayor, item) => Math.max(mayor, Number(item.id.slice(4))), 0)
   const nuevo = { id: `CLI-${String(ultimo + 1).padStart(4, '0')}`, ...cliente, fechaRegistro: new Date().toISOString() }
@@ -111,7 +119,7 @@ export function actualizarCliente(id, cambios) {
 
 export function iniciarSesionCliente(correo) {
   const cliente = listarClientes().find((item) => item.correo === normalizarCorreo(correo))
-  if (!cliente) throw new Error('No existe una cuenta con ese correo. Revisa el dato o regístrate.')
+  if (!cliente) throw errorDeCampo('correo', 'No existe una cuenta con ese correo. Revisa el dato o regístrate.')
   localStorage.setItem(CLAVE_SESION, cliente.id)
   return { ...cliente }
 }

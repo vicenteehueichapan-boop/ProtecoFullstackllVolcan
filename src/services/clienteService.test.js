@@ -74,6 +74,15 @@ describe('clienteService', () => {
     expect(leerSesionCliente()).toBeNull()
   })
 
+  it('indica el campo al que corresponde cada error, para mostrarlo junto a él', () => {
+    registrarCliente(datosCamila)
+
+    expect(() => registrarCliente({ ...datosCamila, run: '99999999K' })).toThrow(expect.objectContaining({ campo: 'correo' }))
+    expect(() => registrarCliente({ ...datosCamila, correo: 'x@correo.cl' })).toThrow(expect.objectContaining({ campo: 'run' }))
+    expect(() => registrarCliente({ ...datosCamila, nombre: '' })).toThrow(expect.objectContaining({ campo: 'nombre' }))
+    expect(() => iniciarSesionCliente('nadie@correo.cl')).toThrow(expect.objectContaining({ campo: 'correo' }))
+  })
+
   it('no inicia sesión con un correo sin cuenta', () => {
     expect(() => iniciarSesionCliente('nadie@correo.cl')).toThrow('No existe una cuenta con ese correo')
     expect(leerSesionCliente()).toBeNull()
