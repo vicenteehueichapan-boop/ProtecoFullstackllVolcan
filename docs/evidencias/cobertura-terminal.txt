@@ -1,0 +1,81 @@
+
+> gas-el-volcan-ep2@0.0.0 test:cov
+> vitest run --coverage --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v5.0.3 C:/Users/Vivobook Pro 15/Desktop/SEGUNDO_SEMESTRE/03_DSY1104_Desarrollo_Fullstack_II/05_Proyecto_Gas_El_Volcan_EP2
+      Coverage enabled with v8
+
+Not implemented: navigation to another Document
+
+ Test Files  105 passed (105)
+      Tests  422 passed (422)
+   Start at  16:28:45
+   Duration  240.49s (tests 39%, environment 37%, import 13%, setup 8%, worker 2%, transform 1%)
+
+Environment  jsdom was created 105 times · 82.04s total, 37% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |    96.4 |    91.92 |   97.08 |    97.1 |                   
+ ...ents/molecules |   97.91 |    96.77 |   96.42 |   97.72 |                   
+  LineaCarrito.jsx |      75 |      100 |      75 |      75 | 13                
+  ...aProducto.jsx |     100 |    91.66 |     100 |     100 | 27                
+ ...ents/organisms |   94.81 |    94.26 |   95.49 |   96.89 |                   
+  ...avegacion.jsx |   86.66 |    91.66 |      90 |   92.85 | 52                
+  ...aPersonal.jsx |    62.5 |       75 |      60 |   71.42 | 13-19             
+  ...Categoria.jsx |   93.33 |      100 |      80 |    92.3 | 33                
+  ...ioCliente.jsx |   89.47 |    86.36 |   88.88 |   94.11 | 52                
+  ...oContacto.jsx |   94.73 |     87.5 |     100 |     100 | 17                
+  ...oRegistro.jsx |   95.23 |    83.33 |     100 |      95 | 27                
+  ...dosDelDia.jsx |     100 |     87.5 |     100 |     100 | 76                
+  ...istracion.jsx |   88.88 |     87.5 |     100 |     100 | 19                
+ ...ents/templates |   88.88 |      100 |      80 |   88.88 |                   
+  ...laPublica.jsx |      75 |      100 |      50 |      75 | 19-20             
+ src/context       |   99.35 |    91.66 |   98.11 |     100 |                   
+  ...toContext.jsx |     100 |       50 |     100 |     100 | 26                
+  ...osContext.jsx |   96.66 |      100 |   88.88 |     100 |                   
+ src/hooks         |   94.59 |    84.61 |     100 |   96.66 |                   
+  useProductos.js  |      75 |       50 |     100 |      75 | 8                 
+  ...onPersonal.js |      75 |       50 |     100 |     100 | 6                 
+ src/pages         |   94.91 |    86.14 |   95.07 |   95.35 |                   
+  ...ategorias.jsx |   95.45 |       80 |   85.71 |      95 | 48                
+  ...Productos.jsx |   94.44 |    91.66 |   94.11 |      96 | 102,160           
+  ...rUsuarios.jsx |    91.3 |       75 |      90 |      95 | 46                
+  Carrito.jsx      |    90.9 |       80 |      80 |      90 | 48                
+  ...marPedido.jsx |   91.42 |    90.62 |    87.5 |   96.87 | 86                
+  Contacto.jsx     |   92.85 |    66.66 |     100 |    92.3 | 25                
+  ...istracion.jsx |      95 |       70 |     100 |   94.11 | 35                
+  ...istracion.jsx |   94.44 |       70 |     100 |   93.75 | 23                
+  ...eProducto.jsx |   92.85 |       80 |      75 |   91.66 | 55                
+  Ingreso.jsx      |   85.71 |       75 |     100 |   84.61 | 23-24             
+  ...raPedidos.jsx |   94.44 |    66.66 |     100 |   93.33 | 33                
+  ...istracion.jsx |   93.33 |      100 |      80 |   92.85 | 31                
+  ...doExitoso.jsx |     100 |     90.9 |     100 |     100 | 47                
+  ...istracion.jsx |    90.9 |      100 |     100 |    90.9 | 22                
+  ...sCriticos.jsx |    92.3 |    83.33 |     100 |    90.9 | 21                
+  Registro.jsx     |   85.71 |    66.66 |     100 |   84.61 | 24-25             
+  ...rEntregas.jsx |   91.66 |       50 |     100 |    90.9 | 24                
+  ...istracion.jsx |     100 |    83.33 |     100 |     100 | 32                
+ src/services      |   96.66 |    91.83 |   99.32 |   97.34 |                   
+  ...itoService.js |     100 |    89.74 |     100 |     100 | 53,59-65,78       
+  ...riaService.js |    98.3 |     93.1 |     100 |   97.87 | 36                
+  ...nteService.js |   95.65 |    88.23 |     100 |   98.48 | 21                
+  ...ajeService.js |   95.23 |      100 |     100 |   94.44 | 10                
+  pedidoService.js |   95.57 |    94.05 |     100 |   95.32 | 45,95,99,104,204  
+  ...nalService.js |   93.33 |    88.63 |   94.73 |   96.49 | 32,83             
+  ...ctoService.js |   98.47 |    94.44 |     100 |   98.23 | 41,168            
+ src/utils         |   99.34 |    99.13 |     100 |     100 |                   
+  ...mirCarrito.js |   94.11 |    93.33 |     100 |     100 | 11                
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 96.4% ( 1581/1640 )
+Branches     : 91.92% ( 842/916 )
+Functions    : 97.08% ( 532/548 )
+Lines        : 97.1% ( 1375/1416 )
+================================================================================

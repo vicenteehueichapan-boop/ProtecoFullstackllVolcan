@@ -1,0 +1,43 @@
+
+ RUN  v5.0.3 C:/Users/Vivobook Pro 15/Desktop/SEGUNDO_SEMESTRE/03_DSY1104_Desarrollo_Fullstack_II/05_Proyecto_Gas_El_Volcan_EP2
+
+ ❯ src/utils/precioSegunCliente.test.js (3 tests | 1 failed) 9ms
+   ❯ precioSegunCliente (3)
+     × devuelve el precio comercial 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/utils/precioSegunCliente.test.js > precioSegunCliente > devuelve el precio comercial
+AssertionError: expected 12000 to be 11000 // Object.is equality
+
+- Expected
++ Received
+
+- 11000
++ 12000
+
+ ❯ src/utils/precioSegunCliente.test.js:15:55
+     13|
+     14|   it('devuelve el precio comercial', () => {
+     15|     expect(precioSegunCliente(producto, 'comercial')).toBe(11000)
+       |                                                       ^
+     16|   })
+     17|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  16:37:06
+   Duration  1.17s (environment 78%, setup 15%, transform 4%, import 2%, tests 1%, worker 1%)
+
+
+ RUN  v5.0.3 C:/Users/Vivobook Pro 15/Desktop/SEGUNDO_SEMESTRE/03_DSY1104_Desarrollo_Fullstack_II/05_Proyecto_Gas_El_Volcan_EP2
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  16:37:09
+   Duration  1.14s (environment 77%, setup 16%, transform 4%, import 2%, worker 1%)
+
