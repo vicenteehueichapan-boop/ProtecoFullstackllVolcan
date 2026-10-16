@@ -1,8 +1,10 @@
 import { Card, Col, Container, Row } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { useProductos } from '../hooks/useProductos'
+import { useTituloPagina } from '../hooks/useTituloPagina'
 
 export default function Categorias() {
+  useTituloPagina('Categorías')
   const { productos } = useProductos()
   const categorias = [...new Set(productos.map((producto) => producto.categoria))]
 

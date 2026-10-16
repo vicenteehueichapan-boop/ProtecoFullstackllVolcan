@@ -7,6 +7,7 @@ import manguera from '../assets/productos/manguera.svg'
 import conexion from '../assets/productos/conexion.svg'
 import accesorio from '../assets/productos/accesorio.svg'
 import detector from '../assets/productos/detector.svg'
+import tapaValvula from '../assets/productos/tapa-valvula.svg'
 
 // Fuente: catálogo Forma C, hoja «Productos y Tarifas», filas 4–17.
 // Las imágenes son ilustraciones locales; no forman parte del Excel.
@@ -152,7 +153,7 @@ const productosIniciales = [
     precioResidencial: 1490,
     precioComercial: 1200,
     stock: 60,
-    imagen: accesorio,
+    imagen: tapaValvula,
   },
   {
     codigo: 'AC003',

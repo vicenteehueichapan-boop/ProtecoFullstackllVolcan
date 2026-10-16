@@ -5,8 +5,10 @@ import ResumenPedido from '../components/molecules/ResumenPedido'
 import { usePedidos } from '../hooks/usePedidos'
 import { useSesionCliente } from '../hooks/useSesionCliente'
 import { puedeVerPedido } from '../utils/puedeVerPedido'
+import { useTituloPagina } from '../hooks/useTituloPagina'
 
 export default function PedidoExitoso() {
+  useTituloPagina('Pedido confirmado')
   const { id } = useParams()
   const { state } = useLocation()
   const { pedidos } = usePedidos()

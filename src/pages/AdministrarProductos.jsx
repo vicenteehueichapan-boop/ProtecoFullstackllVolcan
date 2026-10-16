@@ -4,6 +4,7 @@ import FormularioProducto from '../components/organisms/FormularioProducto'
 import { useProductos } from '../hooks/useProductos'
 import imagenAccesorio from '../assets/productos/accesorio.svg'
 import productosIniciales from '../data/productosIniciales'
+import { useTituloPagina } from '../hooks/useTituloPagina'
 
 const PRODUCTO_VACIO = {
   codigo: '',
@@ -28,6 +29,7 @@ function prepararNumeros(producto) {
 }
 
 export default function AdministrarProductos() {
+  useTituloPagina('Administración de productos')
   const {
     productos,
     categorias,
