@@ -5,6 +5,13 @@ import { abrirAdministracion, irA } from '../tests/abrirAdministracion'
 import { datosPedido } from '../tests/datosPedido'
 import { ingresarPersonalEnPrueba } from '../tests/ingresarPersonal'
 
+// Pegar el texto reproduce lo que escribe la persona sin simular cada tecla, para que las
+// pruebas no dependan de la velocidad del equipo al medir cobertura.
+async function escribir(usuario, etiqueta, valor) {
+  await usuario.click(screen.getByLabelText(etiqueta))
+  await usuario.paste(valor)
+}
+
 describe('página Usuarios', () => {
   beforeEach(() => localStorage.clear())
 
@@ -12,8 +19,8 @@ describe('página Usuarios', () => {
     crearPedido(datosPedido)
     const usuario = await abrirAdministracion('/administracion/usuarios')
 
-    await usuario.type(screen.getByLabelText('Nombre'), 'Repartidor 4')
-    await usuario.type(screen.getByLabelText('Correo'), 'repartidor4@ejemplo.cl')
+    await escribir(usuario, 'Nombre', 'Repartidor 4')
+    await escribir(usuario, 'Correo', 'repartidor4@ejemplo.cl')
     await usuario.selectOptions(screen.getByLabelText('Rol'), 'Repartidor')
     await usuario.click(screen.getByRole('button', { name: 'Crear perfil' }))
     expect(screen.getByRole('alert')).toHaveTextContent('Perfil PER-0001 creado.')
@@ -28,8 +35,8 @@ describe('página Usuarios', () => {
   it('muestra un correo repetido junto al campo', async () => {
     const usuario = await abrirAdministracion('/administracion/usuarios')
 
-    await usuario.type(screen.getByLabelText('Nombre'), 'Otra operadora')
-    await usuario.type(screen.getByLabelText('Correo'), 'operadora@ejemplo.cl')
+    await escribir(usuario, 'Nombre', 'Otra operadora')
+    await escribir(usuario, 'Correo', 'operadora@ejemplo.cl')
     await usuario.selectOptions(screen.getByLabelText('Rol'), 'Operadora')
     await usuario.click(screen.getByRole('button', { name: 'Crear perfil' }))
 
@@ -39,10 +46,10 @@ describe('página Usuarios', () => {
   it('crea una cuenta de cliente desde la pestaña Clientes', async () => {
     const usuario = await abrirAdministracion('/administracion/usuarios?vista=clientes')
 
-    await usuario.type(screen.getByLabelText('Nombre'), 'Luis')
-    await usuario.type(screen.getByLabelText('Apellidos'), 'Soto')
-    await usuario.type(screen.getByLabelText('RUN sin puntos ni guion'), '11111111K')
-    await usuario.type(screen.getByLabelText('Correo'), 'luis@correo.cl')
+    await escribir(usuario, 'Nombre', 'Luis')
+    await escribir(usuario, 'Apellidos', 'Soto')
+    await escribir(usuario, 'RUN sin puntos ni guion', '11111111K')
+    await escribir(usuario, 'Correo', 'luis@correo.cl')
     await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent('Cliente CLI-0001 creado.')

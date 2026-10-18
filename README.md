@@ -59,14 +59,16 @@ src/
 │   ├── organisms/    BarraNavegacion, CatalogoGas, formularios, tablas, OrdenDePedido…
 │   └── templates/    PlantillaPublica, PlantillaPersonal, PlantillaAdministracion
 ├── pages/            una página por ruta (coordina datos y navegación)
-├── routes/           mapa de rutas y protección por rol
+├── routes/           AccesoPorRol (protección de rutas por rol)
 ├── context/          estado compartido (puente entre servicios y pantallas)
 ├── services/         CRUD y persistencia en localStorage (JavaScript sin React)
 ├── hooks/            hooks propios: useTituloPagina, useAhora y acceso a cada Context
 ├── utils/            reglas puras: precioSegunCliente, validaciones, generarReporte…
 ├── data/             datos del caso (Excel Forma C) y perfiles ficticios
 ├── estilos/          CSS propio (se importa después de Bootstrap)
-└── tests/            ayudantes comunes de las pruebas
+├── tests/            ayudantes comunes de las pruebas
+├── App.jsx           mapa de rutas y proveedores de contexto
+└── setupTests.js     configuración de Vitest (jest-dom y limpieza)
 ```
 
 Cada archivo de prueba vive junto al código que prueba (`Nombre.test.jsx`). Solo páginas y
@@ -110,7 +112,7 @@ npm run lint
 npm run build
 ```
 
-`npm test` también ejecuta las pruebas una vez y `npm run test:watch` las deja en modo vigilante.
+`npm test` deja las pruebas en modo vigilante mientras se desarrolla.
 En equipos con poca memoria se puede agregar `-- --maxWorkers=1 --no-file-parallelism`.
 
 ## Demostración rápida
