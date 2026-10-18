@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ProductosProvider } from '../context/ProductosContext'
 import AdministrarProductos from './AdministrarProductos'
-import { eliminarProducto, actualizarProducto } from '../services/productoService'
+import { eliminarProducto, actualizarProducto, obtenerProductoPorCodigo } from '../services/productoService'
+import imagenRegulador from '../assets/productos/regulador.svg'
 
 function renderizarAdministracion() {
   return render(
@@ -87,17 +88,37 @@ describe('AdministrarProductos', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Se conservaron los productos existentes')
   })
 
-  it('muestra el error del negocio cuando se intenta repetir un código', async () => {
+  it('muestra junto al campo Código el error del negocio cuando se repite un código', async () => {
     const usuario = userEvent.setup()
     renderizarAdministracion()
 
     await completarProducto(usuario, 'CL001')
     await usuario.click(screen.getByRole('button', { name: 'Agregar' }))
 
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Ya existe un producto con el código CL001',
-    )
+    expect(screen.getByLabelText('Código')).toHaveAccessibleDescription('Ya existe un producto con el código CL001')
     expect(screen.getByText('14 productos registrados')).toBeInTheDocument()
+  })
+
+  it('no crea un producto con datos inválidos y explica cada campo', async () => {
+    const usuario = userEvent.setup()
+    renderizarAdministracion()
+
+    await usuario.click(screen.getByRole('button', { name: 'Agregar' }))
+
+    expect(screen.getByLabelText('Nombre')).toHaveAccessibleDescription('Ingresa el nombre del producto (al menos 3 caracteres).')
+    expect(screen.getByLabelText('Precio residencial')).toHaveAttribute('aria-invalid', 'true')
+    expect(screen.getByText('14 productos registrados')).toBeInTheDocument()
+  })
+
+  it('asigna a un producto nuevo la ilustración de su categoría', async () => {
+    const usuario = userEvent.setup()
+    renderizarAdministracion()
+
+    await completarProducto(usuario, 'RG004')
+    await usuario.selectOptions(screen.getByLabelText('Categoría'), 'Reguladores')
+    await usuario.click(screen.getByRole('button', { name: 'Agregar' }))
+
+    expect(obtenerProductoPorCodigo('RG004').imagen).toBe(imagenRegulador)
   })
 
   it('edita un producto y refleja el cambio en la tabla', async () => {

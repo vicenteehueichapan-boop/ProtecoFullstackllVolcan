@@ -1,32 +1,10 @@
 import { useState } from 'react'
-import { Badge, Button, Col, Modal, Row, Table } from 'react-bootstrap'
+import { Alert, Badge, Button, Col, Modal, Row, Table } from 'react-bootstrap'
 import FormularioProducto from '../components/organisms/FormularioProducto'
 import { useProductos } from '../hooks/useProductos'
-import imagenAccesorio from '../assets/productos/accesorio.svg'
 import productosIniciales from '../data/productosIniciales'
 import { useTituloPagina } from '../hooks/useTituloPagina'
-
-const PRODUCTO_VACIO = {
-  codigo: '',
-  categoria: '',
-  nombre: '',
-  descripcion: '',
-  unidad: 'Unidad',
-  precioResidencial: 0,
-  precioComercial: 0,
-  stock: 0,
-  destacado: false,
-  imagen: imagenAccesorio,
-}
-
-function prepararNumeros(producto) {
-  return {
-    ...producto,
-    precioResidencial: Number(producto.precioResidencial),
-    precioComercial: Number(producto.precioComercial),
-    stock: Number(producto.stock),
-  }
-}
+import { imagenSegunCategoria } from '../utils/imagenSegunCategoria'
 
 export default function AdministrarProductos() {
   useTituloPagina('Administración de productos')
@@ -39,48 +17,46 @@ export default function AdministrarProductos() {
     restaurarProductos,
     incorporarProductosDelCaso,
   } = useProductos()
-  const [formulario, setFormulario] = useState(PRODUCTO_VACIO)
-  const [codigoOriginal, setCodigoOriginal] = useState(null)
+  // Producto que se está editando (null = crear uno nuevo).
+  const [editando, setEditando] = useState(null)
+  // Cada guardado cambia la clave del formulario para que vuelva a quedar vacío.
+  const [guardados, setGuardados] = useState(0)
   const [mensaje, setMensaje] = useState(null)
   const [confirmacion, setConfirmacion] = useState(null)
 
-  const estaEditando = codigoOriginal !== null
   const faltantes = productosIniciales.filter((original) => !productos.some((producto) => producto.codigo === original.codigo))
 
-  function cambiarCampo(evento) {
-    // Una casilla entrega checked (verdadero o falso); los demás campos entregan value.
-    const { name, value, type, checked } = evento.target
-    setFormulario((actual) => ({ ...actual, [name]: type === 'checkbox' ? checked : value }))
-    setMensaje(null)
-  }
-
   function limpiarFormulario() {
-    setFormulario(PRODUCTO_VACIO)
-    setCodigoOriginal(null)
+    setEditando(null)
+    setGuardados((cantidad) => cantidad + 1)
   }
 
-  function guardar(evento) {
-    evento.preventDefault()
-
+  // El formulario ya validó el formato. Aquí se decide qué guardar: la imagen la elige la
+  // página según la categoría (al crear, o si al editar cambió la categoría).
+  // Devuelve { campo: mensaje } si el servicio rechaza un dato, para mostrarlo junto al campo.
+  function guardar(datos) {
     try {
-      const datos = prepararNumeros(formulario)
-      if (estaEditando) {
-        actualizarProducto(codigoOriginal, datos)
+      if (editando) {
+        const imagen = datos.categoria === editando.categoria ? editando.imagen : imagenSegunCategoria(datos.categoria)
+        actualizarProducto(editando.codigo, { ...datos, imagen })
         setMensaje({ tipo: 'success', texto: 'Producto actualizado correctamente.' })
       } else {
-        crearProducto(datos)
+        crearProducto({ ...datos, imagen: imagenSegunCategoria(datos.categoria) })
         setMensaje({ tipo: 'success', texto: 'Producto agregado correctamente.' })
       }
       limpiarFormulario()
+      return {}
     } catch (error) {
+      if (error.campo) return { [error.campo]: error.message }
       setMensaje({ tipo: 'danger', texto: error.message })
+      return {}
     }
   }
 
   function editar(producto) {
-    setFormulario({ ...producto, imagen: producto.imagen ?? '' })
-    setCodigoOriginal(producto.codigo)
+    setEditando(producto)
     setMensaje(null)
+    // Lleva a la persona al formulario, que en pantallas chicas queda arriba de la tabla.
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -88,7 +64,7 @@ export default function AdministrarProductos() {
     try {
       if (confirmacion.tipo === 'eliminar') {
         eliminarProducto(confirmacion.codigo)
-        if (codigoOriginal === confirmacion.codigo) limpiarFormulario()
+        if (editando?.codigo === confirmacion.codigo) limpiarFormulario()
         setMensaje({ tipo: 'success', texto: 'Producto eliminado correctamente.' })
       } else if (confirmacion.tipo === 'completar') {
         incorporarProductosDelCaso()
@@ -106,16 +82,15 @@ export default function AdministrarProductos() {
 
   return (
     <section>
+      {mensaje && <Alert variant={mensaje.tipo}>{mensaje.texto}</Alert>}
       <Row className="g-4">
         <Col xl={4}>
           <FormularioProducto
-            datos={formulario}
+            key={editando?.codigo ?? `nuevo-${guardados}`}
+            producto={editando}
             categorias={categorias}
-            estaEditando={estaEditando}
-            mensaje={mensaje}
-            onChange={cambiarCampo}
-            onSubmit={guardar}
-            onCancelar={limpiarFormulario}
+            alGuardar={guardar}
+            alCancelar={limpiarFormulario}
           />
         </Col>
         <Col xl={8}>
