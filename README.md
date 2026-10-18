@@ -37,7 +37,7 @@ Mis pedidos y Seguimiento.
 Recorrido del caso: el cliente pide → pedido pendiente → la operadora asigna → el repartidor lo
 marca en camino → entregado (se registra el cobro) → el cliente consulta el estado.
 
-## Límites conocidos (honestos)
+## Límites conocidos
 
 - **No hay autenticación real.** Clientes y personal se identifican por su correo; la contraseña
   solo se valida (mínimo 6 caracteres) y **nunca se guarda**. Las rutas del personal se protegen por
