@@ -47,7 +47,7 @@ marca en camino → entregado (se registra el cobro) → el cliente consulta el 
 - Los datos viven en `localStorage` de cada navegador: no se comparten entre equipos.
 - Sin mapa, sin API REST, sin base de datos: corresponden a la Evaluación Parcial 3.
 - Umbral de stock crítico (10 unidades) y destacados iniciales son decisiones del equipo; el caso
-  no los define (ver `docs/ERS_V2.md`).
+  no los define (se justifican en la ERS versión 2).
 
 ## Estructura del proyecto
 
@@ -127,17 +127,15 @@ Perfiles ficticios del personal (la contraseña es cualquier texto ficticio de 6
 5. Ingresa como administración: revisa el panel, la orden de pedido con el cobro registrado,
    los reportes, repone un producto crítico y crea un repartidor nuevo (aparece en la asignación).
 
-## Documentación
+## Evidencias responsivas
 
-- `docs/ERS_V2.md` — requisitos, reglas, decisiones y trazabilidad.
-- `docs/Cobertura_de_pruebas.md` — herramientas, comando, resultado, tabla de pruebas y lo no probado.
-- `docs/Guia_de_defensa.md` — cómo presentar y explicar el proyecto y sus pruebas.
-- `docs/evidencias/` — salida real de la cobertura y demostración de una prueba fallida corregida.
+Capturas del ingreso en los tres anchos de la Guía 12: `docs/evidencias/ingreso-375.png`,
+`docs/evidencias/ingreso-768.png` y `docs/evidencias/ingreso-1280.png`.
 
 ## Material complementario
 
-La Guía 12 pide una carpeta pública de Google Drive para los documentos. **Pendiente:** se agregará
-aquí el enlace cuando exista (o la confirmación del docente de que basta este repositorio).
+La ERS versión 2 y el documento de cobertura se entregan aparte, según la Guía 12 (carpeta pública
+de Google Drive). **Pendiente:** agregar aquí el enlace a esa carpeta.
 
 ## Despliegue en AWS
 
