@@ -92,6 +92,14 @@ describe('recorrido del carrito persistente', () => {
     expect(listarPedidos()).toHaveLength(0)
     expect(leerCarrito().lineas).toHaveLength(1)
     expect(screen.getByLabelText('Nombre')).toHaveValue('Ana')
+
+    // Reintentar vuelve al formulario con lo escrito y recalcula con el precio vigente.
+    await userEvent.click(screen.getByRole('button', { name: 'Volver a intentarlo' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Revisar pedido' }))
+    expect(screen.getByText('Subtotal: $7.000')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar pedido' }))
+    expect(await screen.findByRole('heading', { name: 'Pedido confirmado' })).toBeInTheDocument()
+    expect(listarPedidos()).toHaveLength(1)
   })
 
   it('no borra el carrito ni pierde el formulario si falla el registro del pedido', async () => {

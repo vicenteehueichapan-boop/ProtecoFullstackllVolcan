@@ -100,8 +100,8 @@ function validarCatalogoVigente(datosPedido) {
   const catalogo = listarProductos()
   for (const linea of datosPedido.productos) {
     const producto = catalogo.find((item) => item.codigo === linea.codigo)
-    if (!producto || producto.categoria !== 'Cilindros de Gas') {
-      throw new Error('Un cilindro del pedido ya no está disponible. Revisa el catálogo y prepara nuevamente el pedido.')
+    if (!producto) {
+      throw new Error('Un producto del pedido ya no está disponible. Revisa el catálogo y prepara nuevamente el pedido.')
     }
     if (linea.cantidad > producto.stock) {
       throw new Error(`El stock de ${producto.nombre} cambió. Solo quedan ${producto.stock} unidades; corrige la cantidad.`)

@@ -24,7 +24,7 @@ export default function Carrito() {
   return (
     <Container as="section" className="py-5">
       <h1>Mi carrito</h1>
-      <p>Revisa los cilindros y cantidades. El pago es en efectivo al entregar.</p>
+      <p>Revisa los productos y sus cantidades. El pago es en efectivo al entregar.</p>
       {error && <Alert variant="danger">{error}</Alert>}
       <Row className="g-4">
         <Col lg={8}>
@@ -32,13 +32,13 @@ export default function Carrito() {
         </Col>
         <Col lg={4}>
           <SelectorTipoCliente valor={carrito.tipoCliente} alCambiar={cambiarTarifa} />
-          <p>La tarifa se aplica a todos los cilindros del pedido. Los importes se calculan con el catálogo vigente.</p>
+          <p>La tarifa se aplica a todos los productos del pedido. Los importes se calculan con el catálogo vigente.</p>
           <p className="h4" aria-live="polite">Total: {formatearPrecio(resumen.total)}</p>
           <div className="d-flex flex-column gap-3 mt-3">
             {resumen.puedeConfirmar && !error && (
               <Link className="btn btn-danger" to="/confirmar-pedido">Continuar con la entrega</Link>
             )}
-            <Link to="/catalogo">Seguir eligiendo cilindros</Link>
+            <Link to="/catalogo">Seguir eligiendo productos</Link>
             {(carrito.lineas.length > 0 || error) && (
               <BotonAccion variante="outline-danger" onClick={() => setConfirmacion(true)}>Vaciar carrito</BotonAccion>
             )}
@@ -49,7 +49,7 @@ export default function Carrito() {
         <Modal.Header closeButton closeLabel="Cerrar">
           <Modal.Title id="titulo-vaciar-carrito">Vaciar carrito</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Se quitarán todos los cilindros del carrito guardado en este navegador. Los pedidos confirmados no se eliminarán.</Modal.Body>
+        <Modal.Body>Se quitarán todos los productos del carrito guardado en este navegador. Los pedidos confirmados no se eliminarán.</Modal.Body>
         <Modal.Footer>
           <BotonAccion variante="outline-secondary" onClick={() => setConfirmacion(false)}>Conservar carrito</BotonAccion>
           <BotonAccion variante="danger" onClick={confirmarVaciado}>Sí, vaciar carrito</BotonAccion>

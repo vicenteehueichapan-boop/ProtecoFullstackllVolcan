@@ -47,8 +47,15 @@ describe('carritoService con persistencia local', () => {
     expect(leerCarrito()).toEqual(antes)
   })
 
-  it('rechaza accesorios, códigos inexistentes y stock excedido', () => {
-    expect(() => agregarAlCarrito('RG001')).toThrow()
+  it('agrega cualquier producto del catálogo, no solo cilindros', () => {
+    agregarAlCarrito('CL002')
+    agregarAlCarrito('RG001')
+    agregarAlCarrito('AC003')
+
+    expect(leerCarrito().lineas.map((linea) => linea.codigo)).toEqual(['CL002', 'RG001', 'AC003'])
+  })
+
+  it('rechaza códigos inexistentes y stock excedido', () => {
     expect(() => agregarAlCarrito('NOEXISTE')).toThrow()
     actualizarProducto('CL001', { stock: 1 })
     agregarAlCarrito('CL001')
