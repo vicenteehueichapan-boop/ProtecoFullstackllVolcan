@@ -43,6 +43,20 @@ describe('ProductosProvider', () => {
     expect(result.current.productos).toHaveLength(14)
   })
 
+  it('informa un catálogo dañado sin borrarlo y lo repara al restaurar', () => {
+    localStorage.setItem('gas-el-volcan-productos', '{')
+    const { result } = renderHook(() => useProductos(), { wrapper: contenedor })
+
+    expect(result.current.productos).toEqual([])
+    expect(result.current.errorProductos).toContain('El catálogo guardado está dañado')
+    expect(() => act(() => result.current.crearProducto(productoNuevo))).toThrow('dañado')
+    expect(localStorage.getItem('gas-el-volcan-productos')).toBe('{')
+
+    act(() => result.current.restaurarProductos())
+    expect(result.current.errorProductos).toBe('')
+    expect(result.current.productos).toHaveLength(14)
+  })
+
   it('restaura el catálogo inicial y actualiza el estado', () => {
     const { result } = renderHook(() => useProductos(), { wrapper: contenedor })
 

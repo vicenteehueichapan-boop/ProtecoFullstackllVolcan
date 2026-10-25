@@ -9,13 +9,23 @@ import {
 } from '../services/pedidoService'
 import { PedidosContext } from './pedidosContextoBase'
 
+// Si los pedidos guardados están dañados, se muestra el problema sin borrarlos.
+function leerPedidos() {
+  try {
+    return { pedidos: listarPedidos(), error: '' }
+  } catch (excepcion) {
+    return { pedidos: [], error: excepcion.message }
+  }
+}
+
 export function PedidosProvider({ children }) {
-  const [pedidos, setPedidos] = useState(() => listarPedidos())
+  const [registro, setRegistro] = useState(leerPedidos)
+  const { pedidos, error: errorPedidos } = registro
 
   const sincronizarPedidos = useCallback(() => {
-    const pedidosActualizados = listarPedidos()
-    setPedidos(pedidosActualizados)
-    return pedidosActualizados
+    const lectura = leerPedidos()
+    setRegistro(lectura)
+    return lectura.pedidos
   }, [])
 
   const crearPedido = useCallback((datosPedido) => {
@@ -40,12 +50,13 @@ export function PedidosProvider({ children }) {
 
   const restaurarPedidos = useCallback(() => {
     const pedidosRestaurados = restaurarPedidosService()
-    setPedidos(pedidosRestaurados)
+    setRegistro({ pedidos: pedidosRestaurados, error: '' })
     return pedidosRestaurados
   }, [])
 
   const valor = useMemo(() => ({
     pedidos,
+    errorPedidos,
     crearPedido,
     buscarPedido,
     asignarRepartidor,
@@ -53,6 +64,7 @@ export function PedidosProvider({ children }) {
     restaurarPedidos,
   }), [
     pedidos,
+    errorPedidos,
     crearPedido,
     buscarPedido,
     asignarRepartidor,
