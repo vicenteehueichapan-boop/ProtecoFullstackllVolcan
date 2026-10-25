@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import FormularioIngreso from '../components/organisms/FormularioIngreso'
 import { useSesionPersonal } from '../hooks/useSesionPersonal'
 import personalDemostracion from '../data/personalDemostracion'
+import { useTituloPagina } from '../hooks/useTituloPagina'
 
 const areasPersonal = [
   { rol: 'administracion', nombre: 'Administración', descripcion: 'Panel con pedidos, catálogo, categorías, usuarios, reportes y perfil.', ruta: '/administracion' },
@@ -11,6 +12,7 @@ const areasPersonal = [
 ]
 
 export default function AccesoPersonal() {
+  useTituloPagina('Área del personal')
   const { personal, ingresarPersonal, salirPersonal } = useSesionPersonal()
 
   // El único dato que puede rechazar la sesión de demostración es el correo: el

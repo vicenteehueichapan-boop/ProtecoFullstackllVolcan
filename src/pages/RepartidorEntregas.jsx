@@ -4,8 +4,10 @@ import ListaEntregas from '../components/organisms/ListaEntregas'
 import { usePedidos } from '../hooks/usePedidos'
 import { useSesionPersonal } from '../hooks/useSesionPersonal'
 import { esEntregaDe } from '../utils/esEntregaDe'
+import { useTituloPagina } from '../hooks/useTituloPagina'
 
 export default function RepartidorEntregas() {
+  useTituloPagina('Mis entregas')
   const { pedidos, cambiarEstado } = usePedidos()
   const { personal } = useSesionPersonal()
   const [mensaje, setMensaje] = useState(null)

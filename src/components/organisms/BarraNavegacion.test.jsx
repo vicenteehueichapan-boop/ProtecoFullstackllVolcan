@@ -28,6 +28,17 @@ describe('BarraNavegacion', () => {
     expect(alSalir).toHaveBeenCalledOnce()
   })
 
+  it('agrupa Nosotros, Blog y Contacto en el menú Información', async () => {
+    const alNavegar = vi.fn()
+    render(<BarraNavegacion rutaActual="/blog/una-entrada" alNavegar={alNavegar} cliente={null} alSalir={vi.fn()} />)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Información' }))
+    expect(screen.getByRole('link', { name: 'Blog' })).toHaveAttribute('aria-current', 'page')
+    await userEvent.click(screen.getByRole('link', { name: 'Contacto' }))
+
+    expect(alNavegar).toHaveBeenCalledExactlyOnceWith('/contacto')
+  })
+
   it('avisa la ruta elegida sin recargar la página', async () => {
     const alNavegar = vi.fn()
     render(<BarraNavegacion rutaActual="/" alNavegar={alNavegar} cliente={null} alSalir={vi.fn()} />)

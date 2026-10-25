@@ -5,6 +5,7 @@ import BuscadorPedido from '../components/molecules/BuscadorPedido'
 import { usePedidos } from '../hooks/usePedidos'
 import { useSesionCliente } from '../hooks/useSesionCliente'
 import { puedeVerPedido } from '../utils/puedeVerPedido'
+import { useTituloPagina } from '../hooks/useTituloPagina'
 
 const PASOS = [
   { valor: 'pendiente', texto: 'Pedido recibido' },
@@ -14,6 +15,7 @@ const PASOS = [
 ]
 
 export default function SeguimientoPedido() {
+  useTituloPagina('Seguimiento del pedido')
   const { id } = useParams()
   const { state } = useLocation()
   const navegar = useNavigate()

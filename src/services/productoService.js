@@ -142,7 +142,7 @@ export function crearProducto(producto) {
   comprobarCategoria(nuevoProducto)
 
   if (productos.some((item) => item.codigo === nuevoProducto.codigo)) {
-    throw new Error(`Ya existe un producto con el código ${nuevoProducto.codigo}`)
+    throw errorDeCampo('codigo', `Ya existe un producto con el código ${nuevoProducto.codigo}`)
   }
 
   guardarProductos([...productos, nuevoProducto])
@@ -165,7 +165,7 @@ export function actualizarProducto(codigo, cambios) {
   )
 
   if (codigoRepetido) {
-    throw new Error(`Ya existe un producto con el código ${productoActualizado.codigo}`)
+    throw errorDeCampo('codigo', `Ya existe un producto con el código ${productoActualizado.codigo}`)
   }
 
   const productosActualizados = [...productos]

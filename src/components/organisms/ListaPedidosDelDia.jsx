@@ -9,7 +9,7 @@ export default function ListaPedidosDelDia({
   alAsignar,
 }) {
   if (pedidos.length === 0) {
-    return <Card body>No hay pedidos registrados durante el día.</Card>
+    return <Card body>No hay pedidos de hoy ni pedidos pendientes de días anteriores.</Card>
   }
 
   return (
@@ -30,7 +30,10 @@ export default function ListaPedidosDelDia({
               <td>
                 <strong>{pedido.id}</strong>
                 <div className="small text-secondary">
-                  {new Date(pedido.fechaCreacion).toLocaleTimeString('es-CL', {
+                  {/* Con día: también aparecen pedidos sin entregar de días anteriores. */}
+                  {new Date(pedido.fechaCreacion).toLocaleString('es-CL', {
+                    day: '2-digit',
+                    month: '2-digit',
                     hour: '2-digit',
                     minute: '2-digit',
                   })}
