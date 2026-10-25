@@ -154,7 +154,7 @@ Trabajo individual: todas las tareas son de Vicente Hueichapan.
 |---|---|---|
 | `Vicente Hueichapan` | vi.hueichapan@duocuc.cl | Commits de desarrollo desde el equipo personal |
 | `vicenteehueichapan-boop` | correo personal de Gmail | Cuenta de GitHub dueña del repositorio (creó el repositorio) |
-| `perropa` | el mismo correo personal | Nombre con que quedaron las fusiones de solicitudes del 14/10, hechas desde GitHub |
+| `perropa` | el mismo correo personal | Nombre con que quedan las fusiones de solicitudes hechas desde GitHub (14/10 y 24/10) |
 
 | Fecha | Tarea |
 |---|---|
