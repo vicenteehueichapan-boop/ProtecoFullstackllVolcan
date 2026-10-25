@@ -9,8 +9,11 @@ describe('useAhora', () => {
     vi.setSystemTime(new Date(2026, 9, 20, 23, 59))
   })
 
-  // Limpieza: se devuelve el reloj real aunque una aserción falle.
-  afterEach(() => vi.useRealTimers())
+  // Limpieza: se devuelven el reloj y las funciones reales aunque una aserción falle.
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+  })
 
   it('entrega la hora actual y la renueva en cada intervalo', () => {
     const { result } = renderHook(() => useAhora(60_000))

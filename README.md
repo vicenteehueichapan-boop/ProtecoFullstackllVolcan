@@ -66,7 +66,6 @@ src/
 ├── utils/            reglas puras: precioSegunCliente, validaciones, generarReporte…
 ├── data/             datos del caso (Excel Forma C) y perfiles ficticios
 ├── estilos/          CSS propio (se importa después de Bootstrap)
-├── tests/            ayudantes comunes de las pruebas
 ├── App.jsx           mapa de rutas y proveedores de contexto
 └── setupTests.js     configuración de Vitest (jest-dom y limpieza)
 ```
@@ -113,7 +112,6 @@ npm run build
 ```
 
 `npm test` deja las pruebas en modo vigilante mientras se desarrolla.
-En equipos con poca memoria se puede agregar `-- --maxWorkers=1 --no-file-parallelism`.
 
 ## Demostración rápida
 
@@ -164,7 +162,7 @@ Trabajo individual: todas las tareas son de Vicente Hueichapan.
 | 14/10 | Guía 14: reglas de validación separadas, hook `useTituloPagina` y corrección del seguimiento. Carrito persistente con tarifas y confirmación de varios cilindros. Catálogo completo del Excel y acceso del personal por rol. Tres solicitudes de incorporación fusionadas en `main`. |
 | 16/10 | Persistencia segura ante datos dañados; cuentas de cliente, Mis pedidos y seguimiento privado; navegación por props en los componentes; Blog, Nosotros, Contacto y Destacados; descuento de stock y registro del cobro; categorías registradas; panel de administración completo; pruebas de todos los niveles de Atomic Design. |
 | 18/10 | README y documentación ordenados; formulario de productos con validación por campo e imagen por categoría; mapa de rutas en `App.jsx`; `setupTests.js` y scripts de la Guía 15; capturas responsivas actualizadas. |
-| 24/10 | Bitácora en el README. Incorporación a `main` de las siete ramas de trabajo mediante solicitudes de incorporación. |
+| 24/10 | Bitácora en el README. Incorporación a `main` de las siete ramas de trabajo mediante solicitudes de incorporación. Las pruebas se reducen a 20 casos prioritarios en 9 archivos (lógica, componentes, un hook y un servicio). |
 
 **Contingencias:** desde el 16/10 el trabajo avanzó en siete ramas encadenadas (`persistencia-segura`
 → `sesion-cliente` → `navegacion-por-props` → `carrito-catalogo-completo` → `vistas-informativas` →
