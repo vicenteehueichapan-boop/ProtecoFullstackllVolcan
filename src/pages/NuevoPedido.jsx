@@ -23,7 +23,7 @@ export default function NuevoPedido() {
   function confirmarPedido() {
     try {
       const pedidoCreado = crearPedido(borrador)
-      navegar(`/pedido-confirmado/${pedidoCreado.id}`)
+      navegar(`/pedido-confirmado/${pedidoCreado.id}`, { state: { recienCreado: true } })
     } catch (excepcion) {
       setErrorConfirmacion(excepcion instanceof Error ? excepcion.message : 'No fue posible crear el pedido.')
       recargarProductos()

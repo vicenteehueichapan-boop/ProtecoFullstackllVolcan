@@ -34,6 +34,26 @@ describe('pedidoService', () => {
     expect(listarPedidos()).toHaveLength(2)
   })
 
+  it('asocia el pedido a la cuenta del cliente cuando hay sesión', () => {
+    const pedido = crearPedido({ ...datosPedido, clienteId: 'CLI-0001' })
+
+    expect(pedido.clienteId).toBe('CLI-0001')
+    expect(listarPedidos()[0].clienteId).toBe('CLI-0001')
+  })
+
+  it.each(['cliente-1', 7, ''])('rechaza un identificador de cliente inválido %j', (clienteId) => {
+    expect(() => crearPedido({ ...datosPedido, clienteId })).toThrow('La cuenta del cliente no es válida')
+    expect(listarPedidos()).toEqual([])
+  })
+
+  it('sigue leyendo pedidos anteriores que no tienen cuenta asociada', () => {
+    const anterior = crearPedido(datosPedido)
+    delete anterior.clienteId
+    localStorage.setItem('gas-el-volcan-pedidos', JSON.stringify([anterior]))
+
+    expect(listarPedidos()).toHaveLength(1)
+  })
+
   it('obtiene un pedido por su identificador', () => {
     crearPedido(datosPedido)
 

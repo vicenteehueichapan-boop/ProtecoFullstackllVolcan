@@ -38,4 +38,17 @@ describe('FormularioIngreso', () => {
       clave: '123456',
     })
   })
+
+  it('muestra junto al campo el error con que responde la página', async () => {
+    // Simula una página que rechaza el correo (por ejemplo, porque no tiene cuenta).
+    const alIngresar = vi.fn().mockReturnValue({ correo: 'No existe una cuenta con ese correo.' })
+    render(<FormularioIngreso alIngresar={alIngresar} />)
+
+    await userEvent.type(screen.getByLabelText('Correo institucional'), 'nadie@duocuc.cl')
+    await userEvent.type(screen.getByLabelText('Contraseña'), '123456')
+    await userEvent.click(screen.getByRole('button', { name: 'Ingresar' }))
+
+    expect(screen.getByLabelText('Correo institucional')).toHaveAccessibleDescription('No existe una cuenta con ese correo.')
+    expect(screen.getByLabelText('Contraseña')).toHaveAttribute('aria-invalid', 'false')
+  })
 })

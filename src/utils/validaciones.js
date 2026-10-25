@@ -19,7 +19,8 @@ export function validarIngreso(correo, clave) {
 
 export function validarRegistro(datos) {
   const errores = validarIngreso(datos.correo, datos.clave)
-  if (datos.nombre.trim().length < 3) errores.nombre = 'Ingresa tu nombre completo.'
+  if (datos.nombre.trim().length < 2) errores.nombre = 'Ingresa tu nombre.'
+  if (datos.apellidos.trim().length < 2) errores.apellidos = 'Ingresa tus apellidos.'
   if (!/^\d{7,8}[0-9kK]$/.test(datos.run)) errores.run = 'Ingresa el RUN sin puntos ni guion.'
   if (datos.confirmarClave !== datos.clave) errores.confirmarClave = 'Las contraseñas deben coincidir.'
   return errores

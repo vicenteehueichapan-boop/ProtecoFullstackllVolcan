@@ -20,7 +20,9 @@ export default function PlantillaPersonal() {
       <a href="#contenido-personal" className="saltar-contenido">Saltar al contenido</a>
       <BarraPersonal personal={personal} alSalir={salir} alNavegar={navegar} />
       <main id="contenido-personal" className="flex-grow-1" tabIndex={-1}>
-        <AvisoAlmacenamiento errores={[errorProductos, errorPedidos]} />
+        <Container>
+          <AvisoAlmacenamiento errores={[errorProductos, errorPedidos]} />
+        </Container>
         <Outlet />
       </main>
       <footer className="py-3 border-top">

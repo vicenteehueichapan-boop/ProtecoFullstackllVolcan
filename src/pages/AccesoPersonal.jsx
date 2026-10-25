@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Alert, Button, Card, Col, Container, Row } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import FormularioIngreso from '../components/organisms/FormularioIngreso'
@@ -13,12 +12,16 @@ const areasPersonal = [
 
 export default function AccesoPersonal() {
   const { personal, ingresarPersonal, salirPersonal } = useSesionPersonal()
-  const [error, setError] = useState('')
 
+  // El único dato que puede rechazar la sesión de demostración es el correo: el
+  // mensaje vuelve al formulario para mostrarse junto a ese campo.
   function ingresar({ correo }) {
-    setError('')
-    try { ingresarPersonal(correo) }
-    catch (excepcion) { setError(excepcion.message) }
+    try {
+      ingresarPersonal(correo)
+      return {}
+    } catch (excepcion) {
+      return { correo: excepcion.message }
+    }
   }
 
   return (
@@ -34,7 +37,6 @@ export default function AccesoPersonal() {
               solo valida el formato (mínimo seis caracteres), no comprueba identidad.
               No escribas contraseñas reales. La sesión termina al recargar o cerrar sesión.
             </Alert>
-            {error && <Alert variant="danger">{error}</Alert>}
             <FormularioIngreso alIngresar={ingresar} etiquetaCorreo="Correo del personal" />
           </Col>
           <Col md={6}>

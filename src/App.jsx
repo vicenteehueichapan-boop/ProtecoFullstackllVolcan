@@ -4,6 +4,7 @@ import { PedidosProvider } from './context/PedidosContext'
 import RutasAplicacion from './routes/RutasAplicacion'
 import { CarritoProvider } from './context/CarritoContext'
 import { SesionPersonalProvider } from './context/SesionPersonalContext'
+import { SesionClienteProvider } from './context/SesionClienteContext'
 
 function App() {
   return (
@@ -11,7 +12,9 @@ function App() {
       <ProductosProvider>
         <PedidosProvider>
           <CarritoProvider>
-            <SesionPersonalProvider><RutasAplicacion /></SesionPersonalProvider>
+            <SesionClienteProvider>
+              <SesionPersonalProvider><RutasAplicacion /></SesionPersonalProvider>
+            </SesionClienteProvider>
           </CarritoProvider>
         </PedidosProvider>
       </ProductosProvider>

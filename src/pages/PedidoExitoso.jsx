@@ -3,19 +3,27 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import EtiquetaEstadoPedido from '../components/atoms/EtiquetaEstadoPedido'
 import ResumenPedido from '../components/molecules/ResumenPedido'
 import { usePedidos } from '../hooks/usePedidos'
+import { useSesionCliente } from '../hooks/useSesionCliente'
+import { puedeVerPedido } from '../utils/puedeVerPedido'
 
 export default function PedidoExitoso() {
   const { id } = useParams()
   const { state } = useLocation()
   const { pedidos } = usePedidos()
-  const pedido = pedidos.find((item) => item.id === id)
+  const { cliente } = useSesionCliente()
+  const encontrado = pedidos.find((item) => item.id === id)
+  // Se muestra a quien acaba de confirmarlo o a la cuenta dueña; escribir la URL no basta.
+  const pedido = encontrado && (state?.recienCreado || puedeVerPedido(encontrado, { cliente })) ? encontrado : null
 
   if (!pedido) {
     return (
       <Container className="py-5 text-center">
-        <h1>Pedido no encontrado</h1>
-        <p>No fue posible recuperar el pedido solicitado.</p>
-        <Button as={Link} to="/carrito" variant="danger">Crear un pedido</Button>
+        <h1>Pedido no disponible</h1>
+        <p>No podemos mostrar este comprobante. Consulta tu pedido con su número y tu correo.</p>
+        <div className="d-flex flex-wrap justify-content-center gap-2">
+          <Button as={Link} to="/seguimiento" variant="danger">Ir al seguimiento</Button>
+          <Button as={Link} to="/carrito" variant="outline-secondary">Crear un pedido</Button>
+        </div>
       </Container>
     )
   }
@@ -34,7 +42,7 @@ export default function PedidoExitoso() {
           </Card>
           <ResumenPedido pedido={pedido} />
           <div className="d-flex flex-wrap gap-2 mt-4">
-            <Button as={Link} to={`/seguimiento/${pedido.id}`} variant="danger">
+            <Button as={Link} to={`/seguimiento/${pedido.id}`} state={{ correo: pedido.cliente.correo ?? '' }} variant="danger">
               Ver seguimiento
             </Button>
             <Button as={Link} to="/catalogo" variant="outline-secondary">Volver al catálogo</Button>

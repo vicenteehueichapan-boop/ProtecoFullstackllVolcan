@@ -1,7 +1,8 @@
 import { Container, Nav, Navbar } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
 
-export default function BarraNavegacion() {
+// La sesión llega por props desde la plantilla: este organismo no lee Context.
+export default function BarraNavegacion({ cliente, alSalir }) {
   return (
     <Navbar expand="xl" className="navegacion-volcan" collapseOnSelect aria-label="Navegación de la tienda">
       <Container>
@@ -19,10 +20,21 @@ export default function BarraNavegacion() {
               Catálogo
             </Nav.Link>
             <Nav.Link as={NavLink} to="/categorias" eventKey="categorias">Categorías</Nav.Link>
-            <Nav.Link as={NavLink} to="/ingreso" eventKey="ingreso">
-              Ingresar
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/registro" eventKey="registro">Registrarse</Nav.Link>
+            {cliente ? (
+              <>
+                <Nav.Link as={NavLink} to="/mis-pedidos" eventKey="mis-pedidos">Mis pedidos</Nav.Link>
+                <Nav.Link as="button" type="button" eventKey="salir" onClick={alSalir} className="text-start">
+                  Cerrar sesión ({cliente.nombre})
+                </Nav.Link>
+              </>
+            ) : (
+              <>
+                <Nav.Link as={NavLink} to="/ingreso" eventKey="ingreso">
+                  Ingresar
+                </Nav.Link>
+                <Nav.Link as={NavLink} to="/registro" eventKey="registro">Registrarse</Nav.Link>
+              </>
+            )}
             <Nav.Link as={NavLink} to="/seguimiento" eventKey="seguimiento">Seguimiento</Nav.Link>
             <Nav.Link as={NavLink} to="/carrito" eventKey="carrito" className="accion-pedido">Mi carrito</Nav.Link>
           </Nav>

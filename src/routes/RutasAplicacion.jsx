@@ -11,6 +11,7 @@ import PaginaNoEncontrada from '../pages/PaginaNoEncontrada'
 import Categorias from '../pages/Categorias'
 import DetalleProducto from '../pages/DetalleProducto'
 import Registro from '../pages/Registro'
+import MisPedidos from '../pages/MisPedidos'
 import AdministrarProductos from '../pages/AdministrarProductos'
 import NuevoPedido from '../pages/NuevoPedido'
 import PedidoExitoso from '../pages/PedidoExitoso'
@@ -32,6 +33,7 @@ export default function RutasAplicacion() {
         <Route path="productos/:codigo" element={<DetalleProducto />} />
         <Route path="ingreso" element={<Ingreso />} />
         <Route path="registro" element={<Registro />} />
+        <Route path="mis-pedidos" element={<MisPedidos />} />
         <Route path="nuevo-pedido" element={<NuevoPedido />} />
         <Route path="pedido-confirmado/:id" element={<PedidoExitoso />} />
         <Route path="pedido-no-realizado" element={<PedidoNoRealizado />} />

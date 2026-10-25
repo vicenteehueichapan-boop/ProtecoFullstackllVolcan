@@ -39,7 +39,7 @@ La aplicación incluye:
 - Carrito persistente de varios cilindros: agregar, cambiar cantidades, quitar, vaciar con confirmación y seleccionar tarifa.
 - Confirmación del carrito con nombre, apellidos, correo, dirección y zona, seguida de resumen y registro del pedido.
 
-Ingreso y registro de compradores validan datos, pero todavía no crean cuentas ni autentican. Acceso del personal usa una sesión de demostración en memoria: identifica un correo ficticio, valida el formato del formulario y limita rutas por rol. No verifica contraseñas ni identidad. Al recargar o salir se pierde la sesión. El repartidor ve únicamente los pedidos del perfil activo, sin selector de otros repartidores. Los datos se conservan solo en este navegador; otro equipo tiene sus propios datos. La cantidad se valida contra el stock, aunque todavía no se reserva ni descuenta inventario al confirmar.
+El registro crea una cuenta de cliente simulada en este navegador (nombre, apellidos, RUN, correo y tarifa) e inicia su sesión; la contraseña solo se valida y no se guarda. El ingreso identifica la cuenta por su correo, sin autenticación real. Con sesión, la entrega se completa sola, el pedido queda en Mis pedidos y se recuerda la última dirección. El seguimiento y el comprobante solo muestran un pedido a su cuenta o a quien escribe su número y el correo usado. Si los datos guardados están dañados, la aplicación avisa y no los reemplaza; solo una restauración explícita los repara. Acceso del personal usa una sesión de demostración en memoria: identifica un correo ficticio, valida el formato del formulario y limita rutas por rol. No verifica contraseñas ni identidad. Al recargar o salir se pierde la sesión. El repartidor ve únicamente los pedidos del perfil activo, sin selector de otros repartidores. Los datos se conservan solo en este navegador; otro equipo tiene sus propios datos. La cantidad se valida contra el stock, aunque todavía no se reserva ni descuenta inventario al confirmar.
 
 Spring Boot, microservicios, base de datos y Docker corresponden a la Evaluación Parcial 3. El frontend puede publicarse como sitio estático en EC2; ese despliegue sigue pendiente.
 
@@ -70,10 +70,10 @@ Esta versión React utiliza Vite: abrir `index.html` con doble clic no ejecuta e
 
 1. Busca un producto en Catálogo, cambia la tarifa y abre el detalle de un cilindro.
 2. Selecciona Agregar al carrito. Agrega otro cilindro si lo necesitas, ajusta cantidades y tarifa, y recarga para comprobar la persistencia. Continúa con la entrega, completa nombre, apellidos, correo, dirección y zona, revisa todas las líneas y confirma.
-3. Guarda el identificador, por ejemplo `PED-0001`, y consulta el seguimiento.
+3. Guarda el identificador, por ejemplo `PED-0001`, y consulta el seguimiento con ese número y el correo usado. Para probar las cuentas, regístrate con datos ficticios antes de pedir: la entrega se completará sola y el pedido aparecerá en Mis pedidos.
 4. En el pie, abre Acceso del personal. Usa operadora@ejemplo.cl y un texto ficticio de al menos seis caracteres en Contraseña. Solo se valida su formato, no se verifica como credencial. Entra a Operadora y asigna el pedido a un repartidor.
 5. En Mi área de trabajo, cierra la sesión del personal. Ingresa con repartidor1@ejemplo.cl (o repartidor2/repartidor3, según la asignación), entra a Repartidor y marca En camino y luego Entregado. No podrá consultar entregas de los otros perfiles desde esta vista.
-6. Vuelve al seguimiento y recarga para comprobar que el estado persiste.
+6. Vuelve al seguimiento (desde Mis pedidos o con número y correo) y recarga para comprobar que el estado persiste.
 7. Cierra la sesión anterior y entra con administracion@ejemplo.cl. En Administración, agrega un producto ficticio, edítalo y elimínalo. Usa Volver a la tienda para revisar los cambios en el catálogo.
 8. Muestra los mensajes de error y un envío válido en ingreso y registro.
 

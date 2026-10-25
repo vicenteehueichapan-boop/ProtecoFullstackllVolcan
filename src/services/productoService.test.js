@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   actualizarProducto,
   crearProducto,
@@ -25,6 +25,7 @@ describe('productoService', () => {
   beforeEach(() => {
     localStorage.clear()
   })
+  afterEach(() => vi.restoreAllMocks())
 
   it('inicializa el catálogo con catorce productos', () => {
     expect(listarProductos()).toHaveLength(14)
@@ -72,10 +73,9 @@ describe('productoService', () => {
   })
 
   it('informa cuando el navegador no permite leer el catálogo', () => {
-    const lectura = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('Bloqueado') })
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('Bloqueado') })
 
     expect(() => listarProductos()).toThrow('No se pudo leer el almacenamiento')
-    lectura.mockRestore()
   })
 
   it('repara un catálogo dañado solo con una restauración explícita', () => {

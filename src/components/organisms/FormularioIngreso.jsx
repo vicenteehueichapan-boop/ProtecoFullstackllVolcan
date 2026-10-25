@@ -15,7 +15,9 @@ export default function FormularioIngreso({ alIngresar, etiquetaCorreo = 'Correo
     setErrores(nuevosErrores)
 
     if (Object.keys(nuevosErrores).length === 0) {
-      alIngresar({ correo, clave })
+      // Si la página responde con errores (por ejemplo, un correo sin cuenta),
+      // se muestran junto al campo correspondiente.
+      setErrores(alIngresar({ correo, clave }) ?? {})
     }
   }
 

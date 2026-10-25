@@ -7,6 +7,7 @@ import FormularioEntrega from '../components/organisms/FormularioEntrega'
 import zonasDespacho from '../data/zonasDespacho'
 import { useCarrito } from '../hooks/useCarrito'
 import { usePedidos } from '../hooks/usePedidos'
+import { useSesionCliente } from '../hooks/useSesionCliente'
 import { useProductos } from '../hooks/useProductos'
 import { useTituloPagina } from '../hooks/useTituloPagina'
 import { resumirCarrito } from '../utils/resumirCarrito'
@@ -16,6 +17,7 @@ export default function ConfirmarPedido() {
   const { carrito, error, vaciar } = useCarrito()
   const { productos, recargarProductos } = useProductos()
   const { crearPedido } = usePedidos()
+  const { cliente: cuenta, actualizarDatos } = useSesionCliente()
   const navegar = useNavigate()
   const [borrador, setBorrador] = useState(null)
   const [errorConfirmacion, setErrorConfirmacion] = useState('')
@@ -32,7 +34,19 @@ export default function ConfirmarPedido() {
         codigo, nombre, cantidad, precioUnitario, subtotal,
       })),
       total: resumen.total, formaPago: 'efectivo_al_entregar',
+      clienteId: cuenta?.id ?? null,
     })
+  }
+
+  // Guarda la última dirección en la cuenta para el próximo pedido. Si falla,
+  // el pedido ya quedó registrado, así que no se presenta como un error.
+  function recordarEntrega() {
+    if (!cuenta) return
+    try {
+      actualizarDatos({ direccion: borrador.cliente.direccion, zonaId: borrador.zona.id })
+    } catch {
+      // El próximo pedido simplemente pedirá la dirección otra vez.
+    }
   }
 
   function confirmar() {
@@ -40,11 +54,14 @@ export default function ConfirmarPedido() {
     try {
       const pedido = crearPedido(borrador)
       registrado.current = true
+      recordarEntrega()
       const vaciado = vaciar()
+      // recienCreado permite ver el comprobante sin volver a pedir el correo.
       navegar(`/pedido-confirmado/${pedido.id}`, {
         replace: true,
-        state: vaciado ? null : {
-          aviso: 'Tu pedido se registró correctamente, pero no pudimos vaciar el carrito. No vuelvas a enviarlo; revisa el almacenamiento y vacía el carrito manualmente.',
+        state: {
+          recienCreado: true,
+          aviso: vaciado ? '' : 'Tu pedido se registró correctamente, pero no pudimos vaciar el carrito. No vuelvas a enviarlo; revisa el almacenamiento y vacía el carrito manualmente.',
         },
       })
     } catch (excepcion) {
@@ -76,7 +93,20 @@ export default function ConfirmarPedido() {
         </>
       )}
       <div hidden={!resumen.puedeConfirmar || Boolean(error) || Boolean(borrador)}>
-        <FormularioEntrega zonas={zonasDespacho} alPreparar={preparar} />
+        {!cuenta && (
+          <p className="border rounded p-3 bg-light">
+            ¿Tienes cuenta? <Link to="/ingreso" state={{ desde: '/confirmar-pedido' }}>Ingresa</Link> para
+            completar tus datos y guardar el pedido en tu historial.
+          </p>
+        )}
+        <FormularioEntrega
+          zonas={zonasDespacho}
+          alPreparar={preparar}
+          datosIniciales={cuenta && {
+            nombre: cuenta.nombre, apellidos: cuenta.apellidos, correo: cuenta.correo,
+            direccion: cuenta.direccion, zonaId: cuenta.zonaId,
+          }}
+        />
       </div>
       <Link className="d-inline-block mt-3" to="/carrito">Volver al carrito</Link>
     </Container>

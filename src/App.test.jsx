@@ -18,33 +18,42 @@ describe('recorrido completo de un pedido', () => {
     window.history.replaceState({}, '', '/nuevo-pedido')
   })
 
-  it('conecta confirmación, operadora, repartidor y seguimiento', async () => {
+  it('conecta cuenta, carrito, operadora, repartidor, historial y seguimiento', async () => {
+    window.history.replaceState({}, '', '/registro')
     const usuario = userEvent.setup()
     render(<App />)
 
-    await usuario.type(screen.getByLabelText('Nombre del cliente'), 'Ana Pérez')
+    await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
+    await usuario.type(screen.getByLabelText('Apellidos'), 'Pérez')
+    await usuario.type(screen.getByLabelText('RUN sin puntos ni guion'), '12345678K')
+    await usuario.type(screen.getByLabelText('Correo'), 'ana@correo.cl')
+    await usuario.type(screen.getByLabelText('Contraseña'), 'volcan2026')
+    await usuario.type(screen.getByLabelText('Confirmar contraseña'), 'volcan2026')
+    await usuario.click(screen.getByRole('button', { name: 'Registrarme' }))
+    expect(await screen.findByRole('link', { name: 'Mis pedidos' })).toBeInTheDocument()
+
+    irA('/productos/CL001')
+    await usuario.click(await screen.findByRole('button', { name: 'Agregar al carrito' }))
+    await usuario.click(screen.getByRole('button', { name: 'Aumentar cantidad de Cilindro GLP 5 kg' }))
+    irA('/confirmar-pedido')
+
+    // La entrega parte con los datos de la cuenta; solo falta la dirección del primer pedido.
+    expect(screen.getByLabelText('Nombre')).toHaveValue('Ana')
+    expect(screen.getByLabelText('Apellidos')).toHaveValue('Pérez')
+    expect(screen.getByLabelText('Correo')).toHaveValue('ana@correo.cl')
     await usuario.type(screen.getByLabelText('Dirección de entrega'), 'Los Aromos 123')
     await usuario.selectOptions(screen.getByLabelText('Zona de despacho'), 'centro')
-    await usuario.selectOptions(screen.getByLabelText('Cilindro'), 'CL001')
-    await usuario.clear(screen.getByLabelText('Cantidad'))
-    await usuario.type(screen.getByLabelText('Cantidad'), '2')
     await usuario.click(screen.getByRole('button', { name: 'Revisar pedido' }))
-
-    expect(screen.getByRole('heading', { name: 'Resumen del pedido' })).toBeInTheDocument()
     expect(screen.getByText(/Cilindro GLP 5 kg × 2/)).toBeInTheDocument()
-
-    await usuario.click(screen.getByRole('button', { name: 'Corregir datos' }))
-    expect(screen.getByLabelText('Nombre del cliente')).toHaveValue('Ana Pérez')
-    expect(screen.getByLabelText('Dirección de entrega')).toHaveValue('Los Aromos 123')
-    expect(screen.getByLabelText('Zona de despacho')).toHaveValue('centro')
-    expect(screen.getByLabelText('Cilindro')).toHaveValue('CL001')
-    expect(screen.getByLabelText('Cantidad')).toHaveValue(2)
-    await usuario.click(screen.getByRole('button', { name: 'Revisar pedido' }))
 
     await usuario.click(screen.getByRole('button', { name: 'Confirmar pedido' }))
 
     expect(await screen.findByRole('heading', { name: 'Pedido confirmado' })).toBeInTheDocument()
     expect(screen.getByText('PED-0001')).toBeInTheDocument()
+    expect(JSON.parse(localStorage.getItem('gas-el-volcan-pedidos'))[0].clienteId).toBe('CLI-0001')
+    expect(JSON.parse(localStorage.getItem('gas-el-volcan-clientes'))[0]).toMatchObject({
+      direccion: 'Los Aromos 123', zonaId: 'centro',
+    })
 
     await ingresarPersonalEnPrueba(usuario, 'operadora@ejemplo.cl')
     irA('/operadora/pedidos')
@@ -75,11 +84,12 @@ describe('recorrido completo de un pedido', () => {
     await usuario.click(screen.getByRole('button', { name: 'Marcar entregado' }))
     expect(screen.getByText('Entrega completada.')).toBeInTheDocument()
 
-    irA('/seguimiento/PED-0001')
+    irA('/mis-pedidos')
+    await usuario.click(await screen.findByRole('button', { name: 'Ver seguimiento de PED-0001' }))
     expect(await screen.findByRole('heading', { name: 'Pedido PED-0001' })).toBeInTheDocument()
     expect(screen.getByText('Repartidor 1')).toBeInTheDocument()
     expect(screen.getByText('Pedido entregado')).toHaveClass('list-group-item-success')
-  })
+  }, 20000)
 
   it('permite corregir el pedido si el catálogo cambió durante el resumen', async () => {
     const usuario = userEvent.setup()

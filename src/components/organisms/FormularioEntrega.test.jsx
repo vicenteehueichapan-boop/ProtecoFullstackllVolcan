@@ -16,6 +16,22 @@ describe('FormularioEntrega', () => {
     expect(alPreparar).not.toHaveBeenCalled()
   })
 
+  it('parte con los datos recibidos por props y permite corregirlos', async () => {
+    const alPreparar = vi.fn()
+    const datosIniciales = { nombre: 'Ana', apellidos: 'Pérez', correo: 'ana@ejemplo.cl', direccion: '', zonaId: '' }
+    render(<FormularioEntrega zonas={zonas} alPreparar={alPreparar} datosIniciales={datosIniciales} />)
+
+    expect(screen.getByLabelText('Nombre')).toHaveValue('Ana')
+    expect(screen.getByLabelText('Correo')).toHaveValue('ana@ejemplo.cl')
+    await userEvent.type(screen.getByLabelText('Dirección de entrega'), 'Los Aromos 123')
+    await userEvent.selectOptions(screen.getByLabelText('Zona de despacho'), 'centro')
+    await userEvent.click(screen.getByRole('button', { name: 'Revisar pedido' }))
+
+    expect(alPreparar).toHaveBeenCalledWith(expect.objectContaining({
+      cliente: expect.objectContaining({ nombre: 'Ana Pérez', direccion: 'Los Aromos 123' }),
+    }))
+  })
+
   it('entrega los datos limpios al padre y actualiza mensajes al corregir', async () => {
     const alPreparar = vi.fn()
     render(<FormularioEntrega zonas={zonas} alPreparar={alPreparar} />)

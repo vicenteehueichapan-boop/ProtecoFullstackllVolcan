@@ -60,6 +60,10 @@ function validarDatosPedido(datosPedido) {
   if (!['residencial', 'comercial'].includes(datosPedido.tipoCliente)) {
     throw new Error('El tipo de cliente no es válido')
   }
+  // Los pedidos sin sesión (o anteriores a las cuentas) no tienen clienteId.
+  if (datosPedido.clienteId != null && !/^CLI-\d{4,}$/.test(datosPedido.clienteId)) {
+    throw new Error('La cuenta del cliente no es válida')
+  }
   if (datosPedido.formaPago !== 'efectivo_al_entregar') {
     throw new Error('La forma de pago no es válida')
   }
