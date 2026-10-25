@@ -1,11 +1,6 @@
-import personalDemostracion from '../data/personalDemostracion'
-
-export function identificarPersonal(correo) {
-  if (typeof correo !== 'string') return null
-  const perfil = personalDemostracion.find((persona) => persona.correo === correo.trim().toLowerCase())
-  return perfil ? { ...perfil } : null
-}
-
+// Regla pura de acceso a las herramientas del personal: el perfil debe existir y su rol
+// estar entre los permitidos para la ruta. Que el perfil siga activo y con ese rol lo
+// garantiza SesionPersonalContext, que lo lee desde los datos guardados.
 export function puedeAccederPersonal(perfil, roles) {
-  return Boolean(perfil && identificarPersonal(perfil.correo)?.rol === perfil.rol && roles.includes(perfil.rol))
+  return Boolean(perfil && roles.includes(perfil.rol))
 }

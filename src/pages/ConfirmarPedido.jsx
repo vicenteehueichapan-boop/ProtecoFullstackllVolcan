@@ -55,6 +55,8 @@ export default function ConfirmarPedido() {
     try {
       const pedido = crearPedido(borrador)
       registrado.current = true
+      // El servicio descontó el stock del pedido: el Context vuelve a leer el catálogo.
+      recargarProductos()
       recordarEntrega()
       const vaciado = vaciar()
       // recienCreado permite ver el comprobante sin volver a pedir el correo.

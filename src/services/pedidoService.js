@@ -1,8 +1,8 @@
 import pedidosIniciales from '../data/pedidosIniciales'
-import repartidores from '../data/repartidores'
 import zonasDespacho from '../data/zonasDespacho'
 import { precioSegunCliente } from '../utils/precioSegunCliente'
-import { listarProductos } from './productoService'
+import { descontarStock, devolverStock, listarProductos } from './productoService'
+import { listarPersonal } from './personalService'
 
 const CLAVE_PEDIDOS = 'gas-el-volcan-pedidos'
 
@@ -94,6 +94,15 @@ function validarPedidoGuardado(pedido) {
       : typeof pedido.repartidor !== 'string' || pedido.repartidor.trim() === '')) {
     throw new Error('El pedido guardado tiene una estructura incorrecta')
   }
+  // Los pedidos asignados antes de guardar el identificador del repartidor no lo tienen.
+  if (pedido.repartidorId !== undefined && (typeof pedido.repartidorId !== 'string' || pedido.repartidorId === '')) {
+    throw new Error('El repartidor del pedido guardado no es válido')
+  }
+  // Los pedidos entregados antes de registrar cobros no tienen este dato: es opcional.
+  if (pedido.cobro !== undefined
+    && (!Number.isFinite(pedido.cobro?.monto) || !Number.isFinite(Date.parse(pedido.cobro?.fecha)))) {
+    throw new Error('El cobro del pedido guardado no es válido')
+  }
 }
 
 function validarCatalogoVigente(datosPedido) {
@@ -163,18 +172,30 @@ export function crearPedido(datosPedido) {
     fechaActualizacion: fechaCreacion,
   }
 
-  guardarPedidos([...pedidos, pedido])
+  // El stock se descuenta antes de guardar el pedido. Si guardar falla, se devuelve:
+  // así nunca queda stock descontado sin un pedido que lo justifique.
+  descontarStock(pedido.productos)
+  try {
+    guardarPedidos([...pedidos, pedido])
+  } catch (excepcion) {
+    devolverStock(pedido.productos)
+    throw excepcion
+  }
   return copiarPedidos(pedido)
 }
 
-export function asignarRepartidor(id, repartidor) {
-  const nombreRepartidor = String(repartidor ?? '').trim()
+export function asignarRepartidor(id, repartidorId) {
+  const idRepartidor = String(repartidorId ?? '').trim()
 
-  if (nombreRepartidor === '') {
+  if (idRepartidor === '') {
     throw new Error('Se debe indicar un repartidor')
   }
 
-  if (!repartidores.some((disponible) => disponible.nombre === nombreRepartidor)) {
+  // Solo un perfil activo con rol repartidor puede recibir pedidos.
+  const repartidor = listarPersonal().find(
+    (perfil) => perfil.id === idRepartidor && perfil.rol === 'repartidor' && perfil.activo,
+  )
+  if (!repartidor) {
     throw new Error('El repartidor seleccionado no está disponible')
   }
 
@@ -183,9 +204,12 @@ export function asignarRepartidor(id, repartidor) {
       throw new Error('Solo se puede asignar un repartidor a un pedido pendiente')
     }
 
+    // Se guarda el identificador (para filtrar sus entregas) y el nombre de ese momento,
+    // como registro de quién recibió el pedido aunque después cambie su perfil.
     return {
       ...pedido,
-      repartidor: nombreRepartidor,
+      repartidorId: repartidor.id,
+      repartidor: repartidor.nombre,
       estado: ESTADOS_PEDIDO.ASIGNADO,
       fechaActualizacion: new Date().toISOString(),
     }
@@ -200,11 +224,14 @@ export function cambiarEstadoPedido(id, nuevoEstado) {
       throw new Error('El cambio de estado no respeta la secuencia del pedido')
     }
 
-    return {
-      ...pedido,
-      estado: nuevoEstado,
-      fechaActualizacion: new Date().toISOString(),
+    const fecha = new Date().toISOString()
+    const actualizado = { ...pedido, estado: nuevoEstado, fechaActualizacion: fecha }
+    // El pago es en efectivo al recibir: al confirmar la entrega queda registrado el cobro
+    // (documento del caso, sección 4), sin depender de anotaciones en cuadernos.
+    if (nuevoEstado === ESTADOS_PEDIDO.ENTREGADO) {
+      actualizado.cobro = { monto: pedido.total, fecha }
     }
+    return actualizado
   })
 }
 

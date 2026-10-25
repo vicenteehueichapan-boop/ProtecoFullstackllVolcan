@@ -17,13 +17,14 @@ async function completarProducto(usuario, codigo = 'CL005') {
   // Pegar textos reproduce una entrada de usuario sin simular cada tecla.
   // Así los casos de CRUD no dependen de la velocidad del equipo con cobertura.
   for (const [etiqueta, valor] of [
-    ['Código', codigo], ['Categoría', 'Cilindros de Gas'],
+    ['Código', codigo],
     ['Nombre', 'Cilindro GLP 2 kg'],
     ['Descripción', 'Cilindro compacto para hogares y emprendimientos de Chillán.'],
   ]) {
     await usuario.click(screen.getByLabelText(etiqueta))
     await usuario.paste(valor)
   }
+  await usuario.selectOptions(screen.getByLabelText('Categoría'), 'Cilindros de Gas')
   await usuario.clear(screen.getByLabelText('Stock'))
   await usuario.type(screen.getByLabelText('Stock'), '18')
   await usuario.clear(screen.getByLabelText('Precio residencial'))

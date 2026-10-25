@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { validarCorreo, validarClave, validarIngreso, validarRegistro } from './validaciones'
+import {
+  validarClave, validarCorreo, validarDatosCliente, validarIngreso, validarPerfilPersonal, validarRegistro,
+} from './validaciones'
 
 describe('validaciones puras de formularios', () => {
   it.each(['', '   ', 'cliente', 'a@@b.cl', 'a@b', 'a b@c.cl'])('rechaza el correo inválido "%s"', (correo) => {
@@ -36,5 +38,26 @@ describe('validaciones puras de formularios', () => {
         run: 'Ingresa el RUN sin puntos ni guion.',
         confirmarClave: 'Las contraseñas deben coincidir.',
       })
+  })
+})
+
+describe('validaciones de administración de usuarios', () => {
+  it('valida los datos de un cliente sin exigir contraseña', () => {
+    const datos = { nombre: 'Ana', apellidos: 'Pérez', run: '12345678K', correo: 'ana@correo.cl' }
+
+    expect(validarDatosCliente(datos)).toEqual({})
+    expect(validarDatosCliente({ ...datos, run: '1', correo: 'x' })).toEqual({
+      run: 'Ingresa el RUN sin puntos ni guion.',
+      correo: 'Ingresa un correo válido.',
+    })
+  })
+
+  it('valida nombre, correo y rol de un perfil del personal', () => {
+    expect(validarPerfilPersonal({ nombre: 'Repartidor 4', correo: 'r4@ejemplo.cl', rol: 'repartidor' })).toEqual({})
+    expect(validarPerfilPersonal({ nombre: 'R', correo: ' ', rol: 'cliente' })).toEqual({
+      nombre: 'Ingresa un nombre de al menos 3 caracteres.',
+      correo: 'Ingresa un correo válido.',
+      rol: 'Selecciona un rol del personal.',
+    })
   })
 })

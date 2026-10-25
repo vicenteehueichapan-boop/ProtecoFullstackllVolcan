@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Badge, Button, Col, Container, Modal, Row, Table } from 'react-bootstrap'
+import { Badge, Button, Col, Modal, Row, Table } from 'react-bootstrap'
 import FormularioProducto from '../components/organisms/FormularioProducto'
 import { useProductos } from '../hooks/useProductos'
 import imagenAccesorio from '../assets/productos/accesorio.svg'
@@ -30,6 +30,7 @@ function prepararNumeros(producto) {
 export default function AdministrarProductos() {
   const {
     productos,
+    categorias,
     crearProducto,
     actualizarProducto,
     eliminarProducto,
@@ -102,11 +103,12 @@ export default function AdministrarProductos() {
   }
 
   return (
-    <Container className="py-5">
+    <section>
       <Row className="g-4">
-        <Col lg={4}>
+        <Col xl={4}>
           <FormularioProducto
             datos={formulario}
+            categorias={categorias}
             estaEditando={estaEditando}
             mensaje={mensaje}
             onChange={cambiarCampo}
@@ -114,7 +116,7 @@ export default function AdministrarProductos() {
             onCancelar={limpiarFormulario}
           />
         </Col>
-        <Col lg={8}>
+        <Col xl={8}>
           <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <div>
               <h1 className="h3 mb-1">Administración de productos</h1>
@@ -171,6 +173,6 @@ export default function AdministrarProductos() {
           <Button variant="danger" onClick={confirmarAccion}>Confirmar</Button>
         </Modal.Footer>
       </Modal>
-    </Container>
+    </section>
   )
 }

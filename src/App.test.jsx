@@ -50,6 +50,9 @@ describe('recorrido completo de un pedido', () => {
     expect(await screen.findByRole('heading', { name: 'Pedido confirmado' })).toBeInTheDocument()
     expect(screen.getByText('PED-0001')).toBeInTheDocument()
     expect(JSON.parse(localStorage.getItem('gas-el-volcan-pedidos'))[0].clienteId).toBe('CLI-0001')
+    // El stock visible ya descuenta los 2 cilindros del pedido (80 - 2).
+    irA('/productos/CL001')
+    expect(await screen.findByText(/Stock disponible: 78/)).toBeInTheDocument()
     expect(JSON.parse(localStorage.getItem('gas-el-volcan-clientes'))[0]).toMatchObject({
       direccion: 'Los Aromos 123', zonaId: 'centro',
     })

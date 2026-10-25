@@ -2,7 +2,6 @@ import { Alert, Button, Card, Col, Form, Row } from 'react-bootstrap'
 
 const CAMPOS_TEXTO = [
   { nombre: 'codigo', etiqueta: 'Código' },
-  { nombre: 'categoria', etiqueta: 'Categoría' },
   { nombre: 'nombre', etiqueta: 'Nombre' },
 ]
 
@@ -14,6 +13,7 @@ const CAMPOS_NUMERICOS = [
 
 export default function FormularioProducto({
   datos,
+  categorias,
   estaEditando,
   mensaje,
   onChange,
@@ -35,6 +35,16 @@ export default function FormularioProducto({
               <Form.Control name={campo.nombre} value={datos[campo.nombre]} onChange={onChange} required />
             </Form.Group>
           ))}
+          {/* Solo categorías registradas: así el catálogo y sus filtros quedan coherentes. */}
+          <Form.Group className="mb-3" controlId="categoria">
+            <Form.Label>Categoría</Form.Label>
+            <Form.Select name="categoria" value={datos.categoria} onChange={onChange} required>
+              <option value="">Selecciona una categoría</option>
+              {categorias.map((categoria) => (
+                <option key={categoria.nombre} value={categoria.nombre}>{categoria.nombre}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
           <Form.Group className="mb-3" controlId="descripcion">
             <Form.Label>Descripción</Form.Label>
             <Form.Control

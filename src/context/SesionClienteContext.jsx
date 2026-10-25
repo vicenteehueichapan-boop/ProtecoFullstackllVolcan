@@ -1,50 +1,48 @@
 import { useCallback, useMemo, useState } from 'react'
 import { SesionClienteContext } from './sesionClienteContextoBase'
-import {
-  actualizarCliente, cerrarSesionCliente, iniciarSesionCliente, leerSesionCliente, registrarCliente,
-} from '../services/clienteService'
+import { useUsuarios } from '../hooks/useUsuarios'
+import { cerrarSesionCliente, iniciarSesionCliente, leerSesionCliente } from '../services/clienteService'
 
-// Lee la sesión guardada; si las cuentas están dañadas, se informa sin borrarlas.
-function estadoInicial() {
+function idInicial() {
   try {
-    return { cliente: leerSesionCliente(), error: '' }
-  } catch (excepcion) {
-    return { cliente: null, error: excepcion.message }
+    return leerSesionCliente()?.id ?? null
+  } catch {
+    // Si las cuentas guardadas están dañadas, UsuariosContext ya informa el problema.
+    return null
   }
 }
 
 export function SesionClienteProvider({ children }) {
-  const [estado, setEstado] = useState(estadoInicial)
+  const { clientes, errorClientes, crearCliente, actualizarCliente } = useUsuarios()
+  // Se guarda solo el identificador. La cuenta se busca en la lista en cada renderizado:
+  // si administración la desactiva o la edita, la sesión lo refleja de inmediato.
+  const [idSesion, setIdSesion] = useState(idInicial)
+  const cliente = clientes.find((cuenta) => cuenta.id === idSesion && cuenta.activo) ?? null
 
-  // Cada operación llama al servicio (que guarda) y después actualiza el estado.
   // Si el servicio lanza un error, el estado no cambia y la página muestra el mensaje.
   const registrar = useCallback((datos) => {
-    const cliente = registrarCliente(datos)
-    iniciarSesionCliente(cliente.correo)
-    setEstado({ cliente, error: '' })
-    return cliente
-  }, [])
+    const creado = crearCliente(datos)
+    iniciarSesionCliente(creado.correo)
+    setIdSesion(creado.id)
+    return creado
+  }, [crearCliente])
 
   const ingresar = useCallback((correo) => {
-    const cliente = iniciarSesionCliente(correo)
-    setEstado({ cliente, error: '' })
-    return cliente
+    const cuenta = iniciarSesionCliente(correo)
+    setIdSesion(cuenta.id)
+    return cuenta
   }, [])
 
   const salir = useCallback(() => {
     cerrarSesionCliente()
-    setEstado({ cliente: null, error: '' })
+    setIdSesion(null)
   }, [])
 
-  const actualizarDatos = useCallback((cambios) => {
-    const cliente = actualizarCliente(estado.cliente?.id, cambios)
-    setEstado({ cliente, error: '' })
-    return cliente
-  }, [estado.cliente?.id])
+  const actualizarDatos = useCallback((cambios) => actualizarCliente(idSesion, cambios), [actualizarCliente, idSesion])
 
   const valor = useMemo(() => ({
-    cliente: estado.cliente, errorClientes: estado.error, registrar, ingresar, salir, actualizarDatos,
-  }), [estado, registrar, ingresar, salir, actualizarDatos])
+    cliente, errorClientes, registrar, ingresar, salir, actualizarDatos,
+  }), [cliente, errorClientes, registrar, ingresar, salir, actualizarDatos])
 
   return <SesionClienteContext.Provider value={valor}>{children}</SesionClienteContext.Provider>
 }

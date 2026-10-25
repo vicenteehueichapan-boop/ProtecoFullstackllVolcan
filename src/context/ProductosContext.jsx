@@ -1,27 +1,30 @@
 import { useCallback, useMemo, useState } from 'react'
+import { crearCategoria as crearCategoriaEnServicio, listarCategorias } from '../services/categoriaService'
 import {
   actualizarProducto as actualizarProductoEnServicio,
   crearProducto as crearProductoEnServicio,
   eliminarProducto as eliminarProductoEnServicio,
   listarProductos,
   incorporarProductosDelCaso as incorporarEnServicio,
+  renombrarCategoria as renombrarCategoriaEnServicio,
   restaurarProductos as restaurarProductosEnServicio,
 } from '../services/productoService'
 import { ProductosContext } from './productosContextoBase'
 
-// Si el catálogo guardado está dañado, la tienda sigue abierta con un aviso
+// Lee productos y categorías juntos: renombrar una categoría cambia ambos.
+// Si los datos guardados están dañados, la tienda sigue abierta con un aviso
 // y los datos quedan intactos hasta que administración los restaure.
 function leerCatalogo() {
   try {
-    return { productos: listarProductos(), error: '' }
+    return { productos: listarProductos(), categorias: listarCategorias(), error: '' }
   } catch (excepcion) {
-    return { productos: [], error: excepcion.message }
+    return { productos: [], categorias: [], error: excepcion.message }
   }
 }
 
 export function ProductosProvider({ children }) {
   const [catalogo, setCatalogo] = useState(leerCatalogo)
-  const { productos, error: errorProductos } = catalogo
+  const { productos, categorias, error: errorProductos } = catalogo
 
   const recargarProductos = useCallback(() => {
     const lectura = leerCatalogo()
@@ -29,48 +32,26 @@ export function ProductosProvider({ children }) {
     return lectura.productos
   }, [])
 
-  const crearProducto = useCallback(
-    (producto) => {
-      const productoCreado = crearProductoEnServicio(producto)
-      recargarProductos()
-      return productoCreado
-    },
-    [recargarProductos],
-  )
+  // Cada operación pide el cambio al servicio (que guarda) y después vuelve a leer.
+  // Si el servicio lanza un error, el estado no cambia y la página muestra el mensaje.
+  const ejecutar = useCallback((operacion, ...argumentos) => {
+    const resultado = operacion(...argumentos)
+    recargarProductos()
+    return resultado
+  }, [recargarProductos])
 
-  const actualizarProducto = useCallback(
-    (codigo, cambios) => {
-      const productoActualizado = actualizarProductoEnServicio(codigo, cambios)
-      recargarProductos()
-      return productoActualizado
-    },
-    [recargarProductos],
-  )
-
-  const eliminarProducto = useCallback(
-    (codigo) => {
-      const productoEliminado = eliminarProductoEnServicio(codigo)
-      recargarProductos()
-      return productoEliminado
-    },
-    [recargarProductos],
-  )
-
-  const restaurarProductos = useCallback(() => {
-    const productosRestaurados = restaurarProductosEnServicio()
-    setCatalogo({ productos: productosRestaurados, error: '' })
-    return productosRestaurados
-  }, [])
-
-  const incorporarProductosDelCaso = useCallback(() => {
-    const completos = incorporarEnServicio()
-    setCatalogo({ productos: completos, error: '' })
-    return completos
-  }, [])
+  const crearProducto = useCallback((producto) => ejecutar(crearProductoEnServicio, producto), [ejecutar])
+  const actualizarProducto = useCallback((codigo, cambios) => ejecutar(actualizarProductoEnServicio, codigo, cambios), [ejecutar])
+  const eliminarProducto = useCallback((codigo) => ejecutar(eliminarProductoEnServicio, codigo), [ejecutar])
+  const restaurarProductos = useCallback(() => ejecutar(restaurarProductosEnServicio), [ejecutar])
+  const incorporarProductosDelCaso = useCallback(() => ejecutar(incorporarEnServicio), [ejecutar])
+  const crearCategoria = useCallback((datos) => ejecutar(crearCategoriaEnServicio, datos), [ejecutar])
+  const renombrarCategoria = useCallback((nombre, datos) => ejecutar(renombrarCategoriaEnServicio, nombre, datos), [ejecutar])
 
   const valorContexto = useMemo(
     () => ({
       productos,
+      categorias,
       errorProductos,
       crearProducto,
       actualizarProducto,
@@ -78,9 +59,12 @@ export function ProductosProvider({ children }) {
       restaurarProductos,
       recargarProductos,
       incorporarProductosDelCaso,
+      crearCategoria,
+      renombrarCategoria,
     }),
     [
       productos,
+      categorias,
       errorProductos,
       crearProducto,
       actualizarProducto,
@@ -88,6 +72,8 @@ export function ProductosProvider({ children }) {
       restaurarProductos,
       recargarProductos,
       incorporarProductosDelCaso,
+      crearCategoria,
+      renombrarCategoria,
     ],
   )
 

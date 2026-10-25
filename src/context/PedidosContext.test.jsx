@@ -35,7 +35,7 @@ describe('PedidosProvider', () => {
       result.current.crearPedido(datosPedido)
     })
     act(() => {
-      result.current.asignarRepartidor('PED-0001', 'Repartidor 1')
+      result.current.asignarRepartidor('PED-0001', 'repartidor-1')
     })
     act(() => {
       result.current.cambiarEstado('PED-0001', ESTADOS_PEDIDO.EN_CAMINO)

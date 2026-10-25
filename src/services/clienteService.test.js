@@ -7,6 +7,7 @@ import {
   listarClientes,
   registrarCliente,
 } from './clienteService'
+import { crearPersonal } from './personalService'
 
 const datosCamila = {
   nombre: ' Camila ',
@@ -81,6 +82,38 @@ describe('clienteService', () => {
     expect(() => registrarCliente({ ...datosCamila, correo: 'x@correo.cl' })).toThrow(expect.objectContaining({ campo: 'run' }))
     expect(() => registrarCliente({ ...datosCamila, nombre: '' })).toThrow(expect.objectContaining({ campo: 'nombre' }))
     expect(() => iniciarSesionCliente('nadie@correo.cl')).toThrow(expect.objectContaining({ campo: 'correo' }))
+  })
+
+  it('crea cuentas activas y administración puede desactivarlas', () => {
+    const { id, activo } = registrarCliente(datosCamila)
+    expect(activo).toBe(true)
+
+    actualizarCliente(id, { activo: false })
+
+    expect(() => iniciarSesionCliente('camila@correo.cl')).toThrow('desactivada')
+    expect(() => actualizarCliente(id, { activo: 'no' })).toThrow('estado de la cuenta')
+  })
+
+  it('cierra la sesión de una cuenta que fue desactivada', () => {
+    const { id } = registrarCliente(datosCamila)
+    iniciarSesionCliente('camila@correo.cl')
+
+    actualizarCliente(id, { activo: false })
+
+    expect(leerSesionCliente()).toBeNull()
+  })
+
+  it('sigue leyendo cuentas creadas antes del estado activo', () => {
+    const { activo: _activo, ...anterior } = registrarCliente(datosCamila)
+    localStorage.setItem('gas-el-volcan-clientes', JSON.stringify([anterior]))
+
+    expect(listarClientes()[0].activo).toBe(true)
+  })
+
+  it('reserva también los correos del personal creado por administración', () => {
+    crearPersonal({ nombre: 'Repartidor 4', correo: 'repartidor4@ejemplo.cl', rol: 'repartidor' })
+
+    expect(() => registrarCliente({ ...datosCamila, correo: 'repartidor4@ejemplo.cl' })).toThrow('reservado para el personal')
   })
 
   it('no inicia sesión con un correo sin cuenta', () => {

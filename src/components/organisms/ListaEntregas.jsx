@@ -1,5 +1,6 @@
 import { Button, Card, Col, Row } from 'react-bootstrap'
 import EtiquetaEstadoPedido from '../atoms/EtiquetaEstadoPedido'
+import { formatearPrecio } from '../../utils/formatearPrecio'
 
 export default function ListaEntregas({ pedidos, alCambiarEstado }) {
   if (pedidos.length === 0) {
@@ -18,7 +19,11 @@ export default function ListaEntregas({ pedidos, alCambiarEstado }) {
               </div>
               <p className="mb-1"><strong>Cliente:</strong> {pedido.cliente.nombre}</p>
               <p className="mb-1"><strong>Dirección:</strong> {pedido.cliente.direccion}</p>
-              <p><strong>Entrega:</strong> {pedido.productos[0]?.nombre} × {pedido.productos[0]?.cantidad}</p>
+              <p className="mb-1"><strong>Entregar:</strong></p>
+              <ul>
+                {pedido.productos.map((linea) => <li key={linea.codigo}>{linea.nombre} × {linea.cantidad}</li>)}
+              </ul>
+              <p><strong>Cobrar en efectivo:</strong> {formatearPrecio(pedido.total)}</p>
 
               {pedido.estado === 'asignado' && (
                 <Button variant="primary" onClick={() => alCambiarEstado(pedido.id, 'en_camino')}>

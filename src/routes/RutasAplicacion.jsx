@@ -1,6 +1,17 @@
 import { Route, Routes } from 'react-router-dom'
 import PlantillaPublica from '../components/templates/PlantillaPublica'
 import PlantillaPersonal from '../components/templates/PlantillaPersonal'
+import PlantillaAdministracion from '../components/templates/PlantillaAdministracion'
+import PanelAdministracion from '../pages/PanelAdministracion'
+import AdministrarPedidos from '../pages/AdministrarPedidos'
+import OrdenPedidoAdministracion from '../pages/OrdenPedidoAdministracion'
+import ProductosCriticos from '../pages/ProductosCriticos'
+import AdministrarCategorias from '../pages/AdministrarCategorias'
+import AdministrarUsuarios from '../pages/AdministrarUsuarios'
+import DetalleClienteAdministracion from '../pages/DetalleClienteAdministracion'
+import DetallePersonalAdministracion from '../pages/DetallePersonalAdministracion'
+import ReportesAdministracion from '../pages/ReportesAdministracion'
+import PerfilAdministracion from '../pages/PerfilAdministracion'
 import AccesoPersonal from '../pages/AccesoPersonal'
 import Catalogo from '../pages/Catalogo'
 import Carrito from '../pages/Carrito'
@@ -50,7 +61,19 @@ export default function RutasAplicacion() {
       <Route element={<PlantillaPersonal />}>
         <Route path="personal" element={<AccesoPersonal />} />
         <Route element={<AccesoPorRol roles={['administracion']} />}>
-          <Route path="administracion/productos" element={<AdministrarProductos />} />
+          <Route path="administracion" element={<PlantillaAdministracion />}>
+            <Route index element={<PanelAdministracion />} />
+            <Route path="pedidos" element={<AdministrarPedidos />} />
+            <Route path="pedidos/:id" element={<OrdenPedidoAdministracion />} />
+            <Route path="productos" element={<AdministrarProductos />} />
+            <Route path="criticos" element={<ProductosCriticos />} />
+            <Route path="categorias" element={<AdministrarCategorias />} />
+            <Route path="usuarios" element={<AdministrarUsuarios />} />
+            <Route path="usuarios/clientes/:id" element={<DetalleClienteAdministracion />} />
+            <Route path="usuarios/personal/:id" element={<DetallePersonalAdministracion />} />
+            <Route path="reportes" element={<ReportesAdministracion />} />
+            <Route path="perfil" element={<PerfilAdministracion />} />
+          </Route>
         </Route>
         <Route element={<AccesoPorRol roles={['operadora']} />}>
           <Route path="operadora/pedidos" element={<OperadoraPedidos />} />

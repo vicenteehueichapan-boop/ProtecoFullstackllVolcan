@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { PedidosProvider } from '../context/PedidosContext'
 import { SesionClienteProvider } from '../context/SesionClienteContext'
+import { UsuariosProvider } from '../context/UsuariosContext'
 import { iniciarSesionCliente, registrarCliente } from '../services/clienteService'
 import { crearPedido } from '../services/pedidoService'
 import { datosPedido } from '../tests/datosPedido'
@@ -24,6 +25,7 @@ function ControlesHistorial() {
 function mostrarSeguimiento(entradas, indice = 0) {
   return render(
     <MemoryRouter initialEntries={entradas} initialIndex={indice}>
+      <UsuariosProvider>
       <SesionClienteProvider>
         <PedidosProvider>
           <ControlesHistorial />
@@ -33,6 +35,7 @@ function mostrarSeguimiento(entradas, indice = 0) {
           </Routes>
         </PedidosProvider>
       </SesionClienteProvider>
+      </UsuariosProvider>
     </MemoryRouter>,
   )
 }

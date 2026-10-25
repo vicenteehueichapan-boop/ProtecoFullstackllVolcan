@@ -57,6 +57,17 @@ describe('ProductosProvider', () => {
     expect(result.current.productos).toHaveLength(14)
   })
 
+  it('comparte las categorías y renombra una en sus productos', () => {
+    const { result } = renderHook(() => useProductos(), { wrapper: contenedor })
+    expect(result.current.categorias).toHaveLength(4)
+
+    act(() => { result.current.crearCategoria({ nombre: 'Repuestos', descripcion: '' }) })
+    act(() => { result.current.renombrarCategoria('Reguladores', { nombre: 'Reguladores de presión', descripcion: '' }) })
+
+    expect(result.current.categorias.map((categoria) => categoria.nombre)).toContain('Repuestos')
+    expect(result.current.productos.find((producto) => producto.codigo === 'RG001').categoria).toBe('Reguladores de presión')
+  })
+
   it('restaura el catálogo inicial y actualiza el estado', () => {
     const { result } = renderHook(() => useProductos(), { wrapper: contenedor })
 

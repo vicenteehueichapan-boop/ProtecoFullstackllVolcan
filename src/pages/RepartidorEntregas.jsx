@@ -3,15 +3,15 @@ import { Alert, Col, Container, Row } from 'react-bootstrap'
 import ListaEntregas from '../components/organisms/ListaEntregas'
 import { usePedidos } from '../hooks/usePedidos'
 import { useSesionPersonal } from '../hooks/useSesionPersonal'
+import { esEntregaDe } from '../utils/esEntregaDe'
 
 export default function RepartidorEntregas() {
   const { pedidos, cambiarEstado } = usePedidos()
   const { personal } = useSesionPersonal()
-  const repartidorActivo = personal.nombre
   const [mensaje, setMensaje] = useState(null)
   const entregas = useMemo(
-    () => pedidos.filter((pedido) => pedido.repartidor === repartidorActivo),
-    [pedidos, repartidorActivo],
+    () => pedidos.filter((pedido) => esEntregaDe(pedido, personal)),
+    [pedidos, personal],
   )
 
   function avanzarEstado(id, nuevoEstado) {
@@ -36,7 +36,7 @@ export default function RepartidorEntregas() {
           </p>
         </Col>
         <Col md={4}>
-          <p className="mb-0">Perfil activo: <strong>{repartidorActivo}</strong></p>
+          <p className="mb-0">Perfil activo: <strong>{personal.nombre}</strong></p>
         </Col>
       </Row>
 
