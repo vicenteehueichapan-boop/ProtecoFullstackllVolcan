@@ -136,11 +136,36 @@ Capturas del ingreso en los tres anchos de la Guía 12: `docs/evidencias/ingreso
 
 ## Material complementario
 
-La ERS versión 2 y el documento de cobertura se entregan aparte, según la Guía 12 (carpeta pública
-de Google Drive). **Pendiente:** agregar aquí el enlace a esa carpeta.
+La ERS versión 2 y el informe de pruebas unitarias y cobertura se entregan en Blackboard junto con
+el proyecto comprimido.
 
 ## Despliegue en AWS
 
-`deploy/nginx-gas-volcan.conf` deja lista la configuración para servir la compilación en EC2 y que
-las rutas de React Router funcionen al recargar. El trabajo en la instancia EC2 todavía no está
-acreditado en este repositorio.
+`deploy/nginx-gas-volcan.conf` es la configuración de nginx para servir la compilación (`dist/`) en
+una instancia EC2 y que las rutas de React Router funcionen al recargar la página.
+
+## Bitácora
+
+Trabajo individual: todas las tareas son de Vicente Hueichapan.
+
+**Cuentas que aparecen en el historial.** Las tres corresponden a la misma persona:
+
+| Autor en GitHub | Correo | Uso |
+|---|---|---|
+| `Vicente Hueichapan` | vi.hueichapan@duocuc.cl | Commits de desarrollo desde el equipo personal |
+| `vicenteehueichapan-boop` | correo personal de Gmail | Cuenta de GitHub dueña del repositorio (creó el repositorio) |
+| `perropa` | el mismo correo personal | Nombre con que quedaron las fusiones de solicitudes del 14/10, hechas desde GitHub |
+
+| Fecha | Tarea |
+|---|---|
+| 30/09 | Crea el proyecto React + Vite, la navegación, el catálogo inicial, React Bootstrap, el ingreso, productos y pedidos con persistencia y sus primeras pruebas. |
+| 01/10 | Corrige la asignación de repartidores y separa la tienda del área de trabajo del personal. |
+| 07/10 | Revisa la estructura de Atomic Design en Inicio y Catálogo y prueba sus componentes. |
+| 14/10 | Guía 14: reglas de validación separadas, hook `useTituloPagina` y corrección del seguimiento. Carrito persistente con tarifas y confirmación de varios cilindros. Catálogo completo del Excel y acceso del personal por rol. Tres solicitudes de incorporación fusionadas en `main`. |
+| 16/10 | Persistencia segura ante datos dañados; cuentas de cliente, Mis pedidos y seguimiento privado; navegación por props en los componentes; Blog, Nosotros, Contacto y Destacados; descuento de stock y registro del cobro; categorías registradas; panel de administración completo; pruebas de todos los niveles de Atomic Design. |
+| 18/10 | README y documentación ordenados; formulario de productos con validación por campo e imagen por categoría; mapa de rutas en `App.jsx`; `setupTests.js` y scripts de la Guía 15; capturas responsivas actualizadas. |
+| 24/10 | Bitácora en el README. Incorporación a `main` de las siete ramas de trabajo mediante solicitudes de incorporación. |
+
+**Contingencias:** desde el 16/10 el trabajo avanzó en siete ramas encadenadas (`persistencia-segura`
+→ `sesion-cliente` → `navegacion-por-props` → `carrito-catalogo-completo` → `vistas-informativas` →
+`panel-administracion` → `pulido-y-pruebas`), que se incorporan a `main` en ese orden.
