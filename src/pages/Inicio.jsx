@@ -1,5 +1,5 @@
 import { Button, Col, Container, Row } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import heroDespacho from '../assets/hero-despacho.svg'
 import CatalogoGas from '../components/organisms/CatalogoGas'
 import CoberturaDespacho from '../components/organisms/CoberturaDespacho'
@@ -10,6 +10,7 @@ import zonasDespacho from '../data/zonasDespacho'
 export default function Inicio() {
   useTituloPagina('Inicio')
   const { productos } = useProductos()
+  const navegar = useNavigate()
   const cilindros = productos.filter((producto) => producto.categoria === 'Cilindros de Gas').slice(0, 4)
 
   return (
@@ -52,7 +53,7 @@ export default function Inicio() {
             </div>
             <Link className="enlace-destacado" to="/catalogo">Ver todo el catálogo</Link>
           </div>
-          <CatalogoGas productos={cilindros} tipoCliente="residencial" />
+          <CatalogoGas productos={cilindros} tipoCliente="residencial" alNavegar={navegar} />
         </Container>
       </section>
       <CoberturaDespacho zonas={zonasDespacho} />

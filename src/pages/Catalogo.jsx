@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import FiltrosCatalogo from '../components/molecules/FiltrosCatalogo'
 import SelectorTipoCliente from '../components/molecules/SelectorTipoCliente'
 import CatalogoGas from '../components/organisms/CatalogoGas'
@@ -10,6 +10,7 @@ import { useTituloPagina } from '../hooks/useTituloPagina'
 export default function Catalogo() {
   useTituloPagina('Catálogo')
   const { productos } = useProductos()
+  const navegar = useNavigate()
   const [tipoCliente, setTipoCliente] = useState('residencial')
   const [parametros, setParametros] = useSearchParams()
   const busqueda = parametros.get('buscar') ?? ''
@@ -62,7 +63,7 @@ export default function Catalogo() {
       <p className="resultado-catalogo" aria-live="polite">
         {productosFiltrados.length} {productosFiltrados.length === 1 ? 'producto encontrado' : 'productos encontrados'}
       </p>
-      <CatalogoGas productos={productosFiltrados} tipoCliente={tipoCliente} />
+      <CatalogoGas productos={productosFiltrados} tipoCliente={tipoCliente} alNavegar={navegar} />
     </Container>
   )
 }

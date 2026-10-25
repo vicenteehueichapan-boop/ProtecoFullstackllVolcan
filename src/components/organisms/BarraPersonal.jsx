@@ -1,8 +1,9 @@
 import { Button, Container, Nav, Navbar } from 'react-bootstrap'
+import { esClicSimple } from '../../utils/esClicSimple'
 
 export default function BarraPersonal({ personal, alSalir, alNavegar }) {
   function seguir(evento, ruta) {
-    if (evento.button !== 0 || evento.ctrlKey || evento.metaKey || evento.shiftKey || evento.altKey) return
+    if (!esClicSimple(evento)) return
     evento.preventDefault()
     alNavegar(ruta)
   }

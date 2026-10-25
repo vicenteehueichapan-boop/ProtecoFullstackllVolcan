@@ -85,7 +85,7 @@ describe('recorrido completo de un pedido', () => {
     expect(screen.getByText('Entrega completada.')).toBeInTheDocument()
 
     irA('/mis-pedidos')
-    await usuario.click(await screen.findByRole('button', { name: 'Ver seguimiento de PED-0001' }))
+    await usuario.click(await screen.findByRole('link', { name: 'Ver seguimiento de PED-0001' }))
     expect(await screen.findByRole('heading', { name: 'Pedido PED-0001' })).toBeInTheDocument()
     expect(screen.getByText('Repartidor 1')).toBeInTheDocument()
     expect(screen.getByText('Pedido entregado')).toHaveClass('list-group-item-success')

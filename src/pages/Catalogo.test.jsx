@@ -49,7 +49,7 @@ describe('navegación y filtros del catálogo', () => {
     const usuario = userEvent.setup()
     render(<App />)
 
-    await usuario.click(screen.getByRole('button', { name: 'Ver detalle de Cilindro GLP 11 kg' }))
+    await usuario.click(screen.getByRole('link', { name: 'Ver detalle de Cilindro GLP 11 kg' }))
     expect(screen.getByRole('heading', { level: 1, name: 'Cilindro GLP 11 kg' })).toBeInTheDocument()
 
     await usuario.click(screen.getByRole('button', { name: 'Agregar al carrito' }))

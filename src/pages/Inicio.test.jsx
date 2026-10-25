@@ -14,7 +14,7 @@ describe('Inicio', () => {
     expect(document.title).toBe('Inicio | Gas El Volcán')
     expect(screen.getByRole('heading', { name: 'Gas para cada día' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Llegamos a tu sector' })).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /Ver detalle de/ })).toHaveLength(4)
+    expect(screen.getAllByRole('link', { name: /Ver detalle de/ })).toHaveLength(4)
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(5)
     await userEvent.click(screen.getByRole('link', { name: 'Ver todo el catálogo' }))
     expect(screen.getByRole('heading', { name: 'Catálogo de productos' })).toBeInTheDocument()
