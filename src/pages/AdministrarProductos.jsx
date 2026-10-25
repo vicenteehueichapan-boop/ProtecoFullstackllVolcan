@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Col, Container, Modal, Row, Table } from 'react-bootstrap'
+import { Badge, Button, Col, Container, Modal, Row, Table } from 'react-bootstrap'
 import FormularioProducto from '../components/organisms/FormularioProducto'
 import { useProductos } from '../hooks/useProductos'
 import imagenAccesorio from '../assets/productos/accesorio.svg'
@@ -14,6 +14,7 @@ const PRODUCTO_VACIO = {
   precioResidencial: 0,
   precioComercial: 0,
   stock: 0,
+  destacado: false,
   imagen: imagenAccesorio,
 }
 
@@ -44,8 +45,9 @@ export default function AdministrarProductos() {
   const faltantes = productosIniciales.filter((original) => !productos.some((producto) => producto.codigo === original.codigo))
 
   function cambiarCampo(evento) {
-    const { name, value } = evento.target
-    setFormulario((actual) => ({ ...actual, [name]: value }))
+    // Una casilla entrega checked (verdadero o falso); los demás campos entregan value.
+    const { name, value, type, checked } = evento.target
+    setFormulario((actual) => ({ ...actual, [name]: type === 'checkbox' ? checked : value }))
     setMensaje(null)
   }
 
@@ -136,7 +138,7 @@ export default function AdministrarProductos() {
                 {productos.map((producto) => (
                   <tr key={producto.codigo}>
                     <td>{producto.codigo}</td>
-                    <td><strong>{producto.nombre}</strong><br /><small className="text-secondary">{producto.categoria}</small></td>
+                    <td><strong>{producto.nombre}</strong>{producto.destacado && <Badge bg="warning" text="dark" className="ms-2">Destacado</Badge>}<br /><small className="text-secondary">{producto.categoria}</small></td>
                     <td>{producto.stock}</td>
                     <td>
                       <div className="d-flex gap-2">

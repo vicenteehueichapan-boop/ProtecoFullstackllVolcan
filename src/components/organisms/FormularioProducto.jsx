@@ -68,6 +68,15 @@ export default function FormularioProducto({
               </Col>
             ))}
           </Row>
+          <Form.Check
+            className="mb-3"
+            type="switch"
+            id="destacado"
+            name="destacado"
+            label="Destacar en la tienda"
+            checked={datos.destacado}
+            onChange={onChange}
+          />
           <div className="d-flex flex-wrap gap-2">
             <Button type="submit">{estaEditando ? 'Guardar cambios' : 'Agregar'}</Button>
             {estaEditando && (

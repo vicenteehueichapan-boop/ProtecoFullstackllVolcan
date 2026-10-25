@@ -46,6 +46,33 @@ describe('productoService', () => {
     expect(incorporarProductosDelCaso()).toHaveLength(15)
   })
 
+  it('inicia con los tres productos destacados por el equipo', () => {
+    const destacados = listarProductos().filter((producto) => producto.destacado).map((producto) => producto.codigo)
+
+    expect(destacados).toEqual(['CL002', 'MG004', 'AC003'])
+  })
+
+  it('migra un catálogo guardado antes del campo destacado sin tocar sus cambios', () => {
+    const anterior = listarProductos().map(({ destacado: _destacado, ...producto }) => producto)
+    anterior[1] = { ...anterior[1], precioResidencial: 12500 }
+    localStorage.setItem('gas-el-volcan-productos', JSON.stringify(anterior.filter((p) => p.codigo !== 'AC003')))
+
+    const migrados = listarProductos()
+
+    expect(migrados.filter((producto) => producto.destacado).map((producto) => producto.codigo)).toEqual(['CL002', 'MG004'])
+    expect(obtenerProductoPorCodigo('CL002').precioResidencial).toBe(12500)
+    expect(migrados).toHaveLength(13)
+  })
+
+  it('permite marcar y desmarcar un destacado y rechaza valores no booleanos', () => {
+    actualizarProducto('CL001', { destacado: true })
+    actualizarProducto('CL002', { destacado: false })
+
+    expect(obtenerProductoPorCodigo('CL001').destacado).toBe(true)
+    expect(obtenerProductoPorCodigo('CL002').destacado).toBe(false)
+    expect(() => actualizarProducto('CL001', { destacado: 'sí' })).toThrow('destacado')
+  })
+
   it('recupera los productos guardados', () => {
     listarProductos()
     expect(listarProductos()[0].codigo).toBe('CL001')
