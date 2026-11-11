@@ -2,8 +2,11 @@
 
 Proyecto frontend de la **Evaluación Parcial 2** de DSY1104 Desarrollo Fullstack II (Duoc UC, 2026).
 Aplicación en React que lleva a una SPA el caso trabajado en la Evaluación Parcial 1, con datos
-simulados guardados en el navegador. El backend con Spring Boot y base de datos corresponde a la
-Evaluación Parcial 3 y **no** forma parte de esta entrega.
+simulados guardados en el navegador.
+
+**Backend (API REST, base de datos e inicio de sesión con JWT):**
+https://github.com/vicenteehueichapan-boop/BackendStackll — Node.js + Express en EC2 y PostgreSQL en
+Amazon RDS. Se desarrolla en su propio repositorio desde la Guía 18 (Evaluación Parcial 3).
 
 ## Equipo
 
