@@ -41,10 +41,12 @@ export default function UsuariosApi() {
   const [mensaje, setMensaje] = useState(null)
   const [creados, setCreados] = useState(0)
   const [creando, setCreando] = useState(false)
+  const [errorCreacion, setErrorCreacion] = useState('')
   const [enviando, setEnviando] = useState(false)
   async function crear(datos) {
+    setErrorCreacion('')
     try { await crearPersonal(datos); setCreados((n) => n + 1); setCreando(false); setMensaje({ tipo: 'success', texto: 'Usuario creado.' }); return {} }
-    catch (excepcion) { setMensaje({ tipo: 'danger', texto: excepcion.message }); return excepcion.detalles ?? {} }
+    catch (excepcion) { setErrorCreacion(excepcion.message); return excepcion.detalles ?? {} }
   }
   async function guardar(datos) {
     await actualizarPersonal(datos.id, datos)
@@ -61,7 +63,7 @@ export default function UsuariosApi() {
     <h1>Usuarios</h1>
     <p>Gestiona las cuentas y los roles de Gas El Volcán. Los clientes crean su cuenta desde Registro.</p>
     {mensaje && <Alert variant={mensaje.tipo}>{mensaje.texto}</Alert>}
-    <Button className="mb-3" onClick={() => setCreando(true)}>Crear cuenta del personal</Button>
+    <Button className="mb-3" onClick={() => { setErrorCreacion(''); setCreando(true) }}>Crear cuenta del personal</Button>
     <div className="table-responsive"><Table striped hover>
       <caption>Cuentas registradas</caption><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
       <tbody>{[...personal, ...clientes].map((usuario) => <tr key={usuario.id}>
@@ -70,7 +72,7 @@ export default function UsuariosApi() {
           {usuario.activo && <Button size="sm" variant="outline-danger" aria-label={`Desactivar a ${usuario.nombre} ${usuario.apellidos}`} onClick={() => setDesactivando(usuario)}>Desactivar</Button>}</div></td>
       </tr>)}</tbody></Table></div>{personal.length + clientes.length === 0 && <p>No hay cuentas para mostrar.</p>}
     <Modal show={creando} onHide={() => setCreando(false)} aria-labelledby="titulo-crear-usuario"><Modal.Header closeButton closeLabel="Cerrar"><Modal.Title id="titulo-crear-usuario">Crear cuenta del personal</Modal.Title></Modal.Header>
-      <Modal.Body><FormularioPersonal key={creados} alGuardar={crear} /></Modal.Body></Modal>
+      <Modal.Body>{errorCreacion && <Alert variant="danger">{errorCreacion}</Alert>}<FormularioPersonal key={creados} alGuardar={crear} /></Modal.Body></Modal>
     <Modal show={Boolean(editando)} onHide={() => setEditando(null)} aria-labelledby="titulo-editar-usuario"><Modal.Header closeButton closeLabel="Cerrar"><Modal.Title id="titulo-editar-usuario">Editar usuario</Modal.Title></Modal.Header>
       <Modal.Body>{editando && <EditarUsuario key={editando.id} usuario={editando} alGuardar={guardar} alCancelar={() => setEditando(null)} />}</Modal.Body></Modal>
     <Modal show={Boolean(desactivando)} onHide={() => !enviando && setDesactivando(null)} aria-labelledby="titulo-desactivar-usuario"><Modal.Header><Modal.Title id="titulo-desactivar-usuario">Desactivar cuenta</Modal.Title></Modal.Header>

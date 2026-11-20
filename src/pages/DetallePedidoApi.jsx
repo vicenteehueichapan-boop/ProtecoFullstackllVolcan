@@ -14,10 +14,20 @@ export default function DetallePedidoApi() {
   const { id } = useParams()
   const { personal } = useSesionPersonal()
   const { cliente } = useSesionCliente()
+  const usuarioId = cliente?.id ?? personal?.id
+  if (!usuarioId) return <Container className="py-5">
+    <h1>Detalle del pedido</h1>
+    <Alert variant="info">Inicia sesión para consultar el pedido. <Link to="/ingreso" state={{ desde: `/seguimiento/${id}` }}>Ingresar</Link></Alert>
+  </Container>
+  // La identidad y la ruta delimitan la consulta: al cambiar se descarta todo el estado anterior.
+  return <ContenidoPedido key={`${usuarioId}:${id}`} id={id} cliente={cliente} personal={personal} />
+}
+
+function ContenidoPedido({ id, cliente, personal }) {
   const { eliminarPedido } = usePedidos()
   const [pedido, setPedido] = useState(null)
   const [error, setError] = useState('')
-  const [idCargado, setIdCargado] = useState(null)
+  const [cargando, setCargando] = useState(true)
   const [confirmacion, setConfirmacion] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const navegar = useNavigate()
@@ -25,7 +35,7 @@ export default function DetallePedidoApi() {
     let activo = true
     obtenerPedido(id).then((datos) => { if (activo) { setPedido(datos); setError('') } })
       .catch((excepcion) => { if (activo) setError(excepcion.message) })
-      .finally(() => { if (activo) setIdCargado(id) })
+      .finally(() => { if (activo) setCargando(false) })
     return () => { activo = false }
   }, [id])
   async function eliminar() {
@@ -36,7 +46,7 @@ export default function DetallePedidoApi() {
   }
   return <Container className="py-5">
     <h1>Detalle del pedido {pedido?.numero ?? ''}</h1>
-    {idCargado !== id && <p role="status">Cargando pedido…</p>}
+    {cargando && <p role="status">Cargando pedido…</p>}
     {error && <Alert variant="danger">{error}</Alert>}
     {pedido && <><p>Estado: <EtiquetaEstadoPedido estado={pedido.estado} /></p><ResumenPedido pedido={pedido} />
       {pedido.repartidor && <p>Repartidor: {pedido.repartidor}</p>}
