@@ -33,7 +33,7 @@ export default function AdministrarPedidos() {
   return (
     <section>
       <h1>Pedidos recibidos</h1>
-      <p className="text-secondary">Todos los pedidos registrados, con su orden de pedido.</p>
+      <p className="text-secondary">Consulta los pedidos registrados y su detalle.</p>
       <Row className="g-3 mb-3">
         <Col md={7}>
           <Form.Group controlId="buscar-pedido">

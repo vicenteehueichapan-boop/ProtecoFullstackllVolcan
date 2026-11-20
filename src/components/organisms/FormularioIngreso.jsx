@@ -8,21 +8,24 @@ export default function FormularioIngreso({ alIngresar, etiquetaCorreo = 'Correo
   const [correo, setCorreo] = useState('')
   const [clave, setClave] = useState('')
   const [errores, setErrores] = useState({})
+  const [enviando, setEnviando] = useState(false)
 
-  function manejarEnvio(evento) {
+  async function manejarEnvio(evento) {
     evento.preventDefault()
+    if (enviando) return
     const nuevosErrores = validarIngreso(correo, clave)
     setErrores(nuevosErrores)
 
     if (Object.keys(nuevosErrores).length === 0) {
       // Si la página responde con errores (por ejemplo, un correo sin cuenta),
       // se muestran junto al campo correspondiente.
-      setErrores(alIngresar({ correo, clave }) ?? {})
+      setEnviando(true)
+      try { setErrores(await alIngresar({ correo, clave }) ?? {}) } finally { setEnviando(false) }
     }
   }
 
   return (
-    <Form noValidate onSubmit={manejarEnvio}>
+    <Form aria-busy={enviando} noValidate onSubmit={manejarEnvio}>
       <CampoFormulario
         identificador="correo"
         etiqueta={etiquetaCorreo}
@@ -41,7 +44,7 @@ export default function FormularioIngreso({ alIngresar, etiquetaCorreo = 'Correo
         error={errores.clave}
         autoComplete="current-password"
       />
-      <BotonAccion tipo="submit" variante="primary" className="w-100">
+      <BotonAccion disabled={enviando} tipo="submit" variante="primary" className="w-100">
         Ingresar
       </BotonAccion>
     </Form>

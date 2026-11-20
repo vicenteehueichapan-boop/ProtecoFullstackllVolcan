@@ -8,7 +8,7 @@ const ENTREGA_VACIA = { nombre: '', apellidos: '', correo: '', direccion: '', zo
 
 // datosIniciales (opcional) llega desde la página cuando hay una cuenta con sesión.
 export default function FormularioEntrega({ zonas, alPreparar, datosIniciales }) {
-  const [datos, setDatos] = useState(() => ({ ...ENTREGA_VACIA, ...datosIniciales }))
+  const [datos, setDatos] = useState(() => ({ ...ENTREGA_VACIA, ...datosIniciales, zonaId: datosIniciales?.zonaId ?? '' }))
   const [errores, setErrores] = useState({})
 
   function cambiar(campo, valor) {
@@ -24,7 +24,7 @@ export default function FormularioEntrega({ zonas, alPreparar, datosIniciales })
     if (Object.keys(nuevosErrores).length > 0) return
     alPreparar({
       cliente: {
-        nombre: `${datos.nombre.trim()} ${datos.apellidos.trim()}`,
+        nombre: datos.nombre.trim(),
         apellidos: datos.apellidos.trim(), correo: datos.correo.trim(),
         direccion: datos.direccion.trim(),
       },

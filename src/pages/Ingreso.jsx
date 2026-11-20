@@ -13,12 +13,13 @@ export default function Ingreso() {
   const [error, setError] = useState('')
 
   // Devuelve { campo: mensaje } cuando el servicio rechaza el dato, para verlo junto al campo.
-  function recibirIngreso({ correo }) {
+  async function recibirIngreso(datos) {
     try {
-      ingresar(correo)
+      await ingresar(datos)
       navegar(state?.desde ?? '/mis-pedidos', { replace: true })
       return {}
     } catch (excepcion) {
+      if (excepcion.detalles) return excepcion.detalles
       if (excepcion.campo) return { [excepcion.campo]: excepcion.message }
       setError(excepcion.message)
       return {}
@@ -43,8 +44,7 @@ export default function Ingreso() {
               ) : (
                 <>
                   <p className="text-secondary">
-                    Demostración sin servidor: el correo identifica tu cuenta y la contraseña solo
-                    se valida (mínimo seis caracteres). No escribas una contraseña real.
+                    Ingresa con el correo y la contraseña de tu cuenta.
                   </p>
                   {error && <Alert variant="danger">{error}</Alert>}
                   <FormularioIngreso alIngresar={recibirIngreso} etiquetaCorreo="Correo" />

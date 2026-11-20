@@ -15,11 +15,11 @@ describe('FormularioRegistro', () => {
     expect(screen.getByLabelText('Apellidos')).toHaveAttribute('aria-invalid', 'true')
     expect(screen.getByText('Ingresa el RUN sin puntos ni guion.')).toBeInTheDocument()
     expect(screen.getByText('Ingresa un correo válido.')).toBeInTheDocument()
-    expect(screen.getByText('La contraseña debe tener al menos 6 caracteres.')).toBeInTheDocument()
+    expect(screen.getByText('La contraseña debe tener entre 8 y 128 caracteres.')).toBeInTheDocument()
     expect(alRegistrar).not.toHaveBeenCalled()
   })
 
-  it('entrega a la página los datos válidos sin la contraseña', async () => {
+  it('entrega a la página los datos válidos con la contraseña para autenticar en el servidor', async () => {
     const usuario = userEvent.setup()
     const alRegistrar = vi.fn()
     render(<FormularioRegistro alRegistrar={alRegistrar} />)
@@ -35,7 +35,7 @@ describe('FormularioRegistro', () => {
 
     expect(alRegistrar).toHaveBeenCalledExactlyOnceWith({
       nombre: 'Camila', apellidos: 'Sepúlveda', run: '12345678K',
-      correo: 'camila.sepulveda@correo.cl', tipoCliente: 'comercial',
+      correo: 'camila.sepulveda@correo.cl', tipoCliente: 'comercial', clave: 'volcan2026',
     })
   })
 })

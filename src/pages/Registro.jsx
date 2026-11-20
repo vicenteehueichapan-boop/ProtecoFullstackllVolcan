@@ -14,12 +14,13 @@ export default function Registro() {
 
   // El formulario ya validó el formato; aquí se guarda la cuenta y se decide adónde ir.
   // Si el servicio rechaza un dato, se devuelve { campo: mensaje } para mostrarlo junto al campo.
-  function crearCuenta(datos) {
+  async function crearCuenta(datos) {
     try {
-      registrar(datos)
+      await registrar(datos)
       navegar(state?.desde ?? '/catalogo', { replace: true })
       return {}
     } catch (excepcion) {
+      if (excepcion.detalles) return { ...excepcion.detalles, clave: excepcion.detalles.contrasena }
       if (excepcion.campo) return { [excepcion.campo]: excepcion.message }
       setError(excepcion.message)
       return {}
@@ -35,8 +36,7 @@ export default function Registro() {
               <h1 className="h3 mb-3">Crear cuenta</h1>
               <p className="text-secondary">
                 Con tu cuenta, la entrega se completa sola y puedes revisar tus pedidos.
-                Es una cuenta de demostración guardada en este navegador: la contraseña solo
-                se valida, no se guarda. No uses una contraseña real.
+                La contraseña debe tener al menos ocho caracteres.
               </p>
               {error && <Alert variant="danger">{error}</Alert>}
               <FormularioRegistro alRegistrar={crearCuenta} />

@@ -5,11 +5,7 @@ const SECCIONES_ADMINISTRACION = [
   { ruta: '/administracion', texto: 'Panel' },
   { ruta: '/administracion/pedidos', texto: 'Pedidos' },
   { ruta: '/administracion/productos', texto: 'Catálogo' },
-  { ruta: '/administracion/criticos', texto: 'Productos críticos' },
-  { ruta: '/administracion/categorias', texto: 'Categorías' },
   { ruta: '/administracion/usuarios', texto: 'Usuarios' },
-  { ruta: '/administracion/reportes', texto: 'Reportes' },
-  { ruta: '/administracion/perfil', texto: 'Mi perfil' },
 ]
 
 // Menú del panel. Sin router: la plantilla le entrega la ruta actual y alNavegar.

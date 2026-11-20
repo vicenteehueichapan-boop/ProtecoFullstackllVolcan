@@ -27,7 +27,7 @@ export default function PiePagina({ alNavegar }) {
           </Col>
         </Row>
         <div className="nota-pie">
-          <small>Proyecto académico DSY1104 · Demostración con datos locales</small>
+          <small>Proyecto académico DSY1104 · Gas El Volcán</small>
         </div>
       </Container>
     </footer>

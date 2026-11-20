@@ -27,7 +27,7 @@ export default function PlantillaPersonal() {
       </main>
       <footer className="py-3 border-top">
         <Container>
-          <small>Área de trabajo · Demostración académica con datos locales, sin autenticación real.</small>
+          <small>Área de trabajo · Gas El Volcán</small>
         </Container>
       </footer>
     </div>

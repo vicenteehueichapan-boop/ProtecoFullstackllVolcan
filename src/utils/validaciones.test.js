@@ -7,16 +7,16 @@ describe('validaciones puras de formularios', () => {
     expect(validarCorreo('cliente@ejemplo')).toBe('Ingresa un correo válido.')
   })
 
-  it('rechaza cinco caracteres y acepta el límite de seis', () => {
-    expect(validarClave('12345')).toBe('La contraseña debe tener al menos 6 caracteres.')
-    expect(validarClave('123456')).toBe('')
+  it('rechaza siete caracteres y acepta el límite de ocho', () => {
+    expect(validarClave('1234567')).toBe('La contraseña debe tener entre 8 y 128 caracteres.')
+    expect(validarClave('12345678')).toBe('')
   })
 
   it('devuelve juntos los errores de ingreso', () => {
     expect(validarIngreso('', '')).toEqual({
       correo: 'Ingresa un correo válido.',
-      clave: 'La contraseña debe tener al menos 6 caracteres.',
+      clave: 'La contraseña debe tener entre 8 y 128 caracteres.',
     })
-    expect(validarIngreso('cliente@ejemplo.cl', '123456')).toEqual({})
+    expect(validarIngreso('cliente@ejemplo.cl', '12345678')).toEqual({})
   })
 })

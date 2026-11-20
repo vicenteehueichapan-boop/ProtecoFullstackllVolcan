@@ -1,4 +1,4 @@
-import { obtenerProductoPorCodigo } from './productoService'
+
 
 const CLAVE_CARRITO = 'gas-el-volcan-carrito'
 
@@ -39,8 +39,8 @@ function guardarCarrito(carrito) {
   return carrito
 }
 
-function comprobarCantidad(codigo, cantidad) {
-  const producto = obtenerProductoPorCodigo(codigo)
+function comprobarCantidad(codigo, cantidad, productos) {
+  const producto = productos.find((item) => item.codigo === codigo)
   if (!producto) {
     throw new Error('El producto ya no está disponible en el catálogo.')
   }
@@ -49,25 +49,25 @@ function comprobarCantidad(codigo, cantidad) {
   }
 }
 
-export function agregarAlCarrito(codigo) {
+export function agregarAlCarrito(codigo, productos) {
   codigo = String(codigo ?? '').trim().toUpperCase()
   const carrito = leerCarrito()
   const existente = carrito.lineas.find((linea) => linea.codigo === codigo)
   const cantidad = (existente?.cantidad ?? 0) + 1
-  comprobarCantidad(codigo, cantidad)
+  comprobarCantidad(codigo, cantidad, productos)
   const lineas = existente
     ? carrito.lineas.map((linea) => linea.codigo === codigo ? { ...linea, cantidad } : linea)
     : [...carrito.lineas, { codigo, cantidad }]
   return guardarCarrito({ ...carrito, lineas })
 }
 
-export function cambiarCantidadCarrito(codigo, cantidad) {
+export function cambiarCantidadCarrito(codigo, cantidad, productos) {
   codigo = String(codigo ?? '').trim().toUpperCase()
   const carrito = leerCarrito()
   if (!carrito.lineas.some((linea) => linea.codigo === codigo)) {
     throw new Error('El producto no está en el carrito.')
   }
-  comprobarCantidad(codigo, cantidad)
+  comprobarCantidad(codigo, cantidad, productos)
   return guardarCarrito({
     ...carrito,
     lineas: carrito.lineas.map((linea) => linea.codigo === codigo ? { ...linea, cantidad } : linea),

@@ -8,7 +8,7 @@ export default function ResultadoPedidoFallido({ mensaje, alReintentar, alRevisa
     <Alert variant="danger" className="my-4">
       <Alert.Heading as="h2" className="h4">Pedido no realizado</Alert.Heading>
       <p className="mb-1">{mensaje}</p>
-      <p>No se registró ningún pedido. Tus datos de entrega y tu carrito siguen guardados.</p>
+      <p>Tus datos de entrega y tu carrito siguen guardados. Si hubo un corte o se agotó el tiempo, revisa Mis pedidos antes de reenviar para evitar duplicados.</p>
       <div className="d-flex flex-wrap gap-2">
         <BotonAccion variante="danger" onClick={alReintentar}>Volver a intentarlo</BotonAccion>
         <BotonAccion variante="outline-secondary" onClick={alRevisarCarrito}>Revisar mi carrito</BotonAccion>

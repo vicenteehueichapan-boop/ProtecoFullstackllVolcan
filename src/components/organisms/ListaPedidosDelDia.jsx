@@ -60,7 +60,7 @@ export default function ListaPedidosDelDia({
                       <option value="">Seleccionar</option>
                       {repartidores.map((repartidor) => (
                         <option key={repartidor.id} value={repartidor.id}>
-                          {repartidor.nombre}
+                          {repartidor.nombre} {repartidor.apellidos}
                         </option>
                       ))}
                     </Form.Select>

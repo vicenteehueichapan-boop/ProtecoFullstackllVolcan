@@ -6,6 +6,7 @@ import SelectorTipoCliente from '../components/molecules/SelectorTipoCliente'
 import ListaCarrito from '../components/organisms/ListaCarrito'
 import { useCarrito } from '../hooks/useCarrito'
 import { useProductos } from '../hooks/useProductos'
+import { useSesionCliente } from '../hooks/useSesionCliente'
 import { useTituloPagina } from '../hooks/useTituloPagina'
 import { resumirCarrito } from '../utils/resumirCarrito'
 import { formatearPrecio } from '../utils/formatearPrecio'
@@ -14,8 +15,9 @@ export default function Carrito() {
   useTituloPagina('Mi carrito')
   const { carrito, error, cambiarCantidad, quitar, cambiarTarifa, vaciar } = useCarrito()
   const { productos } = useProductos()
+  const { cliente } = useSesionCliente()
   const [confirmacion, setConfirmacion] = useState(false)
-  const resumen = resumirCarrito(carrito, productos)
+  const resumen = resumirCarrito({ ...carrito, tipoCliente: cliente?.tipoCliente ?? carrito.tipoCliente }, productos)
 
   function confirmarVaciado() {
     if (vaciar()) setConfirmacion(false)
@@ -31,7 +33,7 @@ export default function Carrito() {
           <ListaCarrito lineas={resumen.lineas} alCambiarCantidad={cambiarCantidad} alQuitar={quitar} />
         </Col>
         <Col lg={4}>
-          <SelectorTipoCliente valor={carrito.tipoCliente} alCambiar={cambiarTarifa} />
+          {cliente ? <p>Tarifa de tu cuenta: <strong>{cliente.tipoCliente}</strong></p> : <SelectorTipoCliente valor={carrito.tipoCliente} alCambiar={cambiarTarifa} />}
           <p>La tarifa se aplica a todos los productos del pedido. Los importes se calculan con el catálogo vigente.</p>
           <p className="h4" aria-live="polite">Total: {formatearPrecio(resumen.total)}</p>
           <div className="d-flex flex-column gap-3 mt-3">
