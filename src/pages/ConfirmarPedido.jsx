@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react'
 import { Alert, Container } from 'react-bootstrap'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import BotonAccion from '../components/atoms/BotonAccion'
 import ResumenPedido from '../components/molecules/ResumenPedido'
 import FormularioEntrega from '../components/organisms/FormularioEntrega'
 import ResultadoPedidoFallido from '../components/organisms/ResultadoPedidoFallido'
-import zonasDespacho from '../data/zonasDespacho'
+
 import { useCarrito } from '../hooks/useCarrito'
 import { usePedidos } from '../hooks/usePedidos'
 import { useSesionCliente } from '../hooks/useSesionCliente'
@@ -16,21 +16,23 @@ import { resumirCarrito } from '../utils/resumirCarrito'
 export default function ConfirmarPedido() {
   useTituloPagina('Confirmar pedido')
   const { carrito, error, vaciar } = useCarrito()
-  const { productos, recargarProductos } = useProductos()
+  const { productos, recargarProductos, zonas: zonasDespacho } = useProductos()
   const { crearPedido } = usePedidos()
-  const { cliente: cuenta, actualizarDatos } = useSesionCliente()
+  const { cliente: cuenta } = useSesionCliente()
   const navegar = useNavigate()
   const [borrador, setBorrador] = useState(null)
   const [errorConfirmacion, setErrorConfirmacion] = useState('')
   const registrado = useRef(false)
-  const resumen = resumirCarrito(carrito, productos)
+  const resumen = resumirCarrito({ ...carrito, tipoCliente: cuenta?.tipoCliente ?? carrito.tipoCliente }, productos)
+  const [enviando, setEnviando] = useState(false)
+  if (!cuenta) return <Navigate to="/ingreso" state={{ desde: '/confirmar-pedido' }} replace />
 
   function preparar({ cliente, zona }) {
     if (!resumen.puedeConfirmar || error) return
     setErrorConfirmacion('')
     setBorrador({
       cliente, zona: { id: zona.id, nombre: zona.nombre, tiempoEstimado: zona.tiempoEstimado },
-      tipoCliente: carrito.tipoCliente,
+      tipoCliente: cuenta.tipoCliente,
       productos: resumen.lineas.map(({ codigo, nombre, cantidad, precioUnitario, subtotal }) => ({
         codigo, nombre, cantidad, precioUnitario, subtotal,
       })),
@@ -39,25 +41,14 @@ export default function ConfirmarPedido() {
     })
   }
 
-  // Guarda la última dirección en la cuenta para el próximo pedido. Si falla,
-  // el pedido ya quedó registrado, así que no se presenta como un error.
-  function recordarEntrega() {
-    if (!cuenta) return
+  async function confirmar() {
+    if (registrado.current || enviando) return
+    setEnviando(true)
     try {
-      actualizarDatos({ direccion: borrador.cliente.direccion, zonaId: borrador.zona.id })
-    } catch {
-      // El próximo pedido simplemente pedirá la dirección otra vez.
-    }
-  }
-
-  function confirmar() {
-    if (registrado.current) return
-    try {
-      const pedido = crearPedido(borrador)
+      const pedido = await crearPedido(borrador)
       registrado.current = true
       // El servicio descontó el stock del pedido: el Context vuelve a leer el catálogo.
-      recargarProductos()
-      recordarEntrega()
+      recargarProductos().catch(() => {})
       const vaciado = vaciar()
       // recienCreado permite ver el comprobante sin volver a pedir el correo.
       navegar(`/pedido-confirmado/${pedido.id}`, {
@@ -70,8 +61,8 @@ export default function ConfirmarPedido() {
     } catch (excepcion) {
       setErrorConfirmacion(excepcion instanceof Error ? excepcion.message : 'No pudimos registrar el pedido.')
       setBorrador(null)
-      recargarProductos()
-    }
+      recargarProductos().catch(() => {})
+    } finally { setEnviando(false) }
   }
 
   return (
@@ -94,7 +85,7 @@ export default function ConfirmarPedido() {
             <>
               <ResumenPedido pedido={borrador} />
               <div className="d-flex flex-wrap gap-3 my-4">
-                <BotonAccion variante="danger" onClick={confirmar}>Confirmar pedido</BotonAccion>
+                <BotonAccion variante="danger" disabled={enviando} onClick={confirmar}>Confirmar pedido</BotonAccion>
                 <BotonAccion variante="outline-secondary" onClick={() => setBorrador(null)}>Corregir datos</BotonAccion>
               </div>
             </>

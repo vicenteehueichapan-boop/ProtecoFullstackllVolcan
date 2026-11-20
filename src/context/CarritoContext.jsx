@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
+import { useProductos } from '../hooks/useProductos'
 import { CarritoContext } from './carritoContextoBase'
 import {
   leerCarrito, carritoVacio, agregarAlCarrito, cambiarCantidadCarrito,
@@ -14,6 +15,7 @@ function estadoInicial() {
 }
 
 export function CarritoProvider({ children }) {
+  const { productos } = useProductos()
   const [estado, setEstado] = useState(estadoInicial)
   const ejecutar = useCallback((operacion, ...argumentos) => {
     try {
@@ -28,8 +30,8 @@ export function CarritoProvider({ children }) {
       return false
     }
   }, [])
-  const agregar = useCallback((codigo) => ejecutar(agregarAlCarrito, codigo), [ejecutar])
-  const cambiarCantidad = useCallback((codigo, cantidad) => ejecutar(cambiarCantidadCarrito, codigo, cantidad), [ejecutar])
+  const agregar = useCallback((codigo) => ejecutar(agregarAlCarrito, codigo, productos), [ejecutar, productos])
+  const cambiarCantidad = useCallback((codigo, cantidad) => ejecutar(cambiarCantidadCarrito, codigo, cantidad, productos), [ejecutar, productos])
   const quitar = useCallback((codigo) => ejecutar(quitarDelCarrito, codigo), [ejecutar])
   const cambiarTarifa = useCallback((tipo) => ejecutar(cambiarTarifaCarrito, tipo), [ejecutar])
   const vaciar = useCallback(() => ejecutar(vaciarCarrito), [ejecutar])

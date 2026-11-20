@@ -22,6 +22,7 @@ export default function FormularioProducto({ producto, categorias, alGuardar, al
   const editando = Boolean(producto)
   const [datos, setDatos] = useState(() => ({ ...VACIO, ...producto }))
   const [errores, setErrores] = useState({})
+  const [enviando, setEnviando] = useState(false)
 
   function cambiar(campo, valor) {
     const siguientes = { ...datos, [campo]: valor }
@@ -29,26 +30,28 @@ export default function FormularioProducto({ producto, categorias, alGuardar, al
     if (Object.keys(errores).length > 0) setErrores(validarProducto(siguientes, categorias))
   }
 
-  function enviar(evento) {
+  async function enviar(evento) {
     evento.preventDefault()
+    if (enviando) return
     const nuevosErrores = validarProducto(datos, categorias)
     setErrores(nuevosErrores)
     if (Object.keys(nuevosErrores).length > 0) return
-    setErrores(alGuardar({
+    setEnviando(true)
+    try { setErrores(await alGuardar({
       ...datos,
       precioResidencial: Number(datos.precioResidencial),
       precioComercial: Number(datos.precioComercial),
       stock: Number(datos.stock),
-    }) ?? {})
+    }) ?? {}) } finally { setEnviando(false) }
   }
 
   return (
     <Card className="shadow-sm position-sticky formulario-administracion">
       <Card.Body>
         <h2 className="h4">{editando ? 'Editar producto' : 'Nuevo producto'}</h2>
-        <p className="text-secondary small">Los cambios se guardan en este navegador (datos simulados de EP2).</p>
-        <Form noValidate onSubmit={enviar}>
-          <CampoFormulario identificador="producto-codigo" etiqueta="Código" value={datos.codigo}
+        <p className="text-secondary small">Los cambios se guardan en el catálogo de la distribuidora.</p>
+        <Form aria-busy={enviando} noValidate onSubmit={enviar}>
+          <CampoFormulario identificador="producto-codigo" etiqueta="Código" disabled={editando} value={datos.codigo}
             onChange={(evento) => cambiar('codigo', evento.target.value)} error={errores.codigo} />
           <Form.Group className="mb-3" controlId="producto-categoria">
             <Form.Label>Categoría</Form.Label>
@@ -80,7 +83,7 @@ export default function FormularioProducto({ producto, categorias, alGuardar, al
           <Form.Check className="mb-3" type="switch" id="producto-destacado" label="Destacar en la tienda"
             checked={datos.destacado} onChange={(evento) => cambiar('destacado', evento.target.checked)} />
           <div className="d-flex flex-wrap gap-2">
-            <BotonAccion tipo="submit">{editando ? 'Guardar cambios' : 'Agregar'}</BotonAccion>
+            <BotonAccion disabled={enviando} tipo="submit">{editando ? 'Guardar cambios' : 'Agregar'}</BotonAccion>
             {editando && <BotonAccion variante="outline-secondary" onClick={alCancelar}>Cancelar</BotonAccion>}
           </div>
         </Form>

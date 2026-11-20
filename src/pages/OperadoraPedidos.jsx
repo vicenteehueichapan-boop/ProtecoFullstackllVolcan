@@ -24,9 +24,9 @@ export default function OperadoraPedidos() {
     setSelecciones((actuales) => ({ ...actuales, [id]: repartidor }))
   }
 
-  function asignar(id) {
+  async function asignar(id) {
     try {
-      asignarRepartidor(id, selecciones[id])
+      await asignarRepartidor(id, selecciones[id])
       setMensaje({ tipo: 'success', texto: `El pedido ${id} fue asignado correctamente.` })
       setSelecciones((actuales) => ({ ...actuales, [id]: '' }))
     } catch (excepcion) {

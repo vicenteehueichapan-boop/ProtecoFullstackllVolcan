@@ -6,7 +6,7 @@ import personalDemostracion from '../data/personalDemostracion'
 import { useTituloPagina } from '../hooks/useTituloPagina'
 
 const areasPersonal = [
-  { rol: 'administracion', nombre: 'Administración', descripcion: 'Panel con pedidos, catálogo, categorías, usuarios, reportes y perfil.', ruta: '/administracion' },
+  { rol: 'administracion', nombre: 'Administración', descripcion: 'Gestión de pedidos, catálogo y usuarios.', ruta: '/administracion' },
   { rol: 'operadora', nombre: 'Operadora', descripcion: 'Revisar los pedidos del día y asignar un repartidor.', ruta: '/operadora/pedidos' },
   { rol: 'repartidor', nombre: 'Repartidor', descripcion: 'Consultar mis entregas asignadas y actualizar su avance.', ruta: '/repartidor/entregas' },
 ]
@@ -17,9 +17,9 @@ export default function AccesoPersonal() {
 
   // El único dato que puede rechazar la sesión de demostración es el correo: el
   // mensaje vuelve al formulario para mostrarse junto a ese campo.
-  function ingresar({ correo }) {
+  async function ingresar(datos) {
     try {
-      ingresarPersonal(correo)
+      await ingresarPersonal(datos)
       return {}
     } catch (excepcion) {
       return { correo: excepcion.message }
@@ -33,11 +33,9 @@ export default function AccesoPersonal() {
       {!personal ? (
         <Row className="g-4">
           <Col md={6}>
-            <h2 className="h4">Ingreso de demostración</h2>
+            <h2 className="h4">Ingresar al área de trabajo</h2>
             <Alert variant="info">
-              EP2 simula los permisos sin servidor. El correo identifica el perfil; la contraseña
-              solo valida el formato (mínimo seis caracteres), no comprueba identidad.
-              No escribas contraseñas reales. La sesión termina al recargar o cerrar sesión.
+              Usa la cuenta que administración habilitó para ti.
             </Alert>
             <FormularioIngreso alIngresar={ingresar} etiquetaCorreo="Correo del personal" />
           </Col>
@@ -49,7 +47,7 @@ export default function AccesoPersonal() {
         </Row>
       ) : (
         <>
-          <p>Sesión de demostración: {personal.nombre}.</p>
+          <p>Sesión: {personal.nombre}.</p>
           <Button variant="outline-secondary" className="mb-4" onClick={salirPersonal}>Cerrar sesión del personal</Button>
           <Row className="g-4">
             {areasPersonal.filter((area) => area.rol === personal.rol).map((area) => (

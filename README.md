@@ -1,172 +1,98 @@
-# Distribuidora de Gas El Volcán
+# Distribuidora de Gas El Volcán · React
 
-Proyecto frontend de la **Evaluación Parcial 2** de DSY1104 Desarrollo Fullstack II (Duoc UC, 2026).
-Aplicación en React que lleva a una SPA el caso trabajado en la Evaluación Parcial 1, con datos
-simulados guardados en el navegador.
+DSY1104 Desarrollo Fullstack II · Duoc UC · sección 006D · 2026. Caso Forma C. Vicente Hueichapan Poblete, trabajo individual.
 
-**Backend (API REST, base de datos e inicio de sesión con JWT):**
-https://github.com/vicenteehueichapan-boop/BackendStackll — Node.js + Express en EC2 y PostgreSQL en
-Amazon RDS. Se desarrolla en su propio repositorio desde la Guía 18 (Evaluación Parcial 3).
+Continuidad del frontend de EP2: conserva React, Atomic Design y diseño del caso; EP3 integra cuentas, catálogo y pedidos con persistencia real y JWT.
 
-## Equipo
+**Backend:** [BackendStackll](https://github.com/vicenteehueichapan-boop/BackendStackll). Su README explica datos, diagramas, decisiones, contratos, permisos y ejecución EC2/RDS.
 
-- **Nombre:** Equipo Gas El Volcán (trabajo individual)
-- **Integrante:** Vicente Hueichapan — vi.hueichapan@duocuc.cl
+## Alcance
 
-## Caso
+- Público: catálogo/detalle, búsqueda/categorías, tarifas residencial/comercial, registro, ingreso y carrito local.
+- Cliente: confirmar, consultar pedidos propios y eliminar pendiente sin asignar.
+- Operadora: pedidos y asignación a repartidor activo.
+- Repartidor: sus asignaciones, en camino y entregado; servidor registra cobro en efectivo.
+- Administración: CRUD productos/cuentas, roles, baja lógica y operación de pedidos.
 
-Forma C: **Distribuidora de Gas El Volcán**.
+Reportes, mantenimiento de categorías, críticos, perfil editable, historial administrativo por usuario, comprobantes y mapa quedan para el examen. Categorías/zonas se consultan como referencias. Las vistas informativas heredadas se conservan; Contacto sigue como simulación local EP2, fuera del backend evaluado.
 
-Empresa familiar de Chillán (Ñuble), fundada en 1998, que reparte cilindros de gas licuado y
-accesorios a clientes residenciales y comerciales. Hoy recibe entre 80 y 120 pedidos diarios por
-teléfono y los anota en cuadernos. La aplicación permite pedir sin llamar y seguir el estado de la
-entrega. La operadora asigna los pedidos a repartidores, el repartidor marca su avance y cobra en
-efectivo, y administración mantiene catálogo, categorías, usuarios y reportes.
+## Desarrollo
 
-## Qué incluye
-
-**Tienda (público):** Inicio, Catálogo con búsqueda y filtro por categoría, Categorías, Detalle de
-producto, Destacados, Nosotros, Blog (2 entradas con detalle), Contacto, Registro e Ingreso, Carrito
-persistente, Confirmación de entrega (se completa sola con sesión), resultado exitoso o con error,
-Mis pedidos y Seguimiento.
-
-**Personal:**
-
-- Operadora: pedidos del día y pendientes anteriores; asignación a repartidores activos.
-- Repartidor: solo sus entregas; marca En camino y Entregado, y se registra el cobro.
-- Administración: panel, pedidos y orden de pedido, catálogo (CRUD), productos críticos con
-  reposición, categorías, usuarios (personal y clientes, con historial), reportes y perfil.
-
-Recorrido del caso: el cliente pide → pedido pendiente → la operadora asigna → el repartidor lo
-marca en camino → entregado (se registra el cobro) → el cliente consulta el estado.
-
-## Límites conocidos
-
-- **No hay autenticación real.** Clientes y personal se identifican por su correo; la contraseña
-  solo se valida (mínimo 6 caracteres) y **nunca se guarda**. Las rutas del personal se protegen por
-  rol en la interfaz, no en un servidor.
-- La sesión del personal vive en memoria y se pierde al recargar. La sesión del cliente guarda solo
-  su identificador.
-- Los datos viven en `localStorage` de cada navegador: no se comparten entre equipos.
-- Sin mapa, sin API REST, sin base de datos: corresponden a la Evaluación Parcial 3.
-- Umbral de stock crítico (10 unidades) y destacados iniciales son decisiones del equipo; el caso
-  no los define (se justifican en la ERS versión 2).
-
-## Estructura del proyecto
-
-```text
-src/
-├── components/
-│   ├── atoms/        piezas mínimas: BotonAccion, CampoEntrada, EnlaceInterno, Precio…
-│   ├── molecules/    CampoFormulario, TarjetaProducto, TarjetaPedido, FiltrosCatalogo…
-│   ├── organisms/    BarraNavegacion, CatalogoGas, formularios, tablas, OrdenDePedido…
-│   └── templates/    PlantillaPublica, PlantillaPersonal, PlantillaAdministracion
-├── pages/            una página por ruta (coordina datos y navegación)
-├── routes/           AccesoPorRol (protección de rutas por rol)
-├── context/          estado compartido (puente entre servicios y pantallas)
-├── services/         CRUD y persistencia en localStorage (JavaScript sin React)
-├── hooks/            hooks propios: useTituloPagina, useAhora y acceso a cada Context
-├── utils/            reglas puras: precioSegunCliente, validaciones, generarReporte…
-├── data/             datos del caso (Excel Forma C) y perfiles ficticios
-├── estilos/          CSS propio (se importa después de Bootstrap)
-├── App.jsx           mapa de rutas y proveedores de contexto
-└── setupTests.js     configuración de Vitest (jest-dom y limpieza)
-```
-
-Cada archivo de prueba vive junto al código que prueba (`Nombre.test.jsx`). Solo páginas y
-plantillas usan el router; átomos, moléculas y organismos reciben `alNavegar` por props.
-
-## Tecnologías
-
-React 19, Vite 8, React Bootstrap 2 y Bootstrap 5, React Router 7, Vitest 5, Testing Library
-(react, jest-dom, user-event), jsdom y oxlint. Versiones exactas en `package-lock.json`.
-
-## Cómo ejecutar el proyecto
-
-Requiere Node.js 22.12 o superior.
+Requiere **Node.js 24** y API según su README.
 
 ```bash
 npm ci
+```
+
+Copiar .env.example a .env.local:
+
+```text
+VITE_API_URL=http://localhost:3000/api/v1
 ```
 
 ```bash
 npm run dev
 ```
 
-Abre la dirección que muestra la terminal (por defecto `http://localhost:5173`). Abrir
-`index.html` con doble clic no funciona: Vite debe servir la aplicación.
+Abrir **http://localhost:5173**. CORS del backend debe permitir ese origen. Variables VITE_ son públicas: nunca contraseñas ni clave JWT.
 
-## Comprobaciones
+## Demostración en EC2
+
+React compilado, API y nginx en lab-springboot; PostgreSQL 18 en RDS. Desde el equipo autorizado:
 
 ```bash
-npm run test:run
+ssh -i RUTA_A_LA_LLAVE -N -L 127.0.0.1:8080:127.0.0.1:8080 ubuntu@18.209.18.21
 ```
 
+Mantener túnel abierto y visitar **http://localhost:8080**, [Swagger](http://localhost:8080/api/v1/docs/). IP comprobada el 20-nov; puede cambiar al reiniciar AWS Academy. Llave fuera del repositorio.
+
+La compilación usa VITE_API_URL=/api/v1. Nginx sirve /var/www/gas-volcan-ep3 y envía /api/v1 a Node en loopback:3001. [Configuración](deploy/nginx-gas-volcan.conf) escucha solo en loopback:8080. SSH cifra el tramo entre equipos. HTTPS público con dominio está pendiente; esta dirección no es una publicación pública. Para regenerar: definir VITE_API_URL=/api/v1 en el entorno y ejecutar npm run build.
+
+## Organización e integración
+
+```text
+src/
+  components/    atoms, molecules, organisms y templates existentes
+  pages/         rutas y coordinación del recorrido
+  context/       datos API, restauración de sesión y carrito
+  services/      Axios y operaciones por recurso
+  dto/           adaptación formularios/API/componentes
+  routes/        restricciones por rol
+  hooks/         contextos y comportamiento reutilizable
+  utils/         validación y cálculos de presentación
+```
+
+services/api.js configura URL, timeout, Bearer y mensajes de error. sesionApi, catalogoApi, usuariosApi y pedidosApi realizan HTTP; dto/api.dto.js adapta campos/tipos. DatosApiProvider mantiene los contratos de contexto de los componentes EP2. Stock, precio final, propiedad y roles los decide el servidor.
+
+| Pantalla | API bajo /api/v1 |
+|---|---|
+| Registro/ingreso/personal | /auth/register, /auth/login, /auth/me, /auth/logout |
+| Catálogo/detalle/carrito | GET /productos, /productos/{codigo}, /categorias |
+| Confirmación | GET /zonas, POST /pedidos |
+| Mis pedidos/detalle | GET /pedidos, /pedidos/{id}, DELETE pendiente |
+| Operadora | GET /repartidores, PATCH /pedidos/{id}/asignacion |
+| Repartidor | GET /pedidos, PATCH /pedidos/{id}/estado |
+| Administración | CRUD /usuarios y /productos, gestión de /pedidos |
+
+Cliente envía contacto, dirección, zona, códigos, cantidades y precio mostrado; API obtiene tarifa/propietario de la cuenta y calcula total. Cambio de precio o stock: 409 sin pedido parcial. React muestra el error y permite revisar.
+
+## Sesión y estados
+
+Token en **sessionStorage** para conservar sesión al recargar como exige EP3. Se consulta /auth/me antes de recuperar permisos. Temporizador limpia al vencer (15 min); 401 limpia y solicita ingreso. Cierre llama al backend para revocar y limpia localmente. Sin refresh token. El token no está en localStorage: allí queda el carrito. sessionStorage tiene riesgo ante XSS y no equivale a una cookie HttpOnly; decisión documentada en backend.
+
+Se muestran carga, conexión fallida con reintento, listas vacías, éxito, validación por campo y acceso denegado. Se bloquea envío mientras espera respuesta. Menús/rutas acompañan el rol; API vuelve a comprobar permisos/propiedad. La contraseña de demostración se configura al sembrar, no en el bundle.
+
+## Verificación real · 20-nov-2026
+
 ```bash
+npm test -- --run
+npm run lint
+npm run build
 npm run test:cov
 ```
 
-```bash
-npm run lint
-```
+**27 pruebas aprobadas en 12 archivos**, lint sin errores y compilación correcta. Cobertura: 25,52 % instrucciones, 23,28 % ramas, 22,63 % funciones y 24,89 % líneas; no representa cobertura completa. Las pruebas manuales se registran aparte.
 
-```bash
-npm run build
-```
+Navegador con API real: registro, login/recarga, carrito/confirmación, asignación, en camino/entrega, bloqueo por rol, alta/edición/baja de personal y CRUD de producto. Persistencia del pedido tras reinicio del backend local. Catálogo a 360, 768 y 1280 px sin desbordamiento de página. Backend: 43 pruebas local y EC2/RDS.
 
-`npm test` deja las pruebas en modo vigilante mientras se desarrolla.
-
-## Demostración rápida
-
-Perfiles ficticios del personal (la contraseña es cualquier texto ficticio de 6 o más caracteres):
-`administracion@ejemplo.cl`, `operadora@ejemplo.cl`, `repartidor1@ejemplo.cl`,
-`repartidor2@ejemplo.cl` y `repartidor3@ejemplo.cl`.
-
-1. Regístrate con datos ficticios, agrega un cilindro y un accesorio al carrito y confirma: la
-   entrega se completa con tu cuenta. El stock baja.
-2. En el pie, **Acceso del personal** → operadora → asigna el pedido.
-3. Cierra sesión del personal → repartidor asignado → En camino → Entregado.
-4. Vuelve a **Mis pedidos** y abre el seguimiento: el pedido aparece entregado.
-5. Ingresa como administración: revisa el panel, la orden de pedido con el cobro registrado,
-   los reportes, repone un producto crítico y crea un repartidor nuevo (aparece en la asignación).
-
-## Evidencias responsivas
-
-Capturas del ingreso en los tres anchos de la Guía 12: `docs/evidencias/ingreso-375.png`,
-`docs/evidencias/ingreso-768.png` y `docs/evidencias/ingreso-1280.png`.
-
-## Material complementario
-
-La ERS versión 2 y el informe de pruebas unitarias y cobertura se entregan en Blackboard junto con
-el proyecto comprimido.
-
-## Despliegue en AWS
-
-`deploy/nginx-gas-volcan.conf` es la configuración de nginx para servir la compilación (`dist/`) en
-una instancia EC2 y que las rutas de React Router funcionen al recargar la página.
-
-## Bitácora
-
-Trabajo individual: todas las tareas son de Vicente Hueichapan.
-
-**Cuentas que aparecen en el historial.** Las tres corresponden a la misma persona:
-
-| Autor en GitHub | Correo | Uso |
-|---|---|---|
-| `Vicente Hueichapan` | vi.hueichapan@duocuc.cl | Commits de desarrollo desde el equipo personal |
-| `vicenteehueichapan-boop` | correo personal de Gmail | Cuenta de GitHub dueña del repositorio (creó el repositorio) |
-| `perropa` | el mismo correo personal | Nombre con que quedan las fusiones de solicitudes hechas desde GitHub (14/10 y 24/10) |
-
-| Fecha | Tarea |
-|---|---|
-| 30/09 | Crea el proyecto React + Vite, la navegación, el catálogo inicial, React Bootstrap, el ingreso, productos y pedidos con persistencia y sus primeras pruebas. |
-| 01/10 | Corrige la asignación de repartidores y separa la tienda del área de trabajo del personal. |
-| 07/10 | Revisa la estructura de Atomic Design en Inicio y Catálogo y prueba sus componentes. |
-| 14/10 | Guía 14: reglas de validación separadas, hook `useTituloPagina` y corrección del seguimiento. Carrito persistente con tarifas y confirmación de varios cilindros. Catálogo completo del Excel y acceso del personal por rol. Tres solicitudes de incorporación fusionadas en `main`. |
-| 16/10 | Persistencia segura ante datos dañados; cuentas de cliente, Mis pedidos y seguimiento privado; navegación por props en los componentes; Blog, Nosotros, Contacto y Destacados; descuento de stock y registro del cobro; categorías registradas; panel de administración completo; pruebas de todos los niveles de Atomic Design. |
-| 18/10 | README y documentación ordenados; formulario de productos con validación por campo e imagen por categoría; mapa de rutas en `App.jsx`; `setupTests.js` y scripts de la Guía 15; capturas responsivas actualizadas. |
-| 24/10 | Bitácora en el README. Incorporación a `main` de las siete ramas de trabajo mediante solicitudes de incorporación. Las pruebas se reducen a 20 casos prioritarios en 9 archivos (lógica, componentes, un hook y un servicio). |
-
-**Contingencias:** desde el 16/10 el trabajo avanzó en siete ramas encadenadas (`persistencia-segura`
-→ `sesion-cliente` → `navegacion-por-props` → `carrito-catalogo-completo` → `vistas-informativas` →
-`panel-administracion` → `pulido-y-pruebas`), que se incorporan a `main` en ese orden.
+Requiere laboratorio/EC2/RDS/túnel activos. Manual por rol, documento de integración, ERS V3 y ZIP se entregan separados del código. Carga en AVA y ensayo individual no se acreditan desde el repositorio.

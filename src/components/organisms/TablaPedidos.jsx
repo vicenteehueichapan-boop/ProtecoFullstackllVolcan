@@ -39,9 +39,9 @@ export default function TablaPedidos({ pedidos, alNavegar }) {
                   ruta={`/administracion/pedidos/${pedido.id}`}
                   alNavegar={alNavegar}
                   className="btn btn-sm btn-outline-danger"
-                  aria-label={`Ver la orden de ${pedido.id}`}
+                  aria-label={`Ver detalle de ${pedido.id}`}
                 >
-                  Ver orden
+                  Ver detalle
                 </EnlaceInterno>
               </td>
             </tr>

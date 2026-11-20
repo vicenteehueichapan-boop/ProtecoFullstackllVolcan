@@ -5,7 +5,7 @@ export function validarCorreo(correo) {
 }
 
 export function validarClave(clave) {
-  return clave.length >= 6 ? '' : 'La contraseña debe tener al menos 6 caracteres.'
+  return clave.length >= 8 && clave.length <= 128 ? '' : 'La contraseña debe tener entre 8 y 128 caracteres.'
 }
 
 export function validarIngreso(correo, clave) {

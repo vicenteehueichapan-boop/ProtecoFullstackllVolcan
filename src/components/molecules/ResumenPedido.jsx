@@ -7,7 +7,7 @@ export default function ResumenPedido({ pedido }) {
       <Card.Body>
         <Card.Title as="h2" className="h4">Resumen del pedido</Card.Title>
         <ListGroup variant="flush">
-          <ListGroup.Item><strong>Cliente:</strong> {pedido.cliente.nombre}</ListGroup.Item>
+          <ListGroup.Item><strong>Cliente:</strong> {pedido.cliente.nombre} {pedido.cliente.apellidos}</ListGroup.Item>
           {pedido.cliente.correo && <ListGroup.Item><strong>Correo:</strong> {pedido.cliente.correo}</ListGroup.Item>}
           <ListGroup.Item><strong>Dirección:</strong> {pedido.cliente.direccion}</ListGroup.Item>
           <ListGroup.Item>

@@ -19,6 +19,7 @@ const datosVacios = {
 export default function FormularioRegistro({ alRegistrar }) {
   const [datos, setDatos] = useState(datosVacios)
   const [errores, setErrores] = useState({})
+  const [enviando, setEnviando] = useState(false)
 
   function cambiar(campo, valor) {
     setDatos((actuales) => ({ ...actuales, [campo]: valor }))
@@ -28,22 +29,24 @@ export default function FormularioRegistro({ alRegistrar }) {
     }
   }
 
-  function manejarEnvio(evento) {
+  async function manejarEnvio(evento) {
     evento.preventDefault()
+    if (enviando) return
     const nuevosErrores = validarRegistro(datos)
     setErrores(nuevosErrores)
     if (Object.keys(nuevosErrores).length === 0) {
-      // La contraseña no se entrega: en EP2 solo se valida su formato.
-      const { nombre, apellidos, run, correo, tipoCliente } = datos
+      // La página entrega la contraseña al servicio HTTP; no se guarda en el navegador.
+      const { nombre, apellidos, run, correo, tipoCliente, clave } = datos
       // La página puede responder con errores del servicio (por ejemplo, un correo ya
       // registrado). El formulario sigue siendo el dueño de los errores y los muestra
       // junto a su campo.
-      setErrores(alRegistrar({ nombre, apellidos, run, correo, tipoCliente }) ?? {})
+      setEnviando(true)
+      try { setErrores(await alRegistrar({ nombre, apellidos, run, correo, tipoCliente, clave }) ?? {}) } finally { setEnviando(false) }
     }
   }
 
   return (
-    <Form noValidate onSubmit={manejarEnvio}>
+    <Form aria-busy={enviando} noValidate onSubmit={manejarEnvio}>
       <Row className="gx-md-3">
         <Col md={6}>
           <CampoFormulario
@@ -107,7 +110,7 @@ export default function FormularioRegistro({ alRegistrar }) {
         error={errores.confirmarClave}
         autoComplete="new-password"
       />
-      <BotonAccion tipo="submit" className="w-100">Registrarme</BotonAccion>
+      <BotonAccion disabled={enviando} tipo="submit" className="w-100">Registrarme</BotonAccion>
     </Form>
   )
 }

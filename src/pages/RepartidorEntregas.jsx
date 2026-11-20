@@ -16,9 +16,9 @@ export default function RepartidorEntregas() {
     [pedidos, personal],
   )
 
-  function avanzarEstado(id, nuevoEstado) {
+  async function avanzarEstado(id, nuevoEstado) {
     try {
-      cambiarEstado(id, nuevoEstado)
+      await cambiarEstado(id, nuevoEstado)
       setMensaje({ tipo: 'success', texto: `El estado de ${id} fue actualizado.` })
     } catch (excepcion) {
       setMensaje({
